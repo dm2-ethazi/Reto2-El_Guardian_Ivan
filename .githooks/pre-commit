@@ -1,0 +1,21 @@
+#!/bin/sh
+
+echo "Ejecutando hook pre-commit..."
+
+# Comprobar si existen tests de Python
+if [ -d "tests" ]; then
+    echo "Ejecutando tests..."
+
+    python -m pytest
+    resultado=$?
+
+    if [ "$resultado" -ne 0 ]; then
+        echo "ERROR: Los tests han fallado. Commit cancelado."
+        exit 1
+    fi
+else
+    echo "No hay tests todavía. Se permite el commit inicial."
+fi
+
+echo "Pre-commit completado correctamente."
+exit 0
