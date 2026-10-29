@@ -1,10 +1,15 @@
 """Menú de Hogwarts para cifrar y descifrar mensajes con Vigenère."""
 
 from collections.abc import Callable
+from getpass import getpass
 from pathlib import Path
+import sys
+import time
 
 from .cipher import cifrar_vigenere, descifrar_vigenere, validar_clave
 from .files import (
+    ArchivoSinTextoError,
+    detectar_temporales_antiguos,
     guardar_mensaje,
     leer_mensaje,
     obtener_carpetas,
@@ -19,8 +24,8 @@ TAMANO_MAXIMO_PANTALLA = 4096
 # Para archivos grandes mostramos únicamente 500 caracteres.
 TAMANO_VISTA_PREVIA = 500
 
-# Cantidad de caracteres que leemos cada vez para comprobar un archivo.
-TAMANO_BLOQUE_VALIDACION = 64 * 1024
+# Tiempo mínimo entre actualizaciones de progreso en pantalla.
+INTERVALO_PROGRESO = 0.25
 
 
 def pedir_dato(mensaje: str) -> str | None:
@@ -38,29 +43,57 @@ def mostrar_menu() -> None:
     print("======================================")
 
 
-def mostrar_progreso(procesados: int, total: int) -> None:
-    """Actualiza en una sola línea el porcentaje del archivo procesado."""
-    porcentaje = 100.0 if total == 0 else min(100.0, procesados * 100 / total)
-    longitud_barra = 30
-    completados = int(longitud_barra * porcentaje / 100)
-    barra = "#" * completados + "-" * (longitud_barra - completados)
+def crear_indicador_progreso() -> Callable[[int, int], None]:
+    """Devuelve un indicador con porcentaje, velocidad y tiempo estimado.
 
-    procesados_mib = procesados / (1024 * 1024)
-    total_mib = total / (1024 * 1024)
+    Evita imprimir después de cada bloque si aún no han transcurrido 0,25 s.
+    """
+    inicio = time.monotonic()
+    ultima_actualizacion = inicio
+    ancho_anterior = 0
 
-    print(
-        f"\r[{barra}] {porcentaje:6.2f}% "
-        f"({procesados_mib:,.1f} / {total_mib:,.1f} MiB)",
-        end="",
-        flush=True,
-    )
+    def mostrar_progreso(procesados: int, total: int) -> None:
+        nonlocal ultima_actualizacion, ancho_anterior
+        ahora = time.monotonic()
+        if procesados < total and ahora - ultima_actualizacion < INTERVALO_PROGRESO:
+            return
+        ultima_actualizacion = ahora
+
+        porcentaje = 100.0 if total == 0 else min(100.0, procesados * 100 / total)
+        completados = int(30 * porcentaje / 100)
+        barra = "#" * completados + "-" * (30 - completados)
+        procesados_mib = procesados / (1024 * 1024)
+        total_mib = total / (1024 * 1024)
+        transcurrido = max(ahora - inicio, 0.001)
+        velocidad = procesados_mib / transcurrido
+        restante = max(total - procesados, 0)
+        segundos_restantes = int(restante / (procesados / transcurrido)) if procesados else 0
+        tiempo_estimado = f"{segundos_restantes // 60:02}:{segundos_restantes % 60:02}" if procesados else "--:--"
+
+        linea = (
+            f"[{barra}] {porcentaje:6.2f}% "
+            f"({procesados_mib:,.1f}/{total_mib:,.1f} MiB) "
+            f"{velocidad:.1f} MiB/s ETA {tiempo_estimado}"
+        )
+        print("\r" + linea.ljust(ancho_anterior), end="", flush=True)
+        ancho_anterior = len(linea)
+
+    return mostrar_progreso
+
+
+def pedir_clave_oculta() -> str:
+    """Oculta la contraseña en un terminal; acepta entrada redirigida."""
+    mensaje = "\nIntroduce la clave (0 para volver): "
+    if sys.stdin.isatty() and sys.stderr.isatty():
+        return getpass(mensaje)
+    return input(mensaje)
 
 
 def obtener_clave() -> str | None:
     """Solicita una clave válida o vuelve al dato anterior con 0."""
     while True:
-        clave = pedir_dato("\nIntroduce la clave (0 para volver): ")
-        if clave is None:
+        clave = pedir_clave_oculta()
+        if clave.strip() == "0":
             return None
 
         try:
@@ -68,22 +101,6 @@ def obtener_clave() -> str | None:
         except ValueError as error:
             print(f"\nError: {error}")
             print("Introduce otra clave.")
-
-
-def archivo_sin_texto(ruta: Path) -> bool:
-    """
-    Comprueba si un .txt está vacío o solo contiene espacios en blanco.
-
-    Lee fragmentos pequeños para no cargar archivos grandes en memoria.
-    Devuelve False en cuanto encuentra un carácter que no sea espacio.
-    """
-    with ruta.open("r", encoding="utf-8", newline="") as fichero:
-        while True:
-            bloque = fichero.read(TAMANO_BLOQUE_VALIDACION)
-            if not bloque:
-                return True
-            if bloque.strip():
-                return False
 
 
 def obtener_nombre_entrada(cifrar: bool) -> str | None:
@@ -106,12 +123,12 @@ def obtener_nombre_entrada(cifrar: bool) -> str | None:
             if not ruta.is_file():
                 raise FileNotFoundError(f"No existe el archivo: {nombre}")
 
-            # Rechazamos archivos de 0 bytes o con solo espacios/saltos
-            # de línea. Se comprueba sin leer el archivo completo en RAM.
-            if archivo_sin_texto(ruta):
-                raise ValueError(
-                    "El archivo está vacío o solo contiene espacios en blanco."
-                )
+            if ruta.is_symlink():
+                raise ValueError("No se admiten enlaces simbólicos como entrada.")
+            if ruta.stat().st_size == 0:
+                raise ArchivoSinTextoError("El archivo de entrada está vacío.")
+            # Los archivos con solo espacios se detectan durante el procesado
+            # para evitar leer los grandes dos veces.
 
             return nombre
         except (ValueError, OSError, UnicodeError) as error:
@@ -157,20 +174,27 @@ def preguntar_guardado(guardar: Callable[[str], Path]) -> str:
                 print("\nArchivo guardado correctamente.")
                 print(f"Ubicación: {ruta}")
                 return "menu"
+            except ArchivoSinTextoError as error:
+                print(f"\nError en el contenido: {error}")
+                return "menu"
             except (ValueError, FileExistsError) as error:
                 print(f"\nError: {error}")
                 print("Introduce otro nombre.")
             except (OSError, UnicodeError) as error:
                 print(f"\nError al guardar: {error}")
-                print("No se ha publicado un resultado incompleto.")
+                print("El destino no se ha publicado incompleto.")
+                return "menu"
+            except KeyboardInterrupt:
+                print("\nOperación cancelada. El archivo temporal se ha limpiado.")
                 return "menu"
 
 
 def ejecutar_texto_manual(cifrar: bool) -> str:
     """Procesa mensajes introducidos manualmente, permitiendo retroceder."""
     while True:
-        texto = pedir_dato("\nIntroduce el mensaje (0 para volver): ")
-        if texto is None:
+        # :volver permite cifrar literalmente el texto "0".
+        texto = input("\nIntroduce el mensaje (:volver para regresar): ")
+        if texto.strip().lower() == ":volver":
             return "atras"  # Volver a la selección de tipo de entrada.
 
         # No aceptamos una cadena vacía ni mensajes solo con espacios.
@@ -223,6 +247,10 @@ def ejecutar_archivo(cifrar: bool) -> str:
                 if tamano <= TAMANO_MAXIMO_PANTALLA:
                     # Para archivos pequeños mostramos todo el resultado.
                     texto = leer_mensaje(nombre_entrada, cifrar)
+                    if not texto.strip():
+                        raise ArchivoSinTextoError(
+                            "El archivo está vacío o solo contiene espacios en blanco."
+                        )
                     if cifrar:
                         resultado = cifrar_vigenere(texto, clave)
                         print("\n--- MENSAJE CIFRADO ---")
@@ -248,17 +276,18 @@ def ejecutar_archivo(cifrar: bool) -> str:
                     print(f"\n[Primeros {TAMANO_VISTA_PREVIA} caracteres]")
                     print(f"Tamaño: {tamano:,} bytes")
 
-            except (OSError, UnicodeError) as error:
+            except (OSError, UnicodeError, ArchivoSinTextoError) as error:
                 print(f"\nError al leer el archivo: {error}")
                 break  # Volver a seleccionar otro archivo.
 
             def guardar(nombre: str) -> Path:
-                # Los archivos pequeños pueden guardarse directamente.
+                # Los mensajes pequeños también utilizan guardado temporal.
                 if tamano <= TAMANO_MAXIMO_PANTALLA:
                     return guardar_mensaje(nombre, resultado, cifrado=cifrar)
 
                 # Los archivos grandes se cifran o descifran por bloques.
                 print("\nProcesando archivo por bloques...")
+                print("Pulsa Ctrl+C para cancelar sin dejar archivos incompletos.")
 
                 try:
                     ruta = procesar_archivo_grande(
@@ -266,7 +295,7 @@ def ejecutar_archivo(cifrar: bool) -> str:
                         nombre,
                         clave,
                         cifrar,
-                        progreso=mostrar_progreso,
+                        progreso=crear_indicador_progreso(),
                     )
                 finally:
                     # Deja libre la línea incluso si hay un error.
@@ -308,9 +337,30 @@ def ejecutar_operacion(cifrar: bool) -> None:
         # 'atras' vuelve a elegir entre texto manual y archivo.
 
 
+def ofrecer_limpieza_temporales() -> None:
+    """Ofrece eliminar temporales de más de 24 h, con confirmación."""
+    temporales = detectar_temporales_antiguos()
+    if not temporales:
+        return
+    print(f"\nSe encontraron {len(temporales)} archivos temporales antiguos.")
+    print("Asegúrate de que no haya otra ejecución trabajando con ellos.")
+    if input("¿Quieres eliminarlos? (s/N): ").strip().lower() != "s":
+        return
+    borrados = 0
+    for ruta in temporales:
+        try:
+            if ruta.is_file() and not ruta.is_symlink():
+                ruta.unlink()
+                borrados += 1
+        except OSError as error:
+            print(f"No se pudo eliminar {ruta.name}: {error}")
+    print(f"Temporales eliminados: {borrados}")
+
+
 def main() -> None:
     """El programa solo se cierra con 0 desde el menú principal."""
     try:
+        ofrecer_limpieza_temporales()
         while True:
             mostrar_menu()
             opcion = input("\nSelecciona una opción: ").strip()
