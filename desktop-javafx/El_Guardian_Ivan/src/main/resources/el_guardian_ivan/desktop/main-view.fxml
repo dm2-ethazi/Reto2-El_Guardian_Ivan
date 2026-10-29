@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -14,14 +15,17 @@
     </padding>
 
     <Label text="Fichero de entrada:"/>
-    <Button text="Seleccionar fichero..." onAction="#onSelectInputFile"/>
+    <Button fx:id="selectButton" text="Seleccionar fichero..." onAction="#onSelectInputFile"/>
     <Label fx:id="inputFileLabel" text="Ningún fichero seleccionado" wrapText="true"/>
 
     <Label text="Contraseña:"/>
     <PasswordField fx:id="passwordField"/>
 
     <HBox spacing="10.0">
-        <Button text="Cifrar..." onAction="#onEncrypt"/>
-        <Button text="Descifrar..." onAction="#onDecrypt"/>
+        <Button fx:id="encryptButton" text="Cifrar..." onAction="#onEncrypt"/>
+        <Button fx:id="decryptButton" text="Descifrar..." onAction="#onDecrypt"/>
     </HBox>
+
+    <ProgressBar fx:id="progressBar" progress="0" maxWidth="Infinity"/>
+    <Label fx:id="statusLabel"/>
 </VBox>

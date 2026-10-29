@@ -1,11 +1,15 @@
 package el_guardian_ivan.desktop;
 
 import el_guardian_ivan.desktop.crypto.AesFileCipher;
+import el_guardian_ivan.desktop.files.FileSizeFormatter;
 import el_guardian_ivan.desktop.files.FileTypeDetector;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ProgressBar;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
@@ -23,6 +27,21 @@ public class MainController {
 
     @FXML
     private PasswordField passwordField;
+
+    @FXML
+    private Button selectButton;
+
+    @FXML
+    private Button encryptButton;
+
+    @FXML
+    private Button decryptButton;
+
+    @FXML
+    private ProgressBar progressBar;
+
+    @FXML
+    private Label statusLabel;
 
     private Path inputFile;
 
@@ -44,7 +63,7 @@ public class MainController {
             }
             long size = Files.size(path);
             inputFile = path;
-            inputFileLabel.setText(path + " (" + size + " bytes)");
+            inputFileLabel.setText(path + " (" + FileSizeFormatter.format(size) + ")");
         } catch (IOException e) {
             inputFile = null;
             inputFileLabel.setText("Ningún fichero seleccionado");
@@ -73,20 +92,20 @@ public class MainController {
             return; // El usuario ha cancelado el diálogo
         }
 
+        Path input = inputFile;
         Path output = selected.toPath();
-        char[] password = passwordField.getText().toCharArray();
-        try {
-            aesFileCipher.encrypt(inputFile, output, password);
-            showInfo("Fichero cifrado", "Se ha guardado en:\n" + output);
-        } catch (IllegalArgumentException e) {
-            showError("No se puede cifrar", e.getMessage());
-        } catch (IOException e) {
-            showError("Error de lectura o escritura", e.getMessage());
-        } catch (GeneralSecurityException e) {
-            showError("Error de cifrado", e.getMessage());
-        } finally {
-            Arrays.fill(password, '\0'); // No dejamos la contraseña en memoria
-        }
+        char[] password = takePassword();
+        runInBackground("Cifrando...", "Fichero cifrado", new Task<>() {
+            @Override
+            protected Path call() throws Exception {
+                try {
+                    aesFileCipher.encrypt(input, output, password, this::updateProgress);
+                    return output;
+                } finally {
+                    Arrays.fill(password, '\0'); // No dejamos la contraseña en memoria
+                }
+            }
+        });
     }
 
     @FXML
@@ -110,23 +129,79 @@ public class MainController {
             return; // El usuario ha cancelado el diálogo
         }
 
+        Path input = inputFile;
         Path output = selected.toPath();
-        char[] password = passwordField.getText().toCharArray();
-        try {
-            String originalExtension = aesFileCipher.decrypt(inputFile, output, password);
-            output = FileTypeDetector.addExtensionIfMissing(output, originalExtension);
-            showInfo("Fichero descifrado", "Se ha guardado en:\n" + output);
-        } catch (AEADBadTagException e) {
+        char[] password = takePassword();
+        runInBackground("Descifrando...", "Fichero descifrado", new Task<>() {
+            @Override
+            protected Path call() throws Exception {
+                try {
+                    String originalExtension = aesFileCipher.decrypt(input, output, password, this::updateProgress);
+                    return FileTypeDetector.addExtensionIfMissing(output, originalExtension);
+                } finally {
+                    Arrays.fill(password, '\0'); // No dejamos la contraseña en memoria
+                }
+            }
+        });
+    }
+
+    /**
+     * Ejecuta la operación en un hilo aparte para que la ventana no se congele con ficheros grandes.
+     * Los métodos setOnSucceeded/setOnFailed se ejecutan de vuelta en el hilo de JavaFX.
+     */
+    private void runInBackground(String runningText, String successHeader, Task<Path> task) {
+        progressBar.progressProperty().bind(task.progressProperty());
+        statusLabel.setText(runningText);
+        setControlsDisabled(true);
+
+        task.setOnSucceeded(event -> {
+            finishTask();
+            statusLabel.setText(successHeader);
+            showInfo(successHeader, "Se ha guardado en:\n" + task.getValue());
+        });
+        task.setOnFailed(event -> {
+            finishTask();
+            statusLabel.setText("La operación ha fallado");
+            showFailure(task.getException());
+        });
+
+        Thread thread = new Thread(task, "cifrado-aes");
+        thread.setDaemon(true); // Si se cierra la ventana, no deja la aplicación abierta
+        thread.start();
+    }
+
+    private void finishTask() {
+        progressBar.progressProperty().unbind();
+        progressBar.setProgress(0);
+        setControlsDisabled(false);
+    }
+
+    private void showFailure(Throwable error) {
+        if (error instanceof AEADBadTagException) {
             showError("No se ha podido descifrar", "La contraseña es incorrecta o el fichero está dañado.");
-        } catch (IllegalArgumentException e) {
-            showError("No se puede descifrar", e.getMessage());
-        } catch (IOException e) {
-            showError("Error de lectura o escritura", e.getMessage());
-        } catch (GeneralSecurityException e) {
-            showError("Error de descifrado", e.getMessage());
-        } finally {
-            Arrays.fill(password, '\0'); // No dejamos la contraseña en memoria
+        } else if (error instanceof IllegalArgumentException) {
+            showError("Operación no permitida", error.getMessage());
+        } else if (error instanceof IOException) {
+            showError("Error de lectura o escritura", error.getMessage());
+        } else if (error instanceof GeneralSecurityException) {
+            showError("Error de cifrado", error.getMessage());
+        } else {
+            showError("Error inesperado", String.valueOf(error));
         }
+    }
+
+    /** Copia la contraseña y la borra del campo: no se queda escrita en la ventana. */
+    private char[] takePassword() {
+        char[] password = passwordField.getText().toCharArray();
+        passwordField.clear();
+        return password;
+    }
+
+    private void setControlsDisabled(boolean disabled) {
+        selectButton.setDisable(disabled);
+        encryptButton.setDisable(disabled);
+        decryptButton.setDisable(disabled);
+        passwordField.setDisable(disabled);
     }
 
     /** "hogwarts.png" -> "hogwarts", como indica la propuesta técnica (apartado 6.2). */
