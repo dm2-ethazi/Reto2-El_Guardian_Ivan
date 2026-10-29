@@ -1,6 +1,7 @@
 package el_guardian_ivan.desktop;
 
 import el_guardian_ivan.desktop.crypto.AesFileCipher;
+import el_guardian_ivan.desktop.files.FileNameValidator;
 import el_guardian_ivan.desktop.files.FileSizeFormatter;
 import el_guardian_ivan.desktop.files.FileTypeDetector;
 import javafx.concurrent.Task;
@@ -17,6 +18,7 @@ import javax.crypto.AEADBadTagException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
@@ -56,15 +58,18 @@ public class MainController {
             return; // El usuario ha cancelado el diálogo
         }
 
-        Path path = selected.toPath();
         try {
+            Path path = selected.toPath();
+            if (!Files.isRegularFile(path)) {
+                throw new IOException("No es un fichero normal.");
+            }
             if (!Files.isReadable(path)) {
                 throw new IOException("No se puede leer el fichero.");
             }
             long size = Files.size(path);
             inputFile = path;
             inputFileLabel.setText(path + " (" + FileSizeFormatter.format(size) + ")");
-        } catch (IOException e) {
+        } catch (IOException | InvalidPathException e) {
             inputFile = null;
             inputFileLabel.setText("Ningún fichero seleccionado");
             showError("No se ha podido abrir el fichero", e.getMessage());
@@ -93,7 +98,10 @@ public class MainController {
         }
 
         Path input = inputFile;
-        Path output = selected.toPath();
+        Path output = toValidOutputPath(selected);
+        if (output == null) {
+            return; // Ya se ha mostrado la alerta
+        }
         char[] password = takePassword();
         runInBackground("Cifrando...", "Fichero cifrado", new Task<>() {
             @Override
@@ -130,7 +138,10 @@ public class MainController {
         }
 
         Path input = inputFile;
-        Path output = selected.toPath();
+        Path output = toValidOutputPath(selected);
+        if (output == null) {
+            return; // Ya se ha mostrado la alerta
+        }
         char[] password = takePassword();
         runInBackground("Descifrando...", "Fichero descifrado", new Task<>() {
             @Override
@@ -187,6 +198,24 @@ public class MainController {
             showError("Error de cifrado", error.getMessage());
         } else {
             showError("Error inesperado", String.valueOf(error));
+        }
+    }
+
+    /**
+     * Convierte el fichero elegido en una ruta y comprueba que su nombre sea válido en Windows y Linux.
+     * Devuelve {@code null} (tras mostrar una alerta) si no lo es.
+     */
+    private Path toValidOutputPath(File selected) {
+        String problem = FileNameValidator.validate(selected.getName());
+        if (problem != null) {
+            showError("Nombre de fichero no válido", problem);
+            return null;
+        }
+        try {
+            return selected.toPath();
+        } catch (InvalidPathException e) {
+            showError("Ruta no válida", "No se puede usar la ruta elegida: " + e.getReason());
+            return null;
         }
     }
 
