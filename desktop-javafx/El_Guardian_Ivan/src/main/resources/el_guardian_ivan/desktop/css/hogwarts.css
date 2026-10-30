@@ -1,0 +1,200 @@
+/*
+ * Estilo El Guardián Iván.
+ * Solo se usan los colores de la propuesta técnica (apartado 8.3):
+ * principales burdeos, azul noche, verde bosque y oro antiguo;
+ * auxiliares pergamino (fondos y formularios), carbón (texto principal),
+ * verde éxito (confirmaciones) y rojo error (mensajes de error).
+ * Los tonos de hover y bordes se obtienen con derive() a partir de ellos.
+ */
+
+.root {
+    -burdeos: #591C29;
+    -azul-noche: #102B40;
+    -verde-bosque: #245747;
+    -oro-antiguo: #C49A51;
+    -pergamino: #F3E9D2;
+    -carbon: #252525;
+    -verde-exito: #32865B;
+    -rojo-error: #B34242;
+
+    -fx-font-family: "Inter";
+    -fx-font-size: 14px;
+    -fx-background-color: -pergamino;
+    -fx-text-fill: -carbon;
+
+    /* Anillo de foco visible en todos los controles */
+    -fx-focus-color: -azul-noche;
+    -fx-faint-focus-color: rgba(16, 43, 64, 0.25);
+    -fx-accent: -verde-bosque;
+}
+
+.label {
+    -fx-text-fill: -carbon;
+}
+
+/* ---------- Menú lateral ---------- */
+
+.sidebar {
+    -fx-background-color: -burdeos;
+}
+
+.sidebar .app-name {
+    -fx-font-family: "Cinzel";
+    -fx-font-weight: bold;
+    -fx-font-size: 17px;
+    -fx-text-fill: -oro-antiguo;
+    -fx-padding: 0 0 18 4;
+}
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 6;
+    -fx-text-fill: -pergamino;
+    -fx-font-size: 15px;
+    -fx-alignment: center-left;
+    -fx-padding: 10 14 10 14;
+    -fx-cursor: hand;
+}
+
+.nav-button:hover {
+    -fx-background-color: rgba(243, 233, 210, 0.12);
+}
+
+.nav-button:selected {
+    -fx-background-color: rgba(196, 154, 81, 0.25);
+    -fx-border-color: transparent transparent transparent -oro-antiguo;
+    -fx-border-width: 0 0 0 4;
+    -fx-font-family: "Inter SemiBold";
+}
+
+.nav-button:focused {
+    -fx-background-insets: 0;
+    -fx-border-color: -oro-antiguo;
+    -fx-border-width: 2;
+    -fx-border-radius: 6;
+}
+
+/* ---------- Contenido ---------- */
+
+.content {
+    -fx-padding: 32 40 32 40;
+}
+
+.title {
+    -fx-font-family: "Cinzel";
+    -fx-font-weight: bold;
+    -fx-font-size: 28px;
+    -fx-text-fill: -azul-noche;
+}
+
+.subtitle {
+    -fx-font-size: 15px;
+    -fx-text-fill: -carbon;
+}
+
+.step-label {
+    -fx-font-family: "Inter SemiBold";
+    -fx-font-size: 15px;
+    -fx-text-fill: -verde-bosque;
+    -fx-padding: 12 0 0 0;
+}
+
+.file-label {
+    -fx-text-fill: -carbon;
+}
+
+/* ---------- Botones ---------- */
+
+.button {
+    -fx-font-family: "Inter SemiBold";
+    -fx-background-color: -pergamino;
+    -fx-background-radius: 6;
+    -fx-border-color: -azul-noche;
+    -fx-border-radius: 6;
+    -fx-text-fill: -azul-noche;
+    -fx-padding: 8 18 8 18;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: derive(-pergamino, -6%);
+}
+
+.button.primary {
+    -fx-background-color: -verde-bosque;
+    -fx-border-color: -verde-bosque;
+    -fx-text-fill: -pergamino;
+}
+
+.button.primary:hover {
+    -fx-background-color: derive(-verde-bosque, -20%);
+}
+
+.button:focused {
+    -fx-border-color: -oro-antiguo;
+    -fx-border-width: 2;
+}
+
+.button:disabled {
+    -fx-opacity: 0.55;
+}
+
+/* Tarjetas de la pantalla de inicio */
+.button.card {
+    -fx-background-color: -pergamino;
+    -fx-border-color: -oro-antiguo;
+    -fx-border-width: 1.5;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-font-size: 15px;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
+    -fx-effect: dropshadow(gaussian, rgba(37, 37, 37, 0.15), 10, 0, 0, 3);
+}
+
+.button.card:hover {
+    -fx-background-color: derive(-pergamino, 40%);
+}
+
+.button.card:focused {
+    -fx-border-width: 3;
+}
+
+/* ---------- Campos y progreso ---------- */
+
+.text-field, .password-field {
+    -fx-background-color: derive(-pergamino, 60%);
+    -fx-background-radius: 6;
+    -fx-border-color: -oro-antiguo;
+    -fx-border-radius: 6;
+    -fx-padding: 8 10 8 10;
+    -fx-max-width: 360;
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-border-color: -azul-noche;
+    -fx-border-width: 2;
+}
+
+.progress-bar > .track {
+    -fx-background-color: derive(-pergamino, -10%);
+    -fx-background-radius: 6;
+}
+
+.progress-bar > .bar {
+    -fx-background-color: -verde-exito;
+    -fx-background-radius: 6;
+    -fx-background-insets: 0;
+}
+
+/* ---------- Mensajes de estado ---------- */
+
+.status-success {
+    -fx-font-family: "Inter SemiBold";
+    -fx-text-fill: -verde-exito;
+}
+
+.status-error {
+    -fx-font-family: "Inter SemiBold";
+    -fx-text-fill: -rojo-error;
+}

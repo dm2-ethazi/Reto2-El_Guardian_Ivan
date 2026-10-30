@@ -1,30 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="10.0" xmlns:fx="http://javafx.com/fxml"
+<VBox spacing="10.0" styleClass="content" xmlns:fx="http://javafx.com/fxml"
       fx:controller="el_guardian_ivan.desktop.controller.EncryptController">
-    <padding>
-        <Insets top="30.0" right="30.0" bottom="30.0" left="30.0"/>
-    </padding>
+    <Label text="Cifrar archivo" styleClass="title"/>
+    <Label text="Selecciona un archivo y define una contraseña para cifrarlo con AES-256." wrapText="true" styleClass="subtitle"/>
 
-    <Label text="Cifrar archivo"/>
-    <Label text="Selecciona un archivo y define una contraseña para cifrarlo con AES-256." wrapText="true"/>
-
-    <Label text="1. Seleccionar archivo"/>
+    <Label text="1. Seleccionar archivo" styleClass="step-label"/>
     <Button fx:id="selectButton" text="Examinar..." onAction="#onSelectInputFile"/>
-    <Label fx:id="inputFileLabel" text="Ningún fichero seleccionado" wrapText="true"/>
+    <Label fx:id="inputFileLabel" text="Ningún fichero seleccionado" wrapText="true" styleClass="file-label"/>
 
-    <Label text="2. Introducir contraseña"/>
+    <Label text="2. Introducir contraseña" styleClass="step-label"/>
     <PasswordField fx:id="passwordField"/>
 
-    <Label text="3. Archivo de salida: se elige al pulsar el botón"/>
-    <Button fx:id="runButton" text="Cifrar archivo..." onAction="#onEncrypt"/>
+    <Label text="3. Archivo de salida: se elige al pulsar el botón" styleClass="step-label"/>
+    <Button fx:id="runButton" styleClass="primary" text="Cifrar archivo..." onAction="#onEncrypt"/>
 
     <ProgressBar fx:id="progressBar" progress="0" maxWidth="Infinity"/>
     <Label fx:id="statusLabel"/>

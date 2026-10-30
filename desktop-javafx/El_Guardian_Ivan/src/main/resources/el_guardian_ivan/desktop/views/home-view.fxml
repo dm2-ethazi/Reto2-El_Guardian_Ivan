@@ -1,28 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="16.0" xmlns:fx="http://javafx.com/fxml"
+<VBox alignment="CENTER" spacing="16.0" styleClass="content" xmlns:fx="http://javafx.com/fxml"
       fx:controller="el_guardian_ivan.desktop.controller.HomeController">
-    <padding>
-        <Insets top="30.0" right="30.0" bottom="30.0" left="30.0"/>
-    </padding>
-
-    <Label text="Hogwarts Crypt"/>
-    <Label text="Protege tus archivos con AES"/>
+    <Label text="El Guardián Iván" styleClass="title"/>
+    <Label text="Protege tus archivos con AES" styleClass="step-label"/>
     <Label text="Cifra y descifra archivos de texto, imágenes y otros ficheros mediante AES-256."
-           wrapText="true"/>
+           wrapText="true" styleClass="subtitle"/>
 
     <HBox alignment="CENTER" spacing="20.0">
         <Button text="Cifrar archivo&#10;Protege tu archivo con AES-256" onAction="#onOpenEncrypt"
-                prefWidth="220.0" prefHeight="120.0"/>
+                prefWidth="240.0" prefHeight="130.0" styleClass="card"/>
         <Button text="Descifrar archivo&#10;Recupera tu archivo original" onAction="#onOpenDecrypt"
-                prefWidth="220.0" prefHeight="120.0"/>
+                prefWidth="240.0" prefHeight="130.0" styleClass="card"/>
     </HBox>
 
-    <Label text="Selecciona una opción para comenzar"/>
+    <Label text="Selecciona una opción para comenzar" styleClass="subtitle"/>
 </VBox>

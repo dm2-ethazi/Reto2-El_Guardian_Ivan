@@ -15,20 +15,20 @@
 
     <!-- Menú lateral -->
     <left>
-        <VBox spacing="6.0" prefWidth="180.0">
+        <VBox spacing="6.0" prefWidth="200.0" styleClass="sidebar">
             <padding>
                 <Insets top="20.0" right="12.0" bottom="20.0" left="12.0"/>
             </padding>
-            <Label text="Hogwarts Crypt"/>
-            <ToggleButton fx:id="homeButton" text="Inicio" toggleGroup="$navigationGroup" maxWidth="Infinity"/>
-            <ToggleButton fx:id="encryptButton" text="Cifrar" toggleGroup="$navigationGroup" maxWidth="Infinity"/>
-            <ToggleButton fx:id="decryptButton" text="Descifrar" toggleGroup="$navigationGroup" maxWidth="Infinity"/>
-            <ToggleButton fx:id="settingsButton" text="Ajustes" toggleGroup="$navigationGroup" maxWidth="Infinity"/>
+            <Label text="El Guardián Iván" styleClass="app-name"/>
+            <ToggleButton fx:id="homeButton" text="Inicio" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button"/>
+            <ToggleButton fx:id="encryptButton" text="Cifrar" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button"/>
+            <ToggleButton fx:id="decryptButton" text="Descifrar" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button"/>
+            <ToggleButton fx:id="settingsButton" text="Ajustes" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button"/>
         </VBox>
     </left>
 
     <!-- Aquí se muestra la pantalla elegida en el menú -->
     <center>
-        <StackPane fx:id="contentArea"/>
+        <StackPane fx:id="contentArea" styleClass="content-area"/>
     </center>
 </BorderPane>

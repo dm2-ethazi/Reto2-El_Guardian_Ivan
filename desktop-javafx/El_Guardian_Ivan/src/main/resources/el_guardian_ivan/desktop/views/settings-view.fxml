@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 
 <!-- El selector de idioma se añadirá en el paso de internacionalización -->
-<VBox spacing="10.0" xmlns:fx="http://javafx.com/fxml">
-    <padding>
-        <Insets top="30.0" right="30.0" bottom="30.0" left="30.0"/>
-    </padding>
-
-    <Label text="Ajustes"/>
-    <Label text="Aquí podrás elegir el idioma de la aplicación."/>
+<VBox spacing="10.0" styleClass="content" xmlns:fx="http://javafx.com/fxml">
+    <Label text="Ajustes" styleClass="title"/>
+    <Label text="Aquí podrás elegir el idioma de la aplicación." styleClass="subtitle"/>
 </VBox>
