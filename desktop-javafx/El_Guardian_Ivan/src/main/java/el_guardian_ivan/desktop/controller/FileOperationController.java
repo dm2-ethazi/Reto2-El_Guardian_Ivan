@@ -1,9 +1,8 @@
-package el_guardian_ivan.desktop;
+package el_guardian_ivan.desktop.controller;
 
 import el_guardian_ivan.desktop.crypto.AesFileCipher;
 import el_guardian_ivan.desktop.files.FileNameValidator;
 import el_guardian_ivan.desktop.files.FileSizeFormatter;
-import el_guardian_ivan.desktop.files.FileTypeDetector;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -21,33 +20,34 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
 
-public class MainController {
+/**
+ * Parte común de las pantallas Cifrar y Descifrar: elegir el fichero de entrada,
+ * leer la contraseña, ejecutar la operación en segundo plano y mostrar el resultado.
+ * Los campos @FXML de esta clase los rellena el FXML de cada pantalla.
+ */
+public abstract class FileOperationController {
     @FXML
-    private Label inputFileLabel;
-
-    @FXML
-    private PasswordField passwordField;
-
-    @FXML
-    private Button selectButton;
+    protected Label inputFileLabel;
 
     @FXML
-    private Button encryptButton;
+    protected PasswordField passwordField;
 
     @FXML
-    private Button decryptButton;
+    protected Button selectButton;
 
     @FXML
-    private ProgressBar progressBar;
+    protected Button runButton;
 
     @FXML
-    private Label statusLabel;
+    protected ProgressBar progressBar;
 
-    private Path inputFile;
+    @FXML
+    protected Label statusLabel;
 
-    private final AesFileCipher aesFileCipher = new AesFileCipher();
+    protected Path inputFile;
+
+    protected final AesFileCipher aesFileCipher = new AesFileCipher();
 
     @FXML
     protected void onSelectInputFile() {
@@ -76,91 +76,11 @@ public class MainController {
         }
     }
 
-    @FXML
-    protected void onEncrypt() {
-        if (inputFile == null) {
-            showError("Falta el fichero", "Selecciona primero el fichero que quieres cifrar.");
-            return;
-        }
-        if (passwordField.getText().isEmpty()) {
-            showError("Falta la contraseña", "Introduce una contraseña para cifrar el fichero.");
-            return;
-        }
-
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Guardar fichero cifrado");
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Contenedor cifrado (*.hgw)", "*.hgw"));
-        chooser.setInitialDirectory(inputFile.toAbsolutePath().getParent().toFile());
-        chooser.setInitialFileName(withoutExtension(inputFile.getFileName().toString()) + ".hgw");
-        File selected = chooser.showSaveDialog(getWindow());
-        if (selected == null) {
-            return; // El usuario ha cancelado el diálogo
-        }
-
-        Path input = inputFile;
-        Path output = toValidOutputPath(selected);
-        if (output == null) {
-            return; // Ya se ha mostrado la alerta
-        }
-        char[] password = takePassword();
-        runInBackground("Cifrando...", "Fichero cifrado", new Task<>() {
-            @Override
-            protected Path call() throws Exception {
-                try {
-                    aesFileCipher.encrypt(input, output, password, this::updateProgress);
-                    return output;
-                } finally {
-                    Arrays.fill(password, '\0'); // No dejamos la contraseña en memoria
-                }
-            }
-        });
-    }
-
-    @FXML
-    protected void onDecrypt() {
-        if (inputFile == null) {
-            showError("Falta el fichero", "Selecciona primero el fichero .hgw que quieres descifrar.");
-            return;
-        }
-        if (passwordField.getText().isEmpty()) {
-            showError("Falta la contraseña", "Introduce la contraseña con la que se cifró el fichero.");
-            return;
-        }
-
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Guardar fichero descifrado");
-        chooser.setInitialDirectory(inputFile.toAbsolutePath().getParent().toFile());
-        // Si el usuario no escribe extensión, se usa la original guardada (cifrada) en el .hgw
-        chooser.setInitialFileName(withoutExtension(inputFile.getFileName().toString()));
-        File selected = chooser.showSaveDialog(getWindow());
-        if (selected == null) {
-            return; // El usuario ha cancelado el diálogo
-        }
-
-        Path input = inputFile;
-        Path output = toValidOutputPath(selected);
-        if (output == null) {
-            return; // Ya se ha mostrado la alerta
-        }
-        char[] password = takePassword();
-        runInBackground("Descifrando...", "Fichero descifrado", new Task<>() {
-            @Override
-            protected Path call() throws Exception {
-                try {
-                    String originalExtension = aesFileCipher.decrypt(input, output, password, this::updateProgress);
-                    return FileTypeDetector.addExtensionIfMissing(output, originalExtension);
-                } finally {
-                    Arrays.fill(password, '\0'); // No dejamos la contraseña en memoria
-                }
-            }
-        });
-    }
-
     /**
      * Ejecuta la operación en un hilo aparte para que la ventana no se congele con ficheros grandes.
      * Los métodos setOnSucceeded/setOnFailed se ejecutan de vuelta en el hilo de JavaFX.
      */
-    private void runInBackground(String runningText, String successHeader, Task<Path> task) {
+    protected void runInBackground(String runningText, String successHeader, Task<Path> task) {
         progressBar.progressProperty().bind(task.progressProperty());
         statusLabel.setText(runningText);
         setControlsDisabled(true);
@@ -205,7 +125,7 @@ public class MainController {
      * Convierte el fichero elegido en una ruta y comprueba que su nombre sea válido en Windows y Linux.
      * Devuelve {@code null} (tras mostrar una alerta) si no lo es.
      */
-    private Path toValidOutputPath(File selected) {
+    protected Path toValidOutputPath(File selected) {
         String problem = FileNameValidator.validate(selected.getName());
         if (problem != null) {
             showError("Nombre de fichero no válido", problem);
@@ -220,7 +140,7 @@ public class MainController {
     }
 
     /** Copia la contraseña y la borra del campo: no se queda escrita en la ventana. */
-    private char[] takePassword() {
+    protected char[] takePassword() {
         char[] password = passwordField.getText().toCharArray();
         passwordField.clear();
         return password;
@@ -228,22 +148,21 @@ public class MainController {
 
     private void setControlsDisabled(boolean disabled) {
         selectButton.setDisable(disabled);
-        encryptButton.setDisable(disabled);
-        decryptButton.setDisable(disabled);
+        runButton.setDisable(disabled);
         passwordField.setDisable(disabled);
     }
 
     /** "hogwarts.png" -> "hogwarts", como indica la propuesta técnica (apartado 6.2). */
-    private static String withoutExtension(String fileName) {
+    protected static String withoutExtension(String fileName) {
         int dot = fileName.lastIndexOf('.');
         return dot > 0 ? fileName.substring(0, dot) : fileName;
     }
 
-    private Window getWindow() {
+    protected Window getWindow() {
         return inputFileLabel.getScene().getWindow();
     }
 
-    private void showInfo(String header, String content) {
+    protected void showInfo(String header, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Información");
         alert.setHeaderText(header);
@@ -251,7 +170,7 @@ public class MainController {
         alert.showAndWait();
     }
 
-    private void showError(String header, String content) {
+    protected void showError(String header, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText(header);

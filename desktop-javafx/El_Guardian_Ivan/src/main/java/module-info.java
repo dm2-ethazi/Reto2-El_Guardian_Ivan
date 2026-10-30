@@ -3,6 +3,6 @@ module el_guardian_ivan.desktop {
     requires javafx.fxml;
 
 
-    opens el_guardian_ivan.desktop to javafx.fxml;
+    opens el_guardian_ivan.desktop.controller to javafx.fxml;
     exports el_guardian_ivan.desktop;
 }

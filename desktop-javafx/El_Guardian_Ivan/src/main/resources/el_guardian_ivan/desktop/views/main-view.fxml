@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="el_guardian_ivan.desktop.controller.MainController">
+    <fx:define>
+        <ToggleGroup fx:id="navigationGroup"/>
+    </fx:define>
+
+    <!-- Menú lateral -->
+    <left>
+        <VBox spacing="6.0" prefWidth="180.0">
+            <padding>
+                <Insets top="20.0" right="12.0" bottom="20.0" left="12.0"/>
+            </padding>
+            <Label text="Hogwarts Crypt"/>
+            <ToggleButton fx:id="homeButton" text="Inicio" toggleGroup="$navigationGroup" maxWidth="Infinity"/>
+            <ToggleButton fx:id="encryptButton" text="Cifrar" toggleGroup="$navigationGroup" maxWidth="Infinity"/>
+            <ToggleButton fx:id="decryptButton" text="Descifrar" toggleGroup="$navigationGroup" maxWidth="Infinity"/>
+            <ToggleButton fx:id="settingsButton" text="Ajustes" toggleGroup="$navigationGroup" maxWidth="Infinity"/>
+        </VBox>
+    </left>
+
+    <!-- Aquí se muestra la pantalla elegida en el menú -->
+    <center>
+        <StackPane fx:id="contentArea"/>
+    </center>
+</BorderPane>

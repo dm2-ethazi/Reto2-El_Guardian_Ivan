@@ -10,9 +10,11 @@ import java.io.IOException;
 public class GuardianApp extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(GuardianApp.class.getResource("main-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 600, 300);
-        stage.setTitle("El Guardián Iván");
+        FXMLLoader fxmlLoader = new FXMLLoader(GuardianApp.class.getResource("views/main-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 1000, 650);
+        stage.setTitle("Hogwarts Crypt");
+        stage.setMinWidth(800);
+        stage.setMinHeight(550);
         stage.setScene(scene);
         stage.show();
     }
