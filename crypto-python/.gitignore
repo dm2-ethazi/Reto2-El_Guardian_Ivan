@@ -4,3 +4,6 @@ __pycache__/
 .venv*/
 .pytest_cache/
 .vigenere_*.tmp
+
+# Metadatos generados al instalar el proyecto
+*.egg-info/
