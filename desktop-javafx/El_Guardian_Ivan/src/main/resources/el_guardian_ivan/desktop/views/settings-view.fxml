@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <!-- El selector de idioma se añadirá en el paso de internacionalización -->
-<VBox spacing="10.0" styleClass="content" xmlns:fx="http://javafx.com/fxml">
-    <Label text="Ajustes" styleClass="title"/>
-    <Label text="Aquí podrás elegir el idioma de la aplicación." styleClass="subtitle"/>
+<VBox styleClass="content" maxWidth="900.0" spacing="18.0" xmlns:fx="http://javafx.com/fxml">
+    <HBox styleClass="page-header" spacing="18.0" alignment="CENTER_LEFT">
+        <Region styleClass="icon,header-icon,icon-settings"/>
+        <VBox spacing="4.0">
+            <Label text="Ajustes" styleClass="title"/>
+            <Label text="Configura la aplicación a tu gusto." styleClass="subtitle"/>
+        </VBox>
+    </HBox>
+
+    <VBox styleClass="form-card" spacing="8.0">
+        <Label text="Idioma" styleClass="step-label"/>
+        <Label text="Aquí podrás elegir el idioma de la aplicación." styleClass="hint"/>
+    </VBox>
 </VBox>

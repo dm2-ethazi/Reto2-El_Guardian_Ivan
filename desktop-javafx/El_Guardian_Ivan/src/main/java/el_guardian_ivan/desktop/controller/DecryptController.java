@@ -5,12 +5,22 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.stage.FileChooser;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
 
 /** Pantalla Descifrar: contenedor .hgw + contraseña -> fichero original. */
 public class DecryptController extends FileOperationController {
+
+    /** Sin extensión: si el usuario no escribe una, se usa la original guardada (cifrada) en el .hgw. */
+    @Override
+    protected String suggestOutputName(String inputName) {
+        return withoutExtension(inputName);
+    }
+
+    @Override
+    protected void configureOutputChooser(FileChooser chooser) {
+        chooser.setTitle("Guardar fichero descifrado");
+    }
 
     @FXML
     private void onDecrypt() {
@@ -23,18 +33,8 @@ public class DecryptController extends FileOperationController {
             return;
         }
 
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Guardar fichero descifrado");
-        chooser.setInitialDirectory(inputFile.toAbsolutePath().getParent().toFile());
-        // Si el usuario no escribe extensión, se usa la original guardada (cifrada) en el .hgw
-        chooser.setInitialFileName(withoutExtension(inputFile.getFileName().toString()));
-        File selected = chooser.showSaveDialog(getWindow());
-        if (selected == null) {
-            return; // El usuario ha cancelado el diálogo
-        }
-
         Path input = inputFile;
-        Path output = toValidOutputPath(selected);
+        Path output = resolveOutputPath(outputNameField.getText().trim());
         if (output == null) {
             return; // Ya se ha mostrado la alerta
         }

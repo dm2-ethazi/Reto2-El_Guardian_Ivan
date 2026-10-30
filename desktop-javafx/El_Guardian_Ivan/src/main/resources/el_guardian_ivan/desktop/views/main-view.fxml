@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -19,11 +20,24 @@
             <padding>
                 <Insets top="20.0" right="12.0" bottom="20.0" left="12.0"/>
             </padding>
-            <Label text="El Guardián Iván" styleClass="app-name"/>
-            <ToggleButton fx:id="homeButton" text="Inicio" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button"/>
-            <ToggleButton fx:id="encryptButton" text="Cifrar" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button"/>
-            <ToggleButton fx:id="decryptButton" text="Descifrar" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button"/>
-            <ToggleButton fx:id="settingsButton" text="Ajustes" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button"/>
+            <!-- Escudo con la inicial, como en el boceto -->
+            <StackPane styleClass="crest">
+                <Region styleClass="icon,crest-shield"/>
+                <Label text="G" styleClass="crest-letter"/>
+            </StackPane>
+            <Label text="El Guardián Iván" styleClass="app-name" maxWidth="Infinity"/>
+            <ToggleButton fx:id="homeButton" text="Inicio" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button">
+                <graphic><Region styleClass="icon,icon-home"/></graphic>
+            </ToggleButton>
+            <ToggleButton fx:id="encryptButton" text="Cifrar" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button">
+                <graphic><Region styleClass="icon,icon-lock"/></graphic>
+            </ToggleButton>
+            <ToggleButton fx:id="decryptButton" text="Descifrar" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button">
+                <graphic><Region styleClass="icon,icon-lock-open"/></graphic>
+            </ToggleButton>
+            <ToggleButton fx:id="settingsButton" text="Ajustes" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button">
+                <graphic><Region styleClass="icon,icon-settings"/></graphic>
+            </ToggleButton>
         </VBox>
     </left>
 

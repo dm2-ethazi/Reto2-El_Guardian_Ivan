@@ -4,12 +4,23 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.stage.FileChooser;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Locale;
 
 /** Pantalla Cifrar: fichero de entrada + contraseña -> contenedor .hgw. */
 public class EncryptController extends FileOperationController {
+
+    @Override
+    protected String suggestOutputName(String inputName) {
+        return withoutExtension(inputName) + ".hgw";
+    }
+
+    @Override
+    protected void configureOutputChooser(FileChooser chooser) {
+        chooser.setTitle("Guardar fichero cifrado");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Contenedor cifrado (*.hgw)", "*.hgw"));
+    }
 
     @FXML
     private void onEncrypt() {
@@ -22,18 +33,12 @@ public class EncryptController extends FileOperationController {
             return;
         }
 
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Guardar fichero cifrado");
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Contenedor cifrado (*.hgw)", "*.hgw"));
-        chooser.setInitialDirectory(inputFile.toAbsolutePath().getParent().toFile());
-        chooser.setInitialFileName(withoutExtension(inputFile.getFileName().toString()) + ".hgw");
-        File selected = chooser.showSaveDialog(getWindow());
-        if (selected == null) {
-            return; // El usuario ha cancelado el diálogo
+        String name = outputNameField.getText().trim();
+        if (!name.toLowerCase(Locale.ROOT).endsWith(".hgw")) {
+            name += ".hgw"; // El resultado siempre es un contenedor .hgw
         }
-
         Path input = inputFile;
-        Path output = toValidOutputPath(selected);
+        Path output = resolveOutputPath(name);
         if (output == null) {
             return; // Ya se ha mostrado la alerta
         }

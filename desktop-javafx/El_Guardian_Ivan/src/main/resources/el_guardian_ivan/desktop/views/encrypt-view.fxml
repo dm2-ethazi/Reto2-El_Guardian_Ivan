@@ -4,23 +4,95 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="10.0" styleClass="content" xmlns:fx="http://javafx.com/fxml"
+<!-- Pantalla Cifrar: cabecera y tres pasos numerados, como en el boceto de la propuesta -->
+<VBox styleClass="content" maxWidth="900.0" spacing="18.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="el_guardian_ivan.desktop.controller.EncryptController">
-    <Label text="Cifrar archivo" styleClass="title"/>
-    <Label text="Selecciona un archivo y define una contraseña para cifrarlo con AES-256." wrapText="true" styleClass="subtitle"/>
 
-    <Label text="1. Seleccionar archivo" styleClass="step-label"/>
-    <Button fx:id="selectButton" text="Examinar..." onAction="#onSelectInputFile"/>
-    <Label fx:id="inputFileLabel" text="Ningún fichero seleccionado" wrapText="true" styleClass="file-label"/>
+    <!-- Cabecera -->
+    <HBox styleClass="page-header" spacing="18.0" alignment="CENTER_LEFT">
+        <Region styleClass="icon,header-icon,icon-lock"/>
+        <VBox spacing="4.0">
+            <Label text="Cifrar archivo" styleClass="title"/>
+            <Label text="Selecciona un archivo y define una contraseña para cifrarlo con AES-256." wrapText="true" styleClass="subtitle"/>
+        </VBox>
+    </HBox>
 
-    <Label text="2. Introducir contraseña" styleClass="step-label"/>
-    <PasswordField fx:id="passwordField"/>
+    <VBox styleClass="form-card">
+        <!-- Paso 1 -->
+        <HBox styleClass="step" spacing="16.0">
+            <VBox styleClass="step-marker" alignment="TOP_CENTER">
+                <StackPane styleClass="step-number"><Label text="1"/></StackPane>
+                <Region styleClass="step-line" VBox.vgrow="ALWAYS"/>
+            </VBox>
+            <VBox styleClass="step-body" spacing="8.0" HBox.hgrow="ALWAYS">
+                <Label text="Seleccionar archivo" styleClass="step-label"/>
+                <HBox spacing="12.0" alignment="CENTER_LEFT">
+                    <HBox styleClass="file-box" spacing="10.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                        <Region styleClass="icon,icon-file"/>
+                        <Label fx:id="inputFileLabel" text="Ningún fichero seleccionado" styleClass="file-name"
+                               maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="inputSizeLabel" styleClass="file-size"/>
+                    </HBox>
+                    <Button fx:id="selectButton" text="Examinar..." styleClass="secondary"
+                            onAction="#onSelectInputFile"/>
+                </HBox>
+                <Label text="Formatos admitidos: .txt, .png y otros archivos binarios." wrapText="true" styleClass="hint"/>
+            </VBox>
+        </HBox>
 
-    <Label text="3. Archivo de salida: se elige al pulsar el botón" styleClass="step-label"/>
-    <Button fx:id="runButton" styleClass="primary" text="Cifrar archivo..." onAction="#onEncrypt"/>
+        <!-- Paso 2 -->
+        <HBox styleClass="step" spacing="16.0">
+            <VBox styleClass="step-marker" alignment="TOP_CENTER">
+                <StackPane styleClass="step-number"><Label text="2"/></StackPane>
+                <Region styleClass="step-line" VBox.vgrow="ALWAYS"/>
+            </VBox>
+            <VBox styleClass="step-body" spacing="8.0" HBox.hgrow="ALWAYS">
+                <Label text="Introducir contraseña" styleClass="step-label"/>
+                <StackPane styleClass="password-box" alignment="CENTER_RIGHT">
+                    <PasswordField fx:id="passwordField" accessibleText="Contraseña" maxWidth="Infinity"/>
+                    <TextField fx:id="visiblePasswordField" accessibleText="Contraseña" maxWidth="Infinity"/>
+                    <ToggleButton fx:id="showPasswordToggle" styleClass="eye-toggle" focusTraversable="true">
+                        <graphic><Region styleClass="icon,icon-eye"/></graphic>
+                    </ToggleButton>
+                </StackPane>
+                <Label text="Usa una contraseña larga: la necesitarás para recuperar el archivo." wrapText="true" styleClass="hint"/>
+            </VBox>
+        </HBox>
 
-    <ProgressBar fx:id="progressBar" progress="0" maxWidth="Infinity"/>
-    <Label fx:id="statusLabel"/>
+        <!-- Paso 3 -->
+        <HBox styleClass="step" spacing="16.0">
+            <VBox styleClass="step-marker" alignment="TOP_CENTER">
+                <StackPane styleClass="step-number"><Label text="3"/></StackPane>
+            </VBox>
+            <VBox styleClass="step-body" spacing="8.0" HBox.hgrow="ALWAYS">
+                <Label text="Archivo de salida" styleClass="step-label"/>
+                <HBox spacing="12.0" alignment="CENTER_LEFT">
+                    <TextField fx:id="outputNameField" accessibleText="Nombre del archivo de salida"
+                               maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="outputFolderButton" styleClass="secondary,icon-button" onAction="#onChooseOutput">
+                        <graphic><Region styleClass="icon,icon-folder"/></graphic>
+                    </Button>
+                </HBox>
+                <Label text="Se generará un archivo cifrado con extensión .hgw" wrapText="true" styleClass="hint"/>
+            </VBox>
+        </HBox>
+
+        <!-- Progreso y botón principal -->
+        <HBox styleClass="form-actions" spacing="16.0" alignment="CENTER_RIGHT">
+            <VBox spacing="6.0" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+                <ProgressBar fx:id="progressBar" progress="0" maxWidth="Infinity" accessibleText="Progreso"/>
+                <Label fx:id="statusLabel" styleClass="hint"/>
+            </VBox>
+            <Button fx:id="runButton" text="Cifrar archivo" styleClass="primary" defaultButton="true" onAction="#onEncrypt">
+                <graphic><Region styleClass="icon,icon-lock"/></graphic>
+            </Button>
+        </HBox>
+    </VBox>
 </VBox>
