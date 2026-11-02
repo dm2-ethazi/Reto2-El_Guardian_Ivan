@@ -5,7 +5,8 @@ public enum View {
     HOME("home-view.fxml"),
     ENCRYPT("encrypt-view.fxml"),
     DECRYPT("decrypt-view.fxml"),
-    SETTINGS("settings-view.fxml");
+    SETTINGS("settings-view.fxml"),
+    HELP("help-view.fxml");
 
     private final String fxml;
 

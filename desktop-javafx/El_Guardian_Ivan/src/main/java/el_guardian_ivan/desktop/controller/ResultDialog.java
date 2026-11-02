@@ -131,7 +131,8 @@ public class ResultDialog {
         Stage stage = new Stage(StageStyle.TRANSPARENT); // Sin la barra de Windows, como en el boceto
         stage.initOwner(owner);
         stage.initModality(Modality.WINDOW_MODAL);
-        stage.setTitle(I18n.get(kind.windowTitleKey));
+        // El título de la ventana es lo que anuncia el lector de pantalla al abrirse
+        stage.setTitle(I18n.get(kind.windowTitleKey) + ": " + title);
         // Mismo tamaño relativo que la ventana principal; el Group hace que la escena mida el contenido ya escalado
         if (owner != null && owner.getScene() != null && owner.getScene().getRoot() instanceof ScalingPane scaling) {
             root.getTransforms().add(new Scale(scaling.getScale(), scaling.getScale()));

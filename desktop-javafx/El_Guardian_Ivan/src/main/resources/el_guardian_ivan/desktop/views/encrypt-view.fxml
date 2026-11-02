@@ -40,7 +40,7 @@
                                maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
                         <Label fx:id="inputSizeLabel" styleClass="file-size"/>
                     </HBox>
-                    <Button fx:id="selectButton" text="%form.browse" styleClass="secondary"
+                    <Button fx:id="selectButton" text="%form.browse" styleClass="secondary" accessibleHelp="%encrypt.hint1"
                             onAction="#onSelectInputFile"/>
                 </HBox>
                 <!-- Ruta completa del fichero elegido (se oculta mientras no hay ninguno) -->
@@ -58,8 +58,8 @@
             <VBox styleClass="step-body" spacing="8.0" HBox.hgrow="ALWAYS">
                 <Label text="%form.step2" styleClass="step-label"/>
                 <StackPane styleClass="password-box" alignment="CENTER_RIGHT">
-                    <PasswordField fx:id="passwordField" accessibleText="%form.password" maxWidth="Infinity"/>
-                    <TextField fx:id="visiblePasswordField" accessibleText="%form.password" maxWidth="Infinity"/>
+                    <PasswordField fx:id="passwordField" accessibleText="%form.password" accessibleHelp="%encrypt.hint2" maxWidth="Infinity"/>
+                    <TextField fx:id="visiblePasswordField" accessibleText="%form.password" accessibleHelp="%encrypt.hint2" maxWidth="Infinity"/>
                     <ToggleButton fx:id="showPasswordToggle" styleClass="eye-toggle" focusTraversable="true">
                         <graphic><Region styleClass="icon,icon-eye"/></graphic>
                     </ToggleButton>
@@ -76,7 +76,7 @@
             <VBox styleClass="step-body" spacing="8.0" HBox.hgrow="ALWAYS">
                 <Label text="%form.step3" styleClass="step-label"/>
                 <HBox spacing="12.0" alignment="CENTER_LEFT">
-                    <TextField fx:id="outputNameField" accessibleText="%form.outputName"
+                    <TextField fx:id="outputNameField" accessibleText="%form.outputName" accessibleHelp="%encrypt.hint3"
                                maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
                     <Button fx:id="outputFolderButton" text="%form.changeFolder" styleClass="secondary,folder-button" onAction="#onChooseOutput" minWidth="-Infinity">
                         <graphic><Region styleClass="icon,icon-folder"/></graphic>

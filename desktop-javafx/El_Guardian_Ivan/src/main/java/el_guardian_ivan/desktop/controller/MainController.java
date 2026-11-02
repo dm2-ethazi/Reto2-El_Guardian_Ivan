@@ -8,7 +8,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.StackPane;
@@ -42,6 +48,9 @@ public class MainController implements Navigator {
     @FXML
     private ToggleButton settingsButton;
 
+    @FXML
+    private ToggleButton helpButton;
+
     private final Map<View, Parent> loadedViews = new EnumMap<>(View.class);
 
     @FXML
@@ -50,6 +59,7 @@ public class MainController implements Navigator {
         encryptButton.setUserData(View.ENCRYPT);
         decryptButton.setUserData(View.DECRYPT);
         settingsButton.setUserData(View.SETTINGS);
+        helpButton.setUserData(View.HELP);
 
         navigationGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
             if (newToggle == null) {
@@ -59,6 +69,44 @@ public class MainController implements Navigator {
             }
         });
         homeButton.setSelected(true);
+
+        // Atajos de teclado: se registran en la escena en cuanto la ventana existe
+        contentArea.sceneProperty().addListener((obs, oldScene, scene) -> {
+            if (scene != null) {
+                registerShortcuts(scene.getAccelerators());
+            }
+        });
+    }
+
+    /** Ctrl+1..4 cambia de sección y Ctrl+O abre el selector de archivo de la pantalla actual. */
+    private void registerShortcuts(Map<KeyCombination, Runnable> accelerators) {
+        ToggleButton[] sections = {homeButton, encryptButton, decryptButton, settingsButton};
+        KeyCode[] digits = {KeyCode.DIGIT1, KeyCode.DIGIT2, KeyCode.DIGIT3, KeyCode.DIGIT4};
+        for (int i = 0; i < sections.length; i++) {
+            ToggleButton section = sections[i];
+            KeyCombination shortcut = new KeyCodeCombination(digits[i], KeyCombination.CONTROL_DOWN);
+            // put() sustituye el atajo anterior si la ventana se reconstruye al cambiar de idioma
+            accelerators.put(shortcut, () -> {
+                section.setSelected(true);
+                section.requestFocus();
+            });
+            section.setTooltip(new Tooltip(section.getText() + " (" + shortcut.getDisplayText() + ")"));
+        }
+        // F1 abre la ayuda, como en la mayoría de programas de escritorio
+        KeyCombination help = new KeyCodeCombination(KeyCode.F1);
+        accelerators.put(help, () -> {
+            helpButton.setSelected(true);
+            helpButton.requestFocus();
+        });
+        helpButton.setTooltip(new Tooltip(helpButton.getText() + " (" + help.getDisplayText() + ")"));
+        accelerators.put(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN), () -> {
+            Node selectButton = contentArea.getChildren().isEmpty() ? null
+                    : contentArea.getChildren().get(0).lookup("#selectButton");
+            if (selectButton instanceof Button button && !button.isDisabled()) {
+                button.requestFocus();
+                button.fire();
+            }
+        });
     }
 
     @Override

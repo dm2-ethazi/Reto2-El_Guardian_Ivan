@@ -95,6 +95,9 @@ public abstract class FileOperationController {
         showPasswordToggle.setTooltip(new Tooltip(I18n.get("form.showPassword")));
         outputFolderButton.setAccessibleText(I18n.get("form.chooseOutput"));
         outputFolderButton.setTooltip(new Tooltip(I18n.get("form.chooseOutput")));
+        selectButton.setTooltip(new Tooltip(I18n.get("form.chooseInput") + " (Ctrl+O)"));
+        // Los lectores de pantalla leen como ayuda del botón la ruta que se muestra debajo
+        outputFolderButton.accessibleHelpProperty().bind(outputPathLabel.textProperty());
 
         // Las rutas solo se ven cuando hay algo que mostrar
         for (Label pathLabel : new Label[]{inputPathLabel, outputPathLabel}) {
@@ -163,6 +166,7 @@ public abstract class FileOperationController {
             inputFileLabel.setTooltip(new Tooltip(path.toString())); // Ruta completa al pasar el ratón
             inputSizeLabel.setText(FileSizeFormatter.format(size, I18n.getLocale()));
             setPath(inputPathLabel, path.toAbsolutePath(), "form.inputPath");
+            selectButton.setAccessibleHelp(inputPathLabel.getText());
             outputDirectory = path.toAbsolutePath().getParent();
             outputNameField.setText(suggestOutputName(path.getFileName().toString()));
             updateOutputPath();

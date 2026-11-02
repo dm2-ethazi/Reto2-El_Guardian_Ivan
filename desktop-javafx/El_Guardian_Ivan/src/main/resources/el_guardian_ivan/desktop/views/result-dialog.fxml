@@ -12,7 +12,7 @@
            fx:controller="el_guardian_ivan.desktop.controller.ResultDialog">
     <VBox styleClass="dialog" alignment="TOP_CENTER" spacing="12.0" prefWidth="440.0">
         <HBox alignment="TOP_RIGHT">
-            <Button fx:id="cornerCloseButton" styleClass="dialog-close" onAction="#onClose" focusTraversable="false">
+            <Button fx:id="cornerCloseButton" styleClass="dialog-close" accessibleText="%dialog.close" onAction="#onClose" focusTraversable="false">
                 <graphic><Region styleClass="icon,icon-close"/></graphic>
             </Button>
         </HBox>

@@ -21,4 +21,5 @@
         <ComboBox fx:id="languageBox" accessibleText="%settings.language" prefWidth="260.0"/>
         <Label text="%settings.language.hint" wrapText="true" minHeight="-Infinity" styleClass="hint"/>
     </VBox>
+
 </VBox>

@@ -33,6 +33,11 @@
             <ToggleButton fx:id="settingsButton" text="%nav.settings" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button">
                 <graphic><Region styleClass="icon,icon-settings"/></graphic>
             </ToggleButton>
+            <!-- Ayuda (con "Acerca de" al final) abajo del todo, separada de las secciones principales -->
+            <Region VBox.vgrow="ALWAYS"/>
+            <ToggleButton fx:id="helpButton" text="%nav.help" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button">
+                <graphic><Region styleClass="icon,icon-help"/></graphic>
+            </ToggleButton>
         </VBox>
     </left>
 
