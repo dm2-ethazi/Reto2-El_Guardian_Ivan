@@ -1,10 +1,10 @@
 """Menú de Hogwarts para cifrar y descifrar mensajes con Vigenère."""
 
+import sys
+import time
 from collections.abc import Callable
 from getpass import getpass
 from pathlib import Path
-import sys
-import time
 
 from .cipher import cifrar_vigenere, descifrar_vigenere, validar_clave
 from .files import (
@@ -16,7 +16,6 @@ from .files import (
     procesar_archivo_grande,
     validar_nombre,
 )
-
 
 # Hasta 4 KiB mostramos el contenido completo del archivo.
 TAMANO_MAXIMO_PANTALLA = 4096
@@ -67,8 +66,14 @@ def crear_indicador_progreso() -> Callable[[int, int], None]:
         transcurrido = max(ahora - inicio, 0.001)
         velocidad = procesados_mib / transcurrido
         restante = max(total - procesados, 0)
-        segundos_restantes = int(restante / (procesados / transcurrido)) if procesados else 0
-        tiempo_estimado = f"{segundos_restantes // 60:02}:{segundos_restantes % 60:02}" if procesados else "--:--"
+        segundos_restantes = (
+            int(restante / (procesados / transcurrido)) if procesados else 0
+        )
+        tiempo_estimado = (
+            f"{segundos_restantes // 60:02}:{segundos_restantes % 60:02}"
+            if procesados
+            else "--:--"
+        )
 
         linea = (
             f"[{barra}] {porcentaje:6.2f}% "
@@ -374,7 +379,7 @@ def main() -> None:
                 ejecutar_operacion(cifrar=False)
             else:
                 print("Opción no válida. Inténtalo de nuevo.")
-    except (KeyboardInterrupt, EOFError):
+    except KeyboardInterrupt, EOFError:
         print("\nPrograma interrumpido.")
 
 
