@@ -4,6 +4,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
@@ -20,6 +22,12 @@
             <padding>
                 <Insets top="20.0" right="12.0" bottom="20.0" left="12.0"/>
             </padding>
+            <!-- Escudo de la aplicación sobre el nombre (el mismo dibujo que el icono de la ventana) -->
+            <StackPane styleClass="app-logo">
+                <ImageView fitWidth="96.0" fitHeight="96.0" preserveRatio="true" smooth="true">
+                    <image><Image url="@../images/logo.png"/></image>
+                </ImageView>
+            </StackPane>
             <Label text="%app.title" styleClass="app-name" maxWidth="Infinity"/>
             <ToggleButton fx:id="homeButton" text="%nav.home" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button">
                 <graphic><Region styleClass="icon,icon-home"/></graphic>

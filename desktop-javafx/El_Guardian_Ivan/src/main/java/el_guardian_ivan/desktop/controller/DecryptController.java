@@ -18,6 +18,12 @@ public class DecryptController extends FileOperationController {
         return withoutExtension(inputName);
     }
 
+    /** Al descifrar se ve el resultado al momento si es una imagen o texto plano. */
+    @Override
+    protected boolean showsPreview() {
+        return true;
+    }
+
     @Override
     protected void configureOutputChooser(FileChooser chooser) {
         chooser.setTitle(I18n.get("decrypt.chooserTitle"));

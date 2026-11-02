@@ -86,7 +86,7 @@ public final class FileTypeDetector {
     }
 
     /** La muestra puede cortar un carácter UTF-8 por la mitad al final: lo descartamos. */
-    private static int trimIncompleteUtf8(byte[] sample) {
+    static int trimIncompleteUtf8(byte[] sample) {
         int end = sample.length;
         int i = end - 1;
         int continuation = 0;

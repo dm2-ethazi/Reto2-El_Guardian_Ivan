@@ -4,6 +4,13 @@ import el_guardian_ivan.desktop.i18n.I18n;
 import el_guardian_ivan.desktop.files.FileLocationOpener;
 import el_guardian_ivan.desktop.files.FileSizeFormatter;
 import el_guardian_ivan.desktop.ui.ScalingPane;
+import el_guardian_ivan.desktop.files.FilePreview;
+import javafx.scene.AccessibleRole;
+import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
@@ -60,6 +67,12 @@ public class ResultDialog {
     private Label messageLabel;
 
     @FXML
+    private VBox dialogBox;
+
+    @FXML
+    private VBox previewBox;
+
+    @FXML
     private HBox fileBox;
 
     @FXML
@@ -80,14 +93,25 @@ public class ResultDialog {
     @FXML
     private Button cornerCloseButton;
 
+    private static final int PREVIEW_WIDTH = 480;
+    private static final int PREVIEW_HEIGHT = 220;
+
     private Stage stage;
     private Path file;
     private boolean confirmed;
 
     /** Operación terminada: muestra el fichero resultante y permite abrir su carpeta. */
     public static void success(Window owner, String title, String message, Path file) {
+        success(owner, title, message, file, false);
+    }
+
+    /** Como {@link #success(Window, String, String, Path)}; con {@code preview} enseña la imagen o el texto. */
+    public static void success(Window owner, String title, String message, Path file, boolean preview) {
         ResultDialog dialog = create(owner, Kind.SUCCESS, title, message);
         dialog.showFile(file);
+        if (preview) {
+            dialog.showPreview(file);
+        }
         dialog.primaryButton.setText(I18n.get("dialog.openLocation"));
         dialog.primaryButton.setOnAction(event -> dialog.openLocation());
         dialog.showAndWait();
@@ -151,6 +175,8 @@ public class ResultDialog {
     private void initialize() {
         fileBox.setVisible(false);
         fileBox.setManaged(false);
+        previewBox.setVisible(false);
+        previewBox.setManaged(false);
         filePathLabel.managedProperty().bind(fileBox.managedProperty());
         filePathLabel.visibleProperty().bind(fileBox.visibleProperty());
         closeButton.setCancelButton(true); // Escape cierra el diálogo
@@ -174,6 +200,69 @@ public class ResultDialog {
         }
         fileBox.setVisible(true);
         fileBox.setManaged(true);
+    }
+
+    /** Muestra la imagen o el texto descifrado; si no es ninguno de los dos (o falla), no enseña nada. */
+    private void showPreview(Path file) {
+        Node content;
+        try {
+            content = switch (FilePreview.kindOf(file)) {
+                case IMAGE -> imagePreview(file);
+                case TEXT -> textPreview(file);
+                case NONE -> null;
+            };
+        } catch (IOException e) {
+            content = null; // Sin vista previa: el archivo ya está guardado y se puede abrir desde su carpeta
+        }
+        if (content == null) {
+            return;
+        }
+        previewBox.getChildren().add(0, content);
+        previewBox.setVisible(true);
+        previewBox.setManaged(true);
+        dialogBox.setPrefWidth(PREVIEW_WIDTH + 80); // Ventana más ancha para que la vista previa luzca
+    }
+
+    private Node imagePreview(Path file) {
+        // Se decodifica ya reducida y en segundo plano: una foto enorme no bloquea ni llena la memoria
+        Image image = new Image(file.toUri().toString(), PREVIEW_WIDTH * 2, PREVIEW_HEIGHT * 2, true, true, true);
+        ImageView view = new ImageView(image);
+        view.setFitWidth(PREVIEW_WIDTH);
+        view.setFitHeight(PREVIEW_HEIGHT);
+        view.setPreserveRatio(true);
+        view.setSmooth(true);
+        view.setAccessibleRole(AccessibleRole.IMAGE_VIEW);
+        view.setAccessibleText(I18n.get("dialog.preview.image", file.getFileName()));
+        image.errorProperty().addListener((obs, hadError, error) -> {
+            if (error) { // JavaFX no sabe dibujarla (formato raro o dañada): quitamos el hueco
+                previewBox.getChildren().remove(view.getParent());
+                previewBox.setVisible(false);
+                previewBox.setManaged(false);
+                stage.sizeToScene();
+            }
+        });
+        StackPane frame = new StackPane(view);
+        frame.getStyleClass().add("preview-image");
+        frame.setMinHeight(PREVIEW_HEIGHT);
+        return frame;
+    }
+
+    private Node textPreview(Path file) throws IOException {
+        FilePreview.Text text = FilePreview.readText(file, FilePreview.MAX_TEXT_BYTES);
+        TextArea area = new TextArea(text.content());
+        area.setEditable(false);
+        area.setWrapText(true);
+        area.setPrefSize(PREVIEW_WIDTH, PREVIEW_HEIGHT);
+        area.getStyleClass().add("preview-text");
+        area.setAccessibleText(I18n.get("dialog.preview.text", file.getFileName()));
+        if (!text.truncated()) {
+            return area;
+        }
+        Label note = new Label(I18n.get("dialog.preview.truncated",
+                FileSizeFormatter.format(FilePreview.MAX_TEXT_BYTES, I18n.getLocale())));
+        note.getStyleClass().add("path-label");
+        note.setWrapText(true);
+        return new VBox(4, area, note);
     }
 
     private void hidePrimaryButton() {

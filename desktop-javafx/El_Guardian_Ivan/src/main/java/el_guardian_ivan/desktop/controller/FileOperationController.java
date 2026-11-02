@@ -210,7 +210,7 @@ public abstract class FileOperationController {
         task.setOnSucceeded(event -> {
             finishTask();
             setStatus("✓ " + successTitle, "status-success");
-            ResultDialog.success(getWindow(), successTitle, successMessage, task.getValue());
+            ResultDialog.success(getWindow(), successTitle, successMessage, task.getValue(), showsPreview());
         });
         task.setOnFailed(event -> {
             finishTask();
@@ -224,6 +224,11 @@ public abstract class FileOperationController {
     }
 
     /** Texto bajo la barra de progreso; el símbolo ✓/✗ (incluido en Inter) evita que el resultado dependa solo del color. */
+    /** Si al terminar se enseña el resultado (imagen o texto) en la ventana de éxito. */
+    protected boolean showsPreview() {
+        return false;
+    }
+
     private void setStatus(String text, String styleClass) {
         statusLabel.getStyleClass().removeAll("status-success", "status-error");
         if (styleClass != null) {

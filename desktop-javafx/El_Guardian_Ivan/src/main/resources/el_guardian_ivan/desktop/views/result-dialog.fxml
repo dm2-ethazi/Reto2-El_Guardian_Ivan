@@ -10,7 +10,7 @@
 <!-- Diálogo de resultado: éxito, error o confirmación. El borde exterior deja sitio a la sombra. -->
 <StackPane styleClass="dialog-root" xmlns:fx="http://javafx.com/fxml"
            fx:controller="el_guardian_ivan.desktop.controller.ResultDialog">
-    <VBox styleClass="dialog" alignment="TOP_CENTER" spacing="12.0" prefWidth="440.0">
+    <VBox fx:id="dialogBox" styleClass="dialog" alignment="TOP_CENTER" spacing="12.0" prefWidth="440.0">
         <HBox alignment="TOP_RIGHT">
             <Button fx:id="cornerCloseButton" styleClass="dialog-close" accessibleText="%dialog.close" onAction="#onClose" focusTraversable="false">
                 <graphic><Region styleClass="icon,icon-close"/></graphic>
@@ -19,6 +19,9 @@
         <Region fx:id="icon" styleClass="icon,dialog-icon"/>
         <Label fx:id="titleLabel" styleClass="dialog-title" wrapText="true"/>
         <Label fx:id="messageLabel" styleClass="dialog-message" wrapText="true"/>
+
+        <!-- Vista previa del archivo descifrado (imagen o texto); oculta en el resto de casos -->
+        <VBox fx:id="previewBox" styleClass="preview-box" spacing="6.0" alignment="CENTER" maxWidth="Infinity"/>
 
         <HBox fx:id="fileBox" styleClass="file-box" spacing="10.0" alignment="CENTER_LEFT">
             <Region styleClass="icon,icon-file"/>

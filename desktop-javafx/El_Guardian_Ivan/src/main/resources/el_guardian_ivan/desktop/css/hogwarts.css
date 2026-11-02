@@ -78,6 +78,10 @@
     -fx-background-color: -burdeos;
 }
 
+.app-logo {
+    -fx-padding: 0 0 6 0;
+}
+
 .sidebar .app-name {
     -fx-font-family: "Cinzel";
     -fx-font-weight: bold;
@@ -526,6 +530,38 @@
 .dialog-message {
     -fx-text-fill: -carbon;
     -fx-text-alignment: center;
+}
+
+/* Vista previa del archivo descifrado */
+.preview-image {
+    -fx-background-color: derive(-pergamino, 60%);
+    -fx-background-radius: 6;
+    -fx-border-color: -borde-campo;
+    -fx-border-radius: 6;
+    -fx-padding: 8;
+}
+
+.preview-text {
+    -fx-font-size: 13px;
+    -fx-background-color: -borde-campo, derive(-pergamino, 60%);
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 6;
+    -fx-text-fill: -carbon;
+}
+
+.preview-text .content {
+    -fx-background-color: derive(-pergamino, 60%);
+    -fx-background-radius: 6;
+    -fx-padding: 4 6 4 6;
+}
+
+.preview-text .scroll-pane, .preview-text .scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.preview-text:focused {
+    -fx-background-color: -azul-noche, derive(-pergamino, 60%);
+    -fx-background-insets: 0, 2;
 }
 
 .dialog .file-box {
