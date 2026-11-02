@@ -131,7 +131,9 @@ def publicar_sin_sobrescribir(temporal: Path, destino: Path) -> None:
     try:
         os.link(temporal, destino)
     except FileExistsError:
-        raise FileExistsError(f"El archivo de salida ya existe: {destino.name}") from None
+        raise FileExistsError(
+            f"El archivo de salida ya existe: {destino.name}"
+        ) from None
     except OSError as error:
         if error.errno in (errno.EPERM, errno.EOPNOTSUPP, errno.ENOTSUP, errno.EXDEV):
             raise OSError(
@@ -146,8 +148,13 @@ def publicar_sin_sobrescribir(temporal: Path, destino: Path) -> None:
 def _crear_temporal(carpeta_salida: Path) -> tuple[Path, object]:
     """Crea un archivo temporal UTF-8, en la misma carpeta del resultado."""
     fichero = tempfile.NamedTemporaryFile(
-        mode="w", encoding="utf-8", newline="", dir=carpeta_salida,
-        prefix=PREFIJO_TEMPORAL, suffix=SUFIJO_TEMPORAL, delete=False,
+        mode="w",
+        encoding="utf-8",
+        newline="",
+        dir=carpeta_salida,
+        prefix=PREFIJO_TEMPORAL,
+        suffix=SUFIJO_TEMPORAL,
+        delete=False,
     )
     return Path(fichero.name), fichero
 
@@ -226,7 +233,10 @@ def procesar_archivo_grande(
                         contiene_texto = True
 
                     resultado, posicion_clave = procesar_bloque(
-                        bloque, clave, cifrar, posicion_clave,
+                        bloque,
+                        clave,
+                        cifrar,
+                        posicion_clave,
                         desplazamientos=desplazamientos,
                     )
                     salida.write(resultado)
@@ -260,7 +270,11 @@ def detectar_temporales_antiguos(horas: int = 24) -> list[Path]:
             continue
         for ruta in carpeta.glob(f"{PREFIJO_TEMPORAL}*{SUFIJO_TEMPORAL}"):
             try:
-                if ruta.is_file() and not ruta.is_symlink() and ruta.stat().st_mtime < limite:
+                if (
+                    ruta.is_file()
+                    and not ruta.is_symlink()
+                    and ruta.stat().st_mtime < limite
+                ):
                     antiguos.append(ruta)
             except OSError:
                 pass

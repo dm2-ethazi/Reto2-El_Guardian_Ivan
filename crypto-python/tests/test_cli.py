@@ -33,9 +33,11 @@ def simular_entrada(monkeypatch):
 
     return configurar
 
+
 # --------------------------------------------------------------------------
 # 1. ENTRADA DE DATOS Y MENÚ PRINCIPAL
 # --------------------------------------------------------------------------
+
 
 @pytest.mark.parametrize(
     ("entrada", "esperado"),
@@ -55,6 +57,7 @@ def test_mostrar_menu(capsys):
     assert "1. Cifrar mensaje" in salida
     assert "2. Descifrar mensaje" in salida
     assert "0. Salir" in salida
+
 
 # --------------------------------------------------------------------------
 # 2. INTRODUCCIÓN Y VALIDACIÓN DE CLAVES
@@ -78,6 +81,7 @@ def test_obtener_clave_permite_volver(monkeypatch):
     """Introducir 0 al pedir la clave devuelve None para retroceder."""
     monkeypatch.setattr(cli, "pedir_clave_oculta", lambda: "0")
     assert cli.obtener_clave() is None
+
 
 # --------------------------------------------------------------------------
 # 3. SELECCIÓN DE ARCHIVOS DE ENTRADA
@@ -111,9 +115,11 @@ def test_nombre_entrada_vacio_y_luego_volver(
     assert cli.obtener_nombre_entrada(cifrar=True) is None
     assert "está vacío" in capsys.readouterr().out
 
+
 # --------------------------------------------------------------------------
 # 4. MENÚ DE GUARDADO Y TRATAMIENTO DE ERRORES
 # --------------------------------------------------------------------------
+
 
 @pytest.mark.parametrize("respuesta", ["n", "N"])
 def test_guardado_no_guardar(simular_entrada, respuesta):
@@ -175,6 +181,7 @@ def test_guardado_opcion_invalida_y_volver(simular_entrada, capsys):
     assert cli.preguntar_guardado(lambda _nombre: Path("nunca.txt")) == "atras"
     assert "Opción no válida" in capsys.readouterr().out
 
+
 # --------------------------------------------------------------------------
 # 5. CIFRADO Y DESCIFRADO DE TEXTO MANUAL
 # --------------------------------------------------------------------------
@@ -221,6 +228,7 @@ def test_texto_manual_volver_desde_clave(simular_entrada, monkeypatch, capsys):
     monkeypatch.setattr(cli, "pedir_clave_oculta", lambda: next(claves))
     assert cli.ejecutar_texto_manual(cifrar=True) == "menu"
     assert cli.cifrar_vigenere("NUEVO", "CLAVE") in capsys.readouterr().out
+
 
 # --------------------------------------------------------------------------
 # 6. PROCESAMIENTO DE ARCHIVOS PEQUEÑOS Y GRANDES
@@ -289,6 +297,7 @@ def test_archivo_volver_desde_seleccion(carpetas_temporales, simular_entrada):
     simular_entrada("0")
     assert cli.ejecutar_archivo(cifrar=True) == "atras"
 
+
 # --------------------------------------------------------------------------
 # 7. NAVEGACIÓN ENTRE MENÚS
 # --------------------------------------------------------------------------
@@ -307,12 +316,11 @@ def test_ejecutar_operacion_texto_manual(simular_entrada, monkeypatch, capsys):
     assert "JZLV" in capsys.readouterr().out
 
 
-def test_ejecutar_operacion_volver_desde_archivo(
-    carpetas_temporales, simular_entrada
-):
+def test_ejecutar_operacion_volver_desde_archivo(carpetas_temporales, simular_entrada):
     """Se puede volver desde archivos hasta la elección inicial."""
     simular_entrada("2", "0", "0")
     cli.ejecutar_operacion(cifrar=True)
+
 
 # --------------------------------------------------------------------------
 # 8. LIMPIEZA OPCIONAL DE TEMPORALES ANTIGUOS
@@ -343,6 +351,7 @@ def test_limpieza_temporales_aceptada(tmp_path, monkeypatch, simular_entrada):
     simular_entrada("s")
     cli.ofrecer_limpieza_temporales()
     assert not archivo.exists()
+
 
 # --------------------------------------------------------------------------
 # 9. EJECUCIÓN DEL PROGRAMA PRINCIPAL
@@ -375,6 +384,7 @@ def test_main_interrupcion_controlada(monkeypatch, capsys, error):
     monkeypatch.setattr("builtins.input", interrumpir)
     cli.main()
     assert "Programa interrumpido" in capsys.readouterr().out
+
 
 # --------------------------------------------------------------------------
 # 10. BARRA DE PROGRESO Y TIEMPO ESTIMADO

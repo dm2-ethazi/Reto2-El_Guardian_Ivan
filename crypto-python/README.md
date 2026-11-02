@@ -67,7 +67,7 @@ Los siguientes comandos se utilizarán durante el desarrollo de los tests y la c
 ### Ejecutar tests y medir cobertura
 
 ```powershell
-python -m pytest --cov=src.vigenere --cov-report=term-missing
+.\crypto-python\.venv\Scripts\python.exe -m pytest crypto-python/tests/ --cov=src.vigenere --cov-config=crypto-python/pyproject.toml --cov-branch --cov-report=term-missing --cov-fail-under=80
 ```
 
 El objetivo mínimo de cobertura es del 80 %.
@@ -75,13 +75,13 @@ El objetivo mínimo de cobertura es del 80 %.
 ### Análisis estático con Ruff
 
 ```powershell
-python -m ruff check .
+.\crypto-python\.venv\Scripts\python.exe -m ruff check crypto-python
 ```
 
 ### Comprobar formato con Black
 
 ```powershell
-python -m black --check .
+.\crypto-python\.venv\Scripts\python.exe -m black --check crypto-python
 ```
 
 ## Integración continua

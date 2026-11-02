@@ -55,19 +55,13 @@ def test_preparar_clave():
 
 def test_procesamiento_por_bloques():
     """Comprueba que la posición de la clave continúa entre bloques."""
-    bloque1, posicion = procesar_bloque(
-        "HOLA, ", "CLAVE", True
-    )
+    bloque1, posicion = procesar_bloque("HOLA, ", "CLAVE", True)
 
-    bloque2, posicion = procesar_bloque(
-        "MUNDO!", "CLAVE", True, posicion
-    )
+    bloque2, posicion = procesar_bloque("MUNDO!", "CLAVE", True, posicion)
 
     resultado = bloque1 + bloque2
 
-    assert resultado == cifrar_vigenere(
-        "HOLA, MUNDO!", "CLAVE"
-    )
+    assert resultado == cifrar_vigenere("HOLA, MUNDO!", "CLAVE")
     assert posicion == 9
 
 

@@ -94,7 +94,10 @@ def test_cifrar_y_descifrar_por_bloques(carpetas_temporales, monkeypatch):
 
     progreso = []
     files.procesar_archivo_grande(
-        "original.txt", "cifrado.txt", "CLAVE", True,
+        "original.txt",
+        "cifrado.txt",
+        "CLAVE",
+        True,
         progreso=lambda procesados, total: progreso.append((procesados, total)),
     )
     files.procesar_archivo_grande("cifrado.txt", "recuperado.txt", "CLAVE", False)
