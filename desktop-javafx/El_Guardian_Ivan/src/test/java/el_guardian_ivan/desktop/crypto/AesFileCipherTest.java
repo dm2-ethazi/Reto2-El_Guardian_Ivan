@@ -19,11 +19,16 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Pruebas principales del cifrado: el fichero se recupera byte a byte, la contraseña incorrecta
+ * y cualquier manipulación se detectan, y el formato .hgw es el documentado.
+ */
 class AesFileCipherTest {
 
     private static final char[] PASSWORD = "alohomora".toCharArray();
     private static final int TAG = AesFileCipher.TAG_LENGTH;
 
+    /** Carpeta temporal que JUnit crea y borra en cada prueba. */
     @TempDir
     Path dir;
 

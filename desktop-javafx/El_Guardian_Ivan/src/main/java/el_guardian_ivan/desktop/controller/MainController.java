@@ -30,12 +30,16 @@ import java.util.Map;
  * haya escrito al cambiar de sección.
  */
 public class MainController implements Navigator {
+    /** Zona central donde se coloca la pantalla elegida. */
     @FXML
     private StackPane contentArea;
+
+    /** Agrupa los botones del menú para que solo uno pueda estar marcado. */
 
     @FXML
     private ToggleGroup navigationGroup;
 
+    // Botones del menú lateral, uno por pantalla
     @FXML
     private ToggleButton homeButton;
 
@@ -51,16 +55,20 @@ public class MainController implements Navigator {
     @FXML
     private ToggleButton helpButton;
 
+    /** Pantallas ya cargadas: se reutilizan para conservar lo escrito al volver a ellas. */
     private final Map<View, Parent> loadedViews = new EnumMap<>(View.class);
 
+    /** FXMLLoader lo llama al cargar el menú: enlaza cada botón con su pantalla y abre Inicio. */
     @FXML
     private void initialize() {
+        // Cada botón guarda la pantalla que abre
         homeButton.setUserData(View.HOME);
         encryptButton.setUserData(View.ENCRYPT);
         decryptButton.setUserData(View.DECRYPT);
         settingsButton.setUserData(View.SETTINGS);
         helpButton.setUserData(View.HELP);
 
+        // Al marcar otro botón del menú se muestra su pantalla
         navigationGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
             if (newToggle == null) {
                 oldToggle.setSelected(true); // Siempre tiene que haber una sección marcada

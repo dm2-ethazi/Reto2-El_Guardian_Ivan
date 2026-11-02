@@ -12,7 +12,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Pruebas de FilePreview: qué ficheros tienen vista previa (imagen o texto) y cómo se lee el texto
+ * (recorte sin partir caracteres, marca BOM, fichero vacío).
+ */
 class FilePreviewTest {
+    /** Carpeta temporal que JUnit crea y borra en cada prueba. */
     @TempDir
     Path dir;
 

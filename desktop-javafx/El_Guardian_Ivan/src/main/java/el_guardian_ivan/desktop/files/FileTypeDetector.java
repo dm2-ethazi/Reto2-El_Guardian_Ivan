@@ -16,14 +16,17 @@ import java.util.Arrays;
  */
 public final class FileTypeDetector {
 
+    /** Solo se leen los primeros 4 KB: basta para reconocer el tipo sin leer el fichero entero. */
     private static final int SAMPLE_SIZE = 4096;
 
+    // Firmas con las que empiezan siempre estos formatos
     private static final byte[] PNG = {(byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n'};
     private static final byte[] JPG = {(byte) 0xFF, (byte) 0xD8, (byte) 0xFF};
     private static final byte[] GIF = {'G', 'I', 'F', '8'};
     private static final byte[] PDF = {'%', 'P', 'D', 'F', '-'};
     private static final byte[] ZIP = {'P', 'K', 0x03, 0x04};
 
+    /** Clase de utilidades: no se crean objetos. */
     private FileTypeDetector() {
     }
 
@@ -61,10 +64,12 @@ public final class FileTypeDetector {
         return Files.move(file, target);
     }
 
+    /** Si {@code data} empieza por los bytes de {@code prefix}. */
     private static boolean startsWith(byte[] data, byte[] prefix) {
         return data.length >= prefix.length && Arrays.equals(data, 0, prefix.length, prefix, 0, prefix.length);
     }
 
+    /** Es texto si no tiene bytes nulos y los bytes forman UTF-8 válido (que incluye el ASCII). */
     private static boolean looksLikeText(byte[] sample) {
         if (sample.length == 0) {
             return true; // Un fichero vacío lo tratamos como texto

@@ -8,8 +8,13 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Pruebas de FileTypeDetector: reconoce los formatos por su contenido y añade la extensión
+ * solo cuando el fichero no tiene, sin pisar ficheros existentes.
+ */
 class FileTypeDetectorTest {
 
+    /** Carpeta temporal que JUnit crea y borra en cada prueba. */
     @TempDir
     Path dir;
 

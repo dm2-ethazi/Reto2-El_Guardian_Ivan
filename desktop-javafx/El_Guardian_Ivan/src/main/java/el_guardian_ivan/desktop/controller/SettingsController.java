@@ -10,12 +10,15 @@ import java.util.Locale;
 /** Pantalla Ajustes: de momento, el idioma de la aplicación. */
 public class SettingsController {
 
+    /** Desplegable con los idiomas disponibles (español, inglés y euskera). */
     @FXML
     private ComboBox<Locale> languageBox;
 
+    /** FXMLLoader lo llama al cargar la pantalla, cuando los campos @FXML ya están rellenos. */
     @FXML
     private void initialize() {
         languageBox.getItems().setAll(I18n.SUPPORTED);
+        // Cada idioma se muestra con su propio nombre ("Español", "English", "Euskara")
         languageBox.setConverter(new StringConverter<>() {
             @Override
             public String toString(Locale language) {

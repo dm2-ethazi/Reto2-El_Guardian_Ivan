@@ -10,11 +10,14 @@ import java.util.Locale;
  */
 public final class FileLocationOpener {
 
+    /** Clase de utilidades: no se crean objetos. */
     private FileLocationOpener() {
     }
 
+    /** Abre la carpeta de {@code file}; lanza IOException si el sistema no puede abrirla. */
     public static void reveal(Path file) throws IOException {
         Path absolute = file.toAbsolutePath();
+        // Cada sistema tiene su propio comando para abrir el explorador
         String os = System.getProperty("os.name", "").toLowerCase(Locale.ROOT);
         ProcessBuilder command;
         if (os.contains("win")) {
@@ -23,8 +26,9 @@ public final class FileLocationOpener {
         } else if (os.contains("mac")) {
             command = new ProcessBuilder("open", "-R", absolute.toString());
         } else {
+            // En Linux no hay forma estándar de seleccionar el fichero: se abre su carpeta
             command = new ProcessBuilder("xdg-open", absolute.getParent().toString());
         }
-        command.start();
+        command.start(); // No esperamos a que termine: el explorador sigue abierto por su cuenta
     }
 }

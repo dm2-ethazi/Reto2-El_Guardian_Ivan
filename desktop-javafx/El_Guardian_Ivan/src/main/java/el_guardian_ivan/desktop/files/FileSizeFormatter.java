@@ -5,9 +5,11 @@ import java.util.Locale;
 /** Convierte un tamaño en bytes a un texto legible: "512 B", "1,5 KB", "20,0 MB", "4,2 GB"... */
 public final class FileSizeFormatter {
 
+    /** Unidades de menor a mayor; cada una es 1024 veces la anterior. */
     private static final String[] UNITS = {"B", "KB", "MB", "GB", "TB"};
     private static final Locale SPANISH = Locale.forLanguageTag("es-ES");
 
+    /** Clase de utilidades: no se crean objetos. */
     private FileSizeFormatter() {
     }
 
@@ -22,8 +24,9 @@ public final class FileSizeFormatter {
             throw new IllegalArgumentException("El tamaño no puede ser negativo.");
         }
         if (bytes < 1024) {
-            return bytes + " B";
+            return bytes + " B"; // Los bytes se muestran sin decimales
         }
+        // Se divide entre 1024 hasta que el número quede por debajo de 1024
         double value = bytes;
         int unit = 0;
         while (value >= 1024 && unit < UNITS.length - 1) {

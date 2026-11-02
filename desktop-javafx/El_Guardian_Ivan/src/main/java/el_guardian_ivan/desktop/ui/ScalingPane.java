@@ -17,13 +17,19 @@ public class ScalingPane extends Region {
     /** Tamaño para el que está diseñada la interfaz: con él se ve a escala 1. */
     private static final double DESIGN_WIDTH = 1000;
     private static final double DESIGN_HEIGHT = 650;
+    /** Por debajo del 60 % el texto sería demasiado pequeño para leerse bien. */
     private static final double MIN_SCALE = 0.6;
+    /** Por encima del 200 % (pantallas muy grandes) no tiene sentido seguir agrandando. */
     private static final double MAX_SCALE = 2.0;
 
+    /** La interfaz que se escala (el menú lateral con la pantalla actual). */
     private final Parent content;
+    /** Transformación que agranda o reduce el contenido. */
     private final Scale scale = new Scale(1, 1, 0, 0);
+    /** Escala actual, observable para quien la necesite. */
     private final ReadOnlyDoubleWrapper currentScale = new ReadOnlyDoubleWrapper(1);
 
+    /** Envuelve {@code content} para que se adapte al tamaño de la ventana. */
     public ScalingPane(Parent content) {
         this.content = content;
         content.getTransforms().add(scale);
@@ -35,14 +41,17 @@ public class ScalingPane extends Region {
         return currentScale.getReadOnlyProperty();
     }
 
+    /** Valor actual de la escala: 1 = tamaño de diseño. */
     public double getScale() {
         return currentScale.get();
     }
 
+    /** JavaFX lo llama cada vez que cambia el tamaño de la ventana: recalcula la escala. */
     @Override
     protected void layoutChildren() {
         double width = getWidth();
         double height = getHeight();
+        // Se usa el lado que más limita, para que todo quepa sin deformarse
         double factor = Math.min(width / DESIGN_WIDTH, height / DESIGN_HEIGHT);
         factor = Math.max(MIN_SCALE, Math.min(MAX_SCALE, factor));
         scale.setX(factor);
@@ -52,6 +61,7 @@ public class ScalingPane extends Region {
         content.resizeRelocate(0, 0, width / factor, height / factor);
     }
 
+    // El tamaño preferido es el del contenido: así la ventana se abre a la medida del diseño
     @Override
     protected double computePrefWidth(double height) {
         return content.prefWidth(height);

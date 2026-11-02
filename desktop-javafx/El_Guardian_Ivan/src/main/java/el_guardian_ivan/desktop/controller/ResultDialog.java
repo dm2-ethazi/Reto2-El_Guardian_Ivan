@@ -41,6 +41,7 @@ import java.nio.file.Path;
  */
 public class ResultDialog {
 
+    /** Los tres tipos de ventana: cada uno con su clase CSS, su icono y su título para el lector de pantalla. */
     private enum Kind {
         SUCCESS("dialog-success", "icon-check-circle", "dialog.success"),
         ERROR("dialog-error", "icon-error", "dialog.error"),
@@ -57,6 +58,9 @@ public class ResultDialog {
         }
     }
 
+    // ---- Elementos de result-dialog.fxml ----
+
+    /** Icono grande de arriba: check verde, aviso rojo o interrogación. */
     @FXML
     private Region icon;
 
@@ -66,12 +70,15 @@ public class ResultDialog {
     @FXML
     private Label messageLabel;
 
+    /** Recuadro de la ventana (fondo pergamino y borde oro). */
     @FXML
     private VBox dialogBox;
 
+    /** Hueco para la vista previa de la imagen o el texto descifrado. */
     @FXML
     private VBox previewBox;
 
+    /** Recuadro con el nombre y el tamaño del fichero resultante (solo en éxito). */
     @FXML
     private HBox fileBox;
 
@@ -84,20 +91,27 @@ public class ResultDialog {
     @FXML
     private Label filePathLabel;
 
+    /** "Abrir ubicación" en éxito, "Reemplazar" en confirmación; oculto en error. */
     @FXML
     private Button primaryButton;
 
+    /** "Cerrar" (o "Cancelar" en confirmación); también responde a Esc. */
     @FXML
     private Button closeButton;
 
+    /** La X de la esquina superior derecha. */
     @FXML
     private Button cornerCloseButton;
 
+    /** Tamaño máximo de la vista previa, en píxeles de diseño (antes de escalar). */
     private static final int PREVIEW_WIDTH = 480;
     private static final int PREVIEW_HEIGHT = 220;
 
+    /** Ventana propia del diálogo. */
     private Stage stage;
+    /** Fichero resultante, para "Abrir ubicación". */
     private Path file;
+    /** En confirmación: si el usuario pulsó el botón de aceptar. */
     private boolean confirmed;
 
     /** Operación terminada: muestra el fichero resultante y permite abrir su carpeta. */
@@ -117,6 +131,7 @@ public class ResultDialog {
         dialog.showAndWait();
     }
 
+    /** Algo ha fallado: icono rojo, mensaje y solo el botón Cerrar. */
     public static void error(Window owner, String title, String message) {
         ResultDialog dialog = create(owner, Kind.ERROR, title, message);
         dialog.hidePrimaryButton();
@@ -137,6 +152,7 @@ public class ResultDialog {
         return dialog.confirmed;
     }
 
+    /** Carga el FXML del diálogo, lo rellena según el tipo y prepara su ventana (aún sin mostrarla). */
     private static ResultDialog create(Window owner, Kind kind, String title, String message) {
         FXMLLoader loader = new FXMLLoader(ResultDialog.class.getResource("/el_guardian_ivan/desktop/views/result-dialog.fxml"),
                 I18n.bundle());
@@ -154,7 +170,7 @@ public class ResultDialog {
 
         Stage stage = new Stage(StageStyle.TRANSPARENT); // Sin la barra de Windows, como en el boceto
         stage.initOwner(owner);
-        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initModality(Modality.WINDOW_MODAL); // Bloquea la ventana principal hasta cerrarlo
         // El título de la ventana es lo que anuncia el lector de pantalla al abrirse
         stage.setTitle(I18n.get(kind.windowTitleKey) + ": " + title);
         // Mismo tamaño relativo que la ventana principal; el Group hace que la escena mida el contenido ya escalado
@@ -162,7 +178,7 @@ public class ResultDialog {
             root.getTransforms().add(new Scale(scaling.getScale(), scaling.getScale()));
         }
         Scene scene = new Scene(new Group(root));
-        scene.setFill(Color.TRANSPARENT);
+        scene.setFill(Color.TRANSPARENT); // Transparente para que se vean las esquinas redondeadas y la sombra
         if (owner != null && owner.getScene() != null) {
             scene.getStylesheets().setAll(owner.getScene().getStylesheets());
         }
@@ -171,6 +187,7 @@ public class ResultDialog {
         return dialog;
     }
 
+    /** Estado inicial: sin fichero ni vista previa; cada tipo enseña lo que necesita. */
     @FXML
     private void initialize() {
         fileBox.setVisible(false);
@@ -183,11 +200,13 @@ public class ResultDialog {
         cornerCloseButton.setAccessibleText(I18n.get("dialog.close"));
     }
 
+    /** Botón Cerrar/Cancelar y la X: cierra sin confirmar nada. */
     @FXML
     private void onClose() {
         stage.close();
     }
 
+    /** Rellena el recuadro del fichero resultante: nombre, tamaño y carpeta. */
     private void showFile(Path file) {
         this.file = file;
         fileNameLabel.setText(file.getFileName().toString());
@@ -223,6 +242,7 @@ public class ResultDialog {
         dialogBox.setPrefWidth(PREVIEW_WIDTH + 80); // Ventana más ancha para que la vista previa luzca
     }
 
+    /** Imagen reducida dentro de un marco, sin deformarla. */
     private Node imagePreview(Path file) {
         // Se decodifica ya reducida y en segundo plano: una foto enorme no bloquea ni llena la memoria
         Image image = new Image(file.toUri().toString(), PREVIEW_WIDTH * 2, PREVIEW_HEIGHT * 2, true, true, true);
@@ -247,6 +267,7 @@ public class ResultDialog {
         return frame;
     }
 
+    /** Texto en un cuadro de solo lectura; si el fichero es muy largo, se avisa de que está recortado. */
     private Node textPreview(Path file) throws IOException {
         FilePreview.Text text = FilePreview.readText(file, FilePreview.MAX_TEXT_BYTES);
         TextArea area = new TextArea(text.content());
@@ -265,12 +286,14 @@ public class ResultDialog {
         return new VBox(4, area, note);
     }
 
+    /** En los errores solo queda "Cerrar", que pasa a responder también a Intro. */
     private void hidePrimaryButton() {
         primaryButton.setVisible(false);
         primaryButton.setManaged(false);
         closeButton.setDefaultButton(true);
     }
 
+    /** "Abrir ubicación": abre el explorador de archivos con el resultado seleccionado. */
     private void openLocation() {
         try {
             FileLocationOpener.reveal(file);

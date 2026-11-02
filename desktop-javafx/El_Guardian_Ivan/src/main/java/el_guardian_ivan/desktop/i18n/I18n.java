@@ -16,17 +16,22 @@ import java.util.prefs.Preferences;
  */
 public final class I18n {
 
+    // Idiomas disponibles, en el orden en que salen en Ajustes
     public static final Locale SPANISH = Locale.forLanguageTag("es");
     public static final Locale ENGLISH = Locale.forLanguageTag("en");
     public static final Locale BASQUE = Locale.forLanguageTag("eu");
     public static final List<Locale> SUPPORTED = List.of(SPANISH, ENGLISH, BASQUE);
 
+    /** Nombre base de los ficheros de textos (messages.properties, messages_en.properties...). */
     private static final String BUNDLE = "el_guardian_ivan.desktop.i18n.messages";
+    /** Clave con la que se guarda el idioma elegido (en Windows, dentro del registro del usuario). */
     private static final String PREFERENCE_KEY = "idioma";
     private static final Preferences PREFERENCES = Preferences.userNodeForPackage(I18n.class);
 
+    /** Idioma actual; observable para que la ventana se recargue al cambiarlo. */
     private static final ReadOnlyObjectWrapper<Locale> locale = new ReadOnlyObjectWrapper<>(initialLocale());
 
+    /** Clase de utilidades: no se crean objetos. */
     private I18n() {
     }
 
@@ -40,6 +45,7 @@ public final class I18n {
                 .orElse(SPANISH);
     }
 
+    /** Idioma en el que se muestra ahora la aplicación. */
     public static Locale getLocale() {
         return locale.get();
     }
@@ -49,6 +55,7 @@ public final class I18n {
         return locale.getReadOnlyProperty();
     }
 
+    /** Cambia el idioma y lo guarda para la próxima vez que se abra la aplicación. */
     public static void setLocale(Locale newLocale) {
         if (!SUPPORTED.contains(newLocale)) {
             throw new IllegalArgumentException("Idioma no soportado: " + newLocale);
@@ -57,6 +64,7 @@ public final class I18n {
         locale.set(newLocale);
     }
 
+    /** Todos los textos del idioma actual; FXMLLoader los usa para resolver los "%clave" de los .fxml. */
     public static ResourceBundle bundle() {
         // El español está en messages.properties (sin sufijo). Si se pidiera "es", Java buscaría
         // messages_es, no lo encontraría y caería al idioma del sistema (p. ej. inglés) antes que

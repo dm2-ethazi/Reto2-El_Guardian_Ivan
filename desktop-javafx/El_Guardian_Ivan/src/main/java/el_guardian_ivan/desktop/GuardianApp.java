@@ -19,11 +19,16 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.util.Objects;
 
+/**
+ * Aplicación JavaFX: crea la ventana principal, carga fuentes, estilos e iconos,
+ * y la reconstruye cuando el usuario cambia de idioma.
+ */
 public class GuardianApp extends Application {
 
     /** Fuentes incluidas en resources/.../fonts (licencia OFL). */
     private static final String[] FONTS = {"Cinzel-Bold.ttf", "Inter-Regular.ttf", "Inter-SemiBold.ttf"};
 
+    /** JavaFX llama a este método al arrancar, con la ventana principal ya creada. */
     @Override
     public void start(Stage stage) {
         loadFonts();
@@ -32,10 +37,12 @@ public class GuardianApp extends Application {
         double width = Math.min(1000, screen.getWidth() * 0.9);
         double height = Math.min(650, screen.getHeight() * 0.9);
         Scene scene = new Scene(loadMainWindow(View.HOME), width, height);
+        // Hoja de estilos con la paleta de la propuesta (colores, fuentes, botones...)
         scene.getStylesheets().add(Objects.requireNonNull(
                 GuardianApp.class.getResource("css/hogwarts.css")).toExternalForm());
         stage.setTitle(I18n.get("app.title"));
         addIcons(stage);
+        // Por debajo de este tamaño la interfaz ya no se puede reducir más sin cortar texto
         stage.setMinWidth(640);
         stage.setMinHeight(420);
         stage.setScene(scene);
@@ -61,7 +68,6 @@ public class GuardianApp extends Application {
         }
     }
 
-    /** Registra las fuentes antes de cargar el CSS para que este pueda usarlas por su nombre. */
     /**
      * Icono de la ventana y de la barra de tareas. Se dan varios tamaños y el sistema elige
      * el que mejor encaja (16 px en la barra de título, 32-48 px en la barra de tareas...).
@@ -73,8 +79,10 @@ public class GuardianApp extends Application {
         }
     }
 
+    /** Registra las fuentes antes de cargar el CSS para que este pueda usarlas por su nombre. */
     private static void loadFonts() {
         for (String font : FONTS) {
+            // Se cargan desde dentro de la aplicación: así se ven igual aunque el equipo no las tenga instaladas
             try (InputStream in = GuardianApp.class.getResourceAsStream("fonts/" + font)) {
                 if (in == null || Font.loadFont(in, 14) == null) {
                     throw new IllegalStateException("No se pudo cargar la fuente " + font);

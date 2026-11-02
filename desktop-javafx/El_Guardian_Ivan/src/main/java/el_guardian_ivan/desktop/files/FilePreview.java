@@ -22,12 +22,14 @@ public final class FilePreview {
     /** Formatos de imagen que JavaFX sabe dibujar. */
     private static final Set<String> IMAGE_EXTENSIONS = Set.of("png", "jpg", "jpeg", "gif", "bmp");
 
+    /** Qué vista previa se puede enseñar: imagen, texto o ninguna. */
     public enum Kind { IMAGE, TEXT, NONE }
 
     /** Texto leído para la vista previa; {@code truncated} indica que el fichero era más largo. */
     public record Text(String content, boolean truncated) {
     }
 
+    /** Clase de utilidades: no se crean objetos. */
     private FilePreview() {
     }
 
@@ -51,8 +53,9 @@ public final class FilePreview {
         boolean truncated;
         try (InputStream in = Files.newInputStream(file)) {
             data = in.readNBytes(maxBytes);
-            truncated = in.read() != -1;
+            truncated = in.read() != -1; // Si queda algo más, el fichero era más largo que el tope
         }
+        // Si se ha cortado, el último carácter puede haber quedado a medias: se descarta
         int length = truncated ? FileTypeDetector.trimIncompleteUtf8(data) : data.length;
         int start = length >= 3 && (data[0] & 0xFF) == 0xEF && (data[1] & 0xFF) == 0xBB && (data[2] & 0xFF) == 0xBF
                 ? 3 : 0; // Quita la marca BOM que añaden algunos editores de Windows

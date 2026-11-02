@@ -31,18 +31,27 @@ import java.security.GeneralSecurityException;
  * Los campos @FXML de esta clase los rellena el FXML de cada pantalla.
  */
 public abstract class FileOperationController {
+    // ---- Paso 1: fichero de entrada ----
+
+    /** Nombre del fichero elegido (o "Ningún fichero seleccionado"). */
     @FXML
     protected Label inputFileLabel;
 
+    /** Tamaño del fichero elegido, por ejemplo "3,2 MB". */
     @FXML
     protected Label inputSizeLabel;
 
+    /** Ruta completa del fichero elegido, debajo del recuadro. */
     @FXML
     protected Label inputPathLabel;
 
+    /** Botón "Examinar...". */
     @FXML
-    protected Label outputPathLabel;
+    protected Button selectButton;
 
+    // ---- Paso 2: contraseña ----
+
+    /** Campo que oculta la contraseña con puntos. */
     @FXML
     protected PasswordField passwordField;
 
@@ -50,34 +59,48 @@ public abstract class FileOperationController {
     @FXML
     protected TextField visiblePasswordField;
 
+    /** Botón del ojo: muestra u oculta la contraseña. */
     @FXML
     protected ToggleButton showPasswordToggle;
 
+    // ---- Paso 3: fichero de salida ----
+
+    /** Nombre del fichero que se va a crear. */
     @FXML
     protected TextField outputNameField;
 
+    /** Botón "Cambiar ubicación...". */
     @FXML
     protected Button outputFolderButton;
 
+    /** Ruta completa donde se guardará el resultado ("Se guardará en: ..."). */
     @FXML
-    protected Button selectButton;
+    protected Label outputPathLabel;
 
+    // ---- Parte inferior: progreso y botón principal ----
+
+    /** Botón "Cifrar archivo" / "Descifrar archivo". */
     @FXML
     protected Button runButton;
 
+    /** Avanza mientras se procesa el fichero. */
     @FXML
     protected ProgressBar progressBar;
 
+    /** Mensaje bajo la barra: "Cifrando...", "✓ Archivo cifrado correctamente"... */
     @FXML
     protected Label statusLabel;
 
+    /** Fichero elegido en el paso 1; {@code null} mientras no haya ninguno. */
     protected Path inputFile;
 
     /** Carpeta donde se guardará el resultado; por defecto, la del fichero de entrada. */
     protected Path outputDirectory;
 
+    /** Hace el cifrado y descifrado de verdad (AES-256-GCM). */
     protected final AesFileCipher aesFileCipher = new AesFileCipher();
 
+    /** FXMLLoader lo llama al cargar la pantalla: conecta los controles entre sí. */
     @FXML
     private void initialize() {
         // Los dos campos comparten el texto; el ojo decide cuál de ellos se ve
@@ -86,6 +109,7 @@ public abstract class FileOperationController {
         visiblePasswordField.managedProperty().bind(showPasswordToggle.selectedProperty());
         passwordField.visibleProperty().bind(showPasswordToggle.selectedProperty().not());
         passwordField.managedProperty().bind(showPasswordToggle.selectedProperty().not());
+        // El texto que leen los lectores de pantalla cambia según la contraseña se vea o no
         showPasswordToggle.selectedProperty().addListener((obs, wasShown, shown) -> {
             String text = I18n.get(shown ? "form.hidePassword" : "form.showPassword");
             showPasswordToggle.setAccessibleText(text);
@@ -104,6 +128,7 @@ public abstract class FileOperationController {
             pathLabel.managedProperty().bind(pathLabel.textProperty().isNotEmpty());
             pathLabel.visibleProperty().bind(pathLabel.textProperty().isNotEmpty());
         }
+        // Al escribir otro nombre de salida se actualiza la ruta de "Se guardará en"
         outputNameField.textProperty().addListener((obs, oldName, newName) -> updateOutputPath());
     }
 
@@ -143,6 +168,10 @@ public abstract class FileOperationController {
     /** Permite a cada pantalla ajustar el diálogo de guardar (título, filtros...). */
     protected abstract void configureOutputChooser(FileChooser chooser);
 
+    /**
+     * Botón "Examinar..." (o Ctrl+O): abre el selector de archivos y, si el elegido se puede leer,
+     * rellena el paso 1 y propone nombre y carpeta para el paso 3.
+     */
     @FXML
     protected void onSelectInputFile() {
         FileChooser chooser = new FileChooser();
@@ -154,6 +183,7 @@ public abstract class FileOperationController {
 
         try {
             Path path = selected.toPath();
+            // Comprobaciones previas para dar un mensaje claro en lugar de fallar al cifrar
             if (!Files.isRegularFile(path)) {
                 throw new IOException(I18n.get("error.notRegular"));
             }
@@ -167,10 +197,12 @@ public abstract class FileOperationController {
             inputSizeLabel.setText(FileSizeFormatter.format(size, I18n.getLocale()));
             setPath(inputPathLabel, path.toAbsolutePath(), "form.inputPath");
             selectButton.setAccessibleHelp(inputPathLabel.getText());
+            // Por defecto el resultado se guarda junto al fichero original
             outputDirectory = path.toAbsolutePath().getParent();
             outputNameField.setText(suggestOutputName(path.getFileName().toString()));
             updateOutputPath();
         } catch (IOException | InvalidPathException e) {
+            // No se puede usar: volvemos al estado "sin fichero" y explicamos el motivo
             inputFile = null;
             inputFileLabel.setText(I18n.get("form.noFile"));
             inputFileLabel.setTooltip(null);
@@ -185,6 +217,7 @@ public abstract class FileOperationController {
     protected void onChooseOutput() {
         FileChooser chooser = new FileChooser();
         configureOutputChooser(chooser);
+        // El diálogo se abre en la carpeta y con el nombre que ya hay puestos
         if (outputDirectory != null && Files.isDirectory(outputDirectory)) {
             chooser.setInitialDirectory(outputDirectory.toFile());
         }
@@ -203,6 +236,7 @@ public abstract class FileOperationController {
      * Los métodos setOnSucceeded/setOnFailed se ejecutan de vuelta en el hilo de JavaFX.
      */
     protected void runInBackground(String runningText, String successTitle, String successMessage, Task<Path> task) {
+        // La barra sigue el progreso de la tarea y los controles se bloquean mientras dura
         progressBar.progressProperty().bind(task.progressProperty());
         setStatus(runningText, null);
         setControlsDisabled(true);
@@ -218,17 +252,18 @@ public abstract class FileOperationController {
             showFailure(task.getException());
         });
 
+        // Hilo propio para el trabajo pesado; la ventana sigue respondiendo
         Thread thread = new Thread(task, "cifrado-aes");
         thread.setDaemon(true); // Si se cierra la ventana, no deja la aplicación abierta
         thread.start();
     }
 
-    /** Texto bajo la barra de progreso; el símbolo ✓/✗ (incluido en Inter) evita que el resultado dependa solo del color. */
     /** Si al terminar se enseña el resultado (imagen o texto) en la ventana de éxito. */
     protected boolean showsPreview() {
         return false;
     }
 
+    /** Texto bajo la barra de progreso; el símbolo ✓/✗ (incluido en Inter) evita que el resultado dependa solo del color. */
     private void setStatus(String text, String styleClass) {
         statusLabel.getStyleClass().removeAll("status-success", "status-error");
         if (styleClass != null) {
@@ -237,13 +272,16 @@ public abstract class FileOperationController {
         statusLabel.setText(text);
     }
 
+    /** Deja la pantalla lista para otra operación: barra a cero y controles activos. */
     private void finishTask() {
         progressBar.progressProperty().unbind();
         progressBar.setProgress(0);
         setControlsDisabled(false);
     }
 
+    /** Traduce el error de la tarea a un mensaje que el usuario entienda. */
     private void showFailure(Throwable error) {
+        // AEADBadTagException: GCM no ha podido verificar los datos (contraseña mala o fichero alterado)
         if (error instanceof AEADBadTagException) {
             showError(I18n.get("error.wrongPassword.title"), I18n.get("error.wrongPassword.text"));
         } else if (error instanceof IllegalArgumentException) {
@@ -289,6 +327,7 @@ public abstract class FileOperationController {
         return password;
     }
 
+    /** Bloquea (o desbloquea) los controles para que no se cambie nada durante la operación. */
     private void setControlsDisabled(boolean disabled) {
         selectButton.setDisable(disabled);
         runButton.setDisable(disabled);
@@ -305,10 +344,12 @@ public abstract class FileOperationController {
         return dot > 0 ? fileName.substring(0, dot) : fileName;
     }
 
+    /** Ventana principal: los diálogos se abren encima de ella. */
     protected Window getWindow() {
         return inputFileLabel.getScene().getWindow();
     }
 
+    /** Muestra la ventana de error con el título y el mensaje dados. */
     protected void showError(String title, String message) {
         ResultDialog.error(getWindow(), title, message);
     }
