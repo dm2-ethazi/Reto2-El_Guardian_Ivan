@@ -62,7 +62,7 @@ Los hooks se encuentran en la carpeta `.githooks`.
 
 Ejecuta las pruebas de Python mediante pytest cuando existe la carpeta `tests`.
 
-Actualmente permite los commits si la carpeta todavía no existe. Este comportamiento se actualizará al incorporar las pruebas definitivas.
+La carpeta `crypto-python/tests/` ya contiene pruebas unitarias para el algoritmo, la gestión de archivos y la interfaz de consola. El hook ejecuta pytest cuando detecta la carpeta de pruebas.
 
 **pre-push**
 
@@ -96,8 +96,48 @@ Los estados de trabajo son:
 
 Cada funcionalidad se gestiona mediante una Issue y sus cambios se registran mediante Pull Requests.
 
-### Integración continua
+### Integración continua — módulo Python (AD-03)
 
-El proyecto incorporará GitHub Actions para ejecutar automáticamente los tests y comprobar la calidad del código.
+El proyecto utiliza **GitHub Actions** para comprobar automáticamente la calidad del módulo Python del Reto 02. El workflow está definido en [`.github/workflows/python-ci.yml`](.github/workflows/python-ci.yml) y se configura para ejecutarse en cada **push** y **Pull Request**.
 
-El objetivo de cobertura de las pruebas unitarias es de al menos el 80 %, según el pliego técnico.
+El trabajo `calidad-python` utiliza Python 3.14.7 en un runner de Ubuntu y realiza estas verificaciones:
+
+1. Descarga el código y configura Python.
+2. Instala las dependencias de desarrollo definidas en [`crypto-python/pyproject.toml`](crypto-python/pyproject.toml).
+3. Ejecuta los tests unitarios con **pytest** y **pytest-cov**.
+4. Comprueba que la cobertura total, incluyendo ramas, alcanza **al menos el 80 %**.
+5. Realiza el análisis estático y comprueba las importaciones con **Ruff**.
+6. Verifica el formato del código con **Black**.
+
+#### Validación realizada
+
+En la validación local del módulo Python se obtuvieron los siguientes resultados:
+
+| Comprobación | Resultado |
+| --- | --- |
+| Tests unitarios | **74 superados**, 0 fallidos |
+| Cobertura total con ramas | **90,77 %** |
+| Cobertura mínima exigida | **80 % — superada** |
+| Ruff | Sin errores |
+| Black | Formato correcto |
+
+La **primera ejecución del workflow por push** en GitHub Actions finalizó con estado **Success** en la rama `feature/python-tests-ci`. El workflow también está configurado para Pull Requests, cuya ejecución se comprobará al abrir una PR.
+
+#### Ejecutar las comprobaciones localmente
+
+Con las dependencias de desarrollo instaladas y el entorno Python activado, desde la carpeta `crypto-python`:
+
+```bash
+python -m pytest tests/ --cov=src.vigenere --cov-branch --cov-report=term-missing --cov-fail-under=80
+python -m ruff check .
+python -m black --check .
+```
+
+La documentación específica de instalación y uso del módulo está en [`crypto-python/README.md`](crypto-python/README.md).
+
+#### Decisión técnica sobre `act`
+
+Se ha valorado **act**, una herramienta que permite ejecutar workflows de GitHub Actions localmente mediante Docker. Por el momento **no se utiliza**, porque las comprobaciones individuales ya pueden ejecutarse desde el entorno Python y el pipeline completo se ha validado correctamente en GitHub Actions. Incorporar `act` añadiría la necesidad de instalar y configurar Docker para este flujo.
+
+Podrá adoptarse más adelante si resulta útil ejecutar el workflow completo sin depender de GitHub o depurar diferencias entre el entorno local y el runner. Esta decisión no implica que se haya probado `act` en este proyecto.
+

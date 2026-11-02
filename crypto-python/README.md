@@ -84,6 +84,58 @@ El objetivo mínimo de cobertura es del 80 %.
 .\crypto-python\.venv\Scripts\python.exe -m black --check crypto-python
 ```
 
-## Integración continua
+## Integración continua (CI/CD)
 
-Se configurará GitHub Actions para ejecutar automáticamente las comprobaciones de calidad en los push y Pull Requests.
+El módulo Python utiliza GitHub Actions para ejecutar automáticamente
+las comprobaciones de calidad del código.
+
+El workflow se encuentra en:
+
+`.github/workflows/python-ci.yml` (raíz del repositorio).
+
+### Funcionamiento del pipeline
+
+El pipeline se ejecuta automáticamente en cada push y Pull Request.
+
+Realiza las siguientes operaciones:
+
+1. Descarga el código del repositorio.
+2. Configura Python 3.14.7.
+3. Instala las dependencias definidas en `pyproject.toml`.
+4. Ejecuta los tests unitarios mediante Pytest.
+5. Comprueba una cobertura mínima del 80 % con pytest-cov.
+6. Analiza el código mediante Ruff.
+7. Comprueba el formato mediante Black.
+
+Si alguna comprobación falla, GitHub Actions marca la ejecución
+como fallida e indica el paso donde se ha producido el error.
+
+### Resultados de validación
+
+En las pruebas locales se obtuvieron los siguientes resultados:
+
+| Comprobación | Resultado |
+|---|---|
+| Tests unitarios | 74 superados |
+| Cobertura total con ramas | 90,77 % |
+| Cobertura mínima exigida | 80 % |
+| Ruff | Sin errores |
+| Black | Formato correcto |
+
+La primera ejecución del workflow en GitHub Actions finalizó
+correctamente en la rama `feature/python-tests-ci`.
+
+### Decisión técnica sobre act
+
+Se ha valorado utilizar `act`, una herramienta que permite
+ejecutar workflows de GitHub Actions localmente mediante Docker.
+
+Por el momento, se ha decidido no incorporarla porque:
+
+- GitHub Actions ya ejecuta correctamente el pipeline.
+- Pytest, Ruff y Black pueden ejecutarse localmente.
+- act requiere instalar y configurar Docker.
+- La validación final se realiza en el entorno de GitHub Actions.
+
+Si en el futuro necesitamos ejecutar el pipeline completo sin
+conexión a GitHub, podremos reconsiderar su utilización.
