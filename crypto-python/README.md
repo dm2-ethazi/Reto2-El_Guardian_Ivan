@@ -116,14 +116,12 @@ En las pruebas locales se obtuvieron los siguientes resultados:
 
 | Comprobación | Resultado |
 |---|---|
-| Tests unitarios | 74 superados |
-| Cobertura total con ramas | 90,77 % |
+| Tests unitarios | 80 superados |
+| Cobertura total con ramas | 91,35 % |
 | Cobertura mínima exigida | 80 % |
+| Cobertura de `logging_config.py` | 100 % |
 | Ruff | Sin errores |
 | Black | Formato correcto |
-
-La primera ejecución del workflow en GitHub Actions finalizó
-correctamente en la rama `feature/python-tests-ci`.
 
 ### Decisión técnica sobre act
 
@@ -139,3 +137,93 @@ Por el momento, se ha decidido no incorporarla porque:
 
 Si en el futuro necesitamos ejecutar el pipeline completo sin
 conexión a GitHub, podremos reconsiderar su utilización.
+
+## Sistema de logs
+
+La aplicación incorpora un sistema de registro de eventos mediante el módulo `logging` de Python. Su objetivo es facilitar el seguimiento de las operaciones y la identificación de errores durante el cifrado y descifrado.
+
+### Eventos registrados
+
+El sistema registra los siguientes eventos:
+
+- Inicio y finalización de la aplicación.
+- Inicio y finalización del cifrado y descifrado de texto manual.
+- Inicio y finalización del procesamiento de archivos pequeños y grandes.
+- Tamaño de los archivos procesados.
+- Duración de las operaciones de cifrado y descifrado de archivos.
+- Errores de lectura y guardado.
+- Cancelaciones realizadas por el usuario.
+
+Se utilizan distintos niveles de registro:
+
+- `INFO`: operaciones realizadas correctamente.
+- `WARNING`: incidencias controladas, validaciones rechazadas y cancelaciones.
+- `ERROR`: errores durante el guardado.
+
+### Almacenamiento y rotación
+
+Los registros se guardan en:
+
+`crypto-python/logs/vigenere.log`
+
+El sistema utiliza `RotatingFileHandler` para evitar que los archivos de registro crezcan indefinidamente.
+
+- Tamaño máximo por archivo: 1 MiB.
+- Número máximo de copias de seguridad: 3.
+- Codificación: UTF-8.
+
+La carpeta `logs/` está incluida en `.gitignore`, por lo que los registros generados no se incorporan al repositorio.
+
+Consultar los logs
+
+Los siguientes comandos se ejecutan desde PowerShell, situándose en la raíz del repositorio Reto2-El_Guardian_Ivan.
+
+Ver los últimos 10 registros:
+
+Get-Content .\crypto-python\logs\vigenere.log -Tail 10 -Encoding UTF8
+
+Ver todos los registros:
+
+Get-Content .\crypto-python\logs\vigenere.log -Encoding UTF8
+
+Ver los logs en tiempo real:
+
+Get-Content .\crypto-python\logs\vigenere.log -Tail 10 -Wait -Encoding UTF8
+
+Este último comando permite observar los nuevos eventos mientras se utiliza la aplicación. Para detener la visualización, pulsar Ctrl+C.
+
+Consultar únicamente advertencias y errores:
+
+Get-Content .\crypto-python\logs\vigenere.log -Encoding UTF8 | Select-String -Pattern "WARNING|ERROR"
+
+Consultar los archivos de log y sus copias de seguridad:
+
+Get-ChildItem .\crypto-python\logs\
+
+Si la terminal está situada dentro de crypto-python, la ruta se simplifica a .\logs\vigenere.log.
+
+### Seguridad de los registros
+
+Los logs no almacenan las claves utilizadas ni el contenido de los mensajes cifrados o descifrados.
+
+Para identificar incidencias se registra el tipo de error, evitando incluir información sensible de los archivos procesados.
+
+### Tiempos de procesamiento
+
+La aplicación registra la duración de las operaciones con archivos mediante `time.perf_counter()`.
+
+- **Archivos pequeños:** se mide el tiempo empleado por el algoritmo de cifrado o descifrado.
+- **Archivos grandes:** se mide el tiempo de procesamiento y publicación del archivo completo.
+
+Estas mediciones permiten observar la duración de las operaciones sin necesidad de ejecutar herramientas adicionales de análisis de rendimiento.
+
+### Pruebas unitarias
+
+El archivo `tests/test_logging.py` contiene seis pruebas que verifican:
+
+- La creación del archivo de registros.
+- El almacenamiento correcto de eventos.
+- La ausencia de manejadores duplicados.
+- La rotación automática de logs.
+- La protección de claves y contenido sensible en el cifrado manual.
+- El registro de cancelaciones.

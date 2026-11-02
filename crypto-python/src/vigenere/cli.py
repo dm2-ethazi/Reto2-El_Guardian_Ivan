@@ -1,5 +1,6 @@
 """Menú de Hogwarts para cifrar y descifrar mensajes con Vigenère."""
 
+import logging
 import sys
 import time
 from collections.abc import Callable
@@ -16,6 +17,9 @@ from .files import (
     procesar_archivo_grande,
     validar_nombre,
 )
+
+# Logger del modulo Vigenere.
+logger = logging.getLogger("vigenere")
 
 # Hasta 4 KiB mostramos el contenido completo del archivo.
 TAMANO_MAXIMO_PANTALLA = 4096
@@ -179,18 +183,37 @@ def preguntar_guardado(guardar: Callable[[str], Path]) -> str:
                 print("\nArchivo guardado correctamente.")
                 print(f"Ubicación: {ruta}")
                 return "menu"
+
             except ArchivoSinTextoError as error:
+                # Registramos un archivo sin contenido valido.
+                logger.warning("Guardado rechazado: archivo sin texto valido")
                 print(f"\nError en el contenido: {error}")
                 return "menu"
+
             except (ValueError, FileExistsError) as error:
+                # Registramos errores de validacion o sobrescritura.
+                logger.warning(
+                    "Guardado rechazado (%s)",
+                    type(error).__name__,
+                )
                 print(f"\nError: {error}")
                 print("Introduce otro nombre.")
+
             except (OSError, UnicodeError) as error:
+                # Registramos errores de acceso o procesamiento.
+                logger.error(
+                    "Error durante el guardado (%s)",
+                    type(error).__name__,
+                )
                 print(f"\nError al guardar: {error}")
                 print("El destino no se ha publicado incompleto.")
                 return "menu"
+
             except KeyboardInterrupt:
-                print("\nOperación cancelada. El archivo temporal se ha limpiado.")
+                # Registramos una cancelacion voluntaria.
+                logger.warning("Operacion cancelada por el usuario")
+
+                print("\nOperación cancelada. " "El archivo temporal se ha limpiado.")
                 return "menu"
 
 
@@ -213,12 +236,21 @@ def ejecutar_texto_manual(cifrar: bool) -> str:
             if clave is None:
                 break  # Volver a introducir el texto.
 
+            # Identificamos la operacion que vamos a realizar.
+            operacion = "cifrado" if cifrar else "descifrado"
+
+            # Registramos el inicio de la operacion.
+            logger.info("Inicio de %s de texto manual", operacion)
+
             if cifrar:
                 resultado = cifrar_vigenere(texto, clave)
                 print("\n--- MENSAJE CIFRADO ---")
             else:
                 resultado = descifrar_vigenere(texto, clave)
                 print("\n--- MENSAJE DESCIFRADO ---")
+
+            # Registramos que la operacion ha finalizado correctamente.
+            logger.info("Fin de %s de texto manual", operacion)
 
             print(resultado)
 
@@ -250,19 +282,45 @@ def ejecutar_archivo(cifrar: bool) -> str:
                 tamano = archivo_entrada.stat().st_size
 
                 if tamano <= TAMANO_MAXIMO_PANTALLA:
-                    # Para archivos pequeños mostramos todo el resultado.
+                    # Para archivos pequenos mostramos todo el resultado.
                     texto = leer_mensaje(nombre_entrada, cifrar)
+
                     if not texto.strip():
                         raise ArchivoSinTextoError(
-                            "El archivo está vacío o solo contiene espacios en blanco."
+                            "El archivo esta vacio o solo contiene espacios en blanco."
                         )
+
+                    # Identificamos la operacion.
+                    operacion = "cifrado" if cifrar else "descifrado"
+
+                    # Registramos el inicio y el tamano del archivo.
+                    logger.info(
+                        "Inicio de %s de archivo pequeno (%d bytes)",
+                        operacion,
+                        tamano,
+                    )
+
+                    # Iniciamos el contador de tiempo.
+                    inicio = time.perf_counter()
+
                     if cifrar:
                         resultado = cifrar_vigenere(texto, clave)
                         print("\n--- MENSAJE CIFRADO ---")
                     else:
                         resultado = descifrar_vigenere(texto, clave)
                         print("\n--- MENSAJE DESCIFRADO ---")
+
+                    # Calculamos el tiempo de procesamiento.
+                    duracion = time.perf_counter() - inicio
+
+                    logger.info(
+                        "Fin de %s de archivo pequeno (duracion: %.4f segundos)",
+                        operacion,
+                        duracion,
+                    )
+
                     print(resultado)
+
                 else:
                     # Para archivos grandes solo leemos los primeros caracteres.
                     with archivo_entrada.open(
@@ -282,8 +340,14 @@ def ejecutar_archivo(cifrar: bool) -> str:
                     print(f"Tamaño: {tamano:,} bytes")
 
             except (OSError, UnicodeError, ArchivoSinTextoError) as error:
+                # Registramos el tipo de error sin guardar datos del archivo.
+                logger.warning(
+                    "Error durante la lectura (%s)",
+                    type(error).__name__,
+                )
+
                 print(f"\nError al leer el archivo: {error}")
-                break  # Volver a seleccionar otro archivo.
+                break
 
             def guardar(nombre: str) -> Path:
                 # Los mensajes pequeños también utilizan guardado temporal.
