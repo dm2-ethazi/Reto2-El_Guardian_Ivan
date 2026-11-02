@@ -26,7 +26,12 @@ public final class FileNameValidator {
     private FileNameValidator() {
     }
 
-    /** Devuelve un mensaje (en el idioma actual) explicando el problema, o {@code null} si el nombre es válido. */
+    /**
+     * Devuelve un mensaje (en el idioma actual) explicando el problema, o {@code null} si el nombre es válido.
+     *
+     * @param name nombre que ha escrito el usuario
+     * @return el motivo por el que no vale, o {@code null} si es válido
+     */
     public static String validate(String name) {
         if (name == null || name.isBlank()) {
             return I18n.get("name.empty");

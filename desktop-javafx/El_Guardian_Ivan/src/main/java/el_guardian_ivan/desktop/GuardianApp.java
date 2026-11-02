@@ -25,6 +25,10 @@ import java.util.Objects;
  */
 public class GuardianApp extends Application {
 
+    /** JavaFX crea la aplicación con este constructor al arrancar. */
+    public GuardianApp() {
+    }
+
     /** Fuentes incluidas en resources/.../fonts (licencia OFL). */
     private static final String[] FONTS = {"Cinzel-Bold.ttf", "Inter-Regular.ttf", "Inter-SemiBold.ttf"};
 
@@ -55,7 +59,12 @@ public class GuardianApp extends Application {
         });
     }
 
-    /** Carga la ventana principal en el idioma actual, mostrando la pantalla indicada. */
+    /**
+     * Carga la ventana principal en el idioma actual, mostrando la pantalla indicada.
+     *
+     * @param initialView pantalla que se muestra al abrir
+     * @return la interfaz completa, ya envuelta en el ScalingPane
+     */
     private static Parent loadMainWindow(View initialView) {
         FXMLLoader loader = new FXMLLoader(GuardianApp.class.getResource("views/main-view.fxml"), I18n.bundle());
         try {
@@ -71,6 +80,8 @@ public class GuardianApp extends Application {
     /**
      * Icono de la ventana y de la barra de tareas. Se dan varios tamaños y el sistema elige
      * el que mejor encaja (16 px en la barra de título, 32-48 px en la barra de tareas...).
+     *
+     * @param stage ventana a la que se le ponen los iconos
      */
     private static void addIcons(Stage stage) {
         for (String name : new String[]{"icon-16.png", "icon-24.png", "icon-32.png", "icon-48.png",

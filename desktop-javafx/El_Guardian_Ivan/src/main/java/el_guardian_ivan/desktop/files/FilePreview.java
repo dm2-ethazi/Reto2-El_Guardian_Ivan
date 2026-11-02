@@ -23,9 +23,21 @@ public final class FilePreview {
     private static final Set<String> IMAGE_EXTENSIONS = Set.of("png", "jpg", "jpeg", "gif", "bmp");
 
     /** Qué vista previa se puede enseñar: imagen, texto o ninguna. */
-    public enum Kind { IMAGE, TEXT, NONE }
+    public enum Kind {
+        /** PNG, JPG, GIF o BMP: se muestra la imagen. */
+        IMAGE,
+        /** Texto plano en UTF-8: se muestra el texto. */
+        TEXT,
+        /** Cualquier otro formato: sin vista previa. */
+        NONE
+    }
 
-    /** Texto leído para la vista previa; {@code truncated} indica que el fichero era más largo. */
+    /**
+     * Texto leído para la vista previa; {@code truncated} indica que el fichero era más largo.
+     *
+     * @param content texto leído
+     * @param truncated {@code true} si el fichero tenía más texto
+     */
     public record Text(String content, boolean truncated) {
     }
 
@@ -33,7 +45,13 @@ public final class FilePreview {
     private FilePreview() {
     }
 
-    /** Se fija primero en el contenido (lo fiable) y, si no lo reconoce, en la extensión. */
+    /**
+     * Se fija primero en el contenido (lo fiable) y, si no lo reconoce, en la extensión.
+     *
+     * @param file fichero descifrado
+     * @return IMAGE, TEXT o NONE
+     * @throws IOException si no se puede leer el fichero
+     */
     public static Kind kindOf(Path file) throws IOException {
         String detected = FileTypeDetector.detectExtension(file);
         if (IMAGE_EXTENSIONS.contains(detected)) {
@@ -47,7 +65,14 @@ public final class FilePreview {
         return name.contains(".") && IMAGE_EXTENSIONS.contains(extension) ? Kind.IMAGE : Kind.NONE;
     }
 
-    /** Lee como mucho {@code maxBytes} en UTF-8; lo que no sea válido se sustituye por "�". */
+    /**
+     * Lee como mucho {@code maxBytes} en UTF-8; lo que no sea válido se sustituye por "�".
+     *
+     * @param file fichero de texto
+     * @param maxBytes cuántos bytes leer como mucho
+     * @return el texto y si se ha recortado
+     * @throws IOException si no se puede leer el fichero
+     */
     public static Text readText(Path file, int maxBytes) throws IOException {
         byte[] data;
         boolean truncated;

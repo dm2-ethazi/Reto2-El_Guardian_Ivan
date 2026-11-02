@@ -31,6 +31,10 @@ import java.security.GeneralSecurityException;
  * Los campos @FXML de esta clase los rellena el FXML de cada pantalla.
  */
 public abstract class FileOperationController {
+
+    /** Lo usan las pantallas Cifrar y Descifrar al crearse. */
+    protected FileOperationController() {
+    }
     // ---- Paso 1: fichero de entrada ----
 
     /** Nombre del fichero elegido (o "Ningún fichero seleccionado"). */
@@ -132,7 +136,11 @@ public abstract class FileOperationController {
         outputNameField.textProperty().addListener((obs, oldName, newName) -> updateOutputPath());
     }
 
-    /** Nombre final del fichero de salida a partir de lo escrito en el paso 3. */
+    /**
+     * Nombre final del fichero de salida a partir de lo escrito en el paso 3.
+     *
+     * @return el nombre sin espacios al principio ni al final (vacío si no hay)
+     */
     protected String outputFileName() {
         return outputNameField.getText().trim();
     }
@@ -151,7 +159,13 @@ public abstract class FileOperationController {
         }
     }
 
-    /** Escribe la ruta con su prefijo ("Ruta: ...") y deja la ruta completa en el tooltip por si se recorta. */
+    /**
+     * Escribe la ruta con su prefijo ("Ruta: ...") y deja la ruta completa en el tooltip por si se recorta.
+     *
+     * @param label etiqueta donde se escribe
+     * @param path ruta que se muestra; {@code null} vacía la etiqueta
+     * @param key clave del texto con el prefijo, por ejemplo "form.inputPath"
+     */
     private static void setPath(Label label, Path path, String key) {
         if (path == null) {
             label.setText("");
@@ -162,10 +176,19 @@ public abstract class FileOperationController {
         }
     }
 
-    /** Nombre que se propone para el fichero de salida a partir del de entrada. */
+    /**
+     * Nombre que se propone para el fichero de salida a partir del de entrada.
+     *
+     * @param inputName nombre del fichero de entrada, por ejemplo "foto.png"
+     * @return el nombre propuesto, por ejemplo "foto.hgw"
+     */
     protected abstract String suggestOutputName(String inputName);
 
-    /** Permite a cada pantalla ajustar el diálogo de guardar (título, filtros...). */
+    /**
+     * Permite a cada pantalla ajustar el diálogo de guardar (título, filtros...).
+     *
+     * @param chooser diálogo de guardar que se va a abrir
+     */
     protected abstract void configureOutputChooser(FileChooser chooser);
 
     /**
@@ -234,6 +257,11 @@ public abstract class FileOperationController {
     /**
      * Ejecuta la operación en un hilo aparte para que la ventana no se congele con ficheros grandes.
      * Los métodos setOnSucceeded/setOnFailed se ejecutan de vuelta en el hilo de JavaFX.
+     *
+     * @param runningText texto mientras trabaja, por ejemplo "Cifrando..."
+     * @param successTitle título de la ventana de éxito
+     * @param successMessage mensaje de la ventana de éxito
+     * @param task trabajo que se ejecuta; devuelve la ruta del fichero creado
      */
     protected void runInBackground(String runningText, String successTitle, String successMessage, Task<Path> task) {
         // La barra sigue el progreso de la tarea y los controles se bloquean mientras dura
@@ -258,12 +286,21 @@ public abstract class FileOperationController {
         thread.start();
     }
 
-    /** Si al terminar se enseña el resultado (imagen o texto) en la ventana de éxito. */
+    /**
+     * Si al terminar se enseña el resultado (imagen o texto) en la ventana de éxito.
+     *
+     * @return {@code true} para enseñar la vista previa; aquí {@code false}
+     */
     protected boolean showsPreview() {
         return false;
     }
 
-    /** Texto bajo la barra de progreso; el símbolo ✓/✗ (incluido en Inter) evita que el resultado dependa solo del color. */
+    /**
+     * Texto bajo la barra de progreso; el símbolo ✓/✗ (incluido en Inter) evita que el resultado dependa solo del color.
+     *
+     * @param text texto que se muestra
+     * @param styleClass "status-success", "status-error" o {@code null} para el estilo normal
+     */
     private void setStatus(String text, String styleClass) {
         statusLabel.getStyleClass().removeAll("status-success", "status-error");
         if (styleClass != null) {
@@ -279,7 +316,11 @@ public abstract class FileOperationController {
         setControlsDisabled(false);
     }
 
-    /** Traduce el error de la tarea a un mensaje que el usuario entienda. */
+    /**
+     * Traduce el error de la tarea a un mensaje que el usuario entienda.
+     *
+     * @param error excepción con la que terminó la tarea
+     */
     private void showFailure(Throwable error) {
         // AEADBadTagException: GCM no ha podido verificar los datos (contraseña mala o fichero alterado)
         if (error instanceof AEADBadTagException) {
@@ -299,6 +340,9 @@ public abstract class FileOperationController {
      * Construye la ruta de salida con la carpeta elegida y el nombre del paso 3, comprobando que el
      * nombre sea válido en Windows y Linux y pidiendo confirmación si el fichero ya existe.
      * Devuelve {@code null} (tras mostrar una alerta) si no se puede usar.
+     *
+     * @param name nombre del fichero de salida
+     * @return la ruta completa, o {@code null} si no se puede usar o el usuario no quiere reemplazar
      */
     protected Path resolveOutputPath(String name) {
         String problem = FileNameValidator.validate(name);
@@ -320,14 +364,22 @@ public abstract class FileOperationController {
         return output;
     }
 
-    /** Copia la contraseña y la borra del campo: no se queda escrita en la ventana. */
+    /**
+     * Copia la contraseña y la borra del campo: no se queda escrita en la ventana.
+     *
+     * @return la contraseña como array de caracteres (se puede borrar después, a diferencia de un String)
+     */
     protected char[] takePassword() {
         char[] password = passwordField.getText().toCharArray();
         passwordField.clear();
         return password;
     }
 
-    /** Bloquea (o desbloquea) los controles para que no se cambie nada durante la operación. */
+    /**
+     * Bloquea (o desbloquea) los controles para que no se cambie nada durante la operación.
+     *
+     * @param disabled {@code true} para bloquear, {@code false} para desbloquear
+     */
     private void setControlsDisabled(boolean disabled) {
         selectButton.setDisable(disabled);
         runButton.setDisable(disabled);
@@ -338,18 +390,32 @@ public abstract class FileOperationController {
         outputFolderButton.setDisable(disabled);
     }
 
-    /** "hogwarts.png" -> "hogwarts", como indica la propuesta técnica (apartado 6.2). */
+    /**
+     * "hogwarts.png" -> "hogwarts", como indica la propuesta técnica (apartado 6.2).
+     *
+     * @param fileName nombre del fichero
+     * @return el nombre sin la última extensión
+     */
     protected static String withoutExtension(String fileName) {
         int dot = fileName.lastIndexOf('.');
         return dot > 0 ? fileName.substring(0, dot) : fileName;
     }
 
-    /** Ventana principal: los diálogos se abren encima de ella. */
+    /**
+     * Ventana principal: los diálogos se abren encima de ella.
+     *
+     * @return la ventana que contiene esta pantalla
+     */
     protected Window getWindow() {
         return inputFileLabel.getScene().getWindow();
     }
 
-    /** Muestra la ventana de error con el título y el mensaje dados. */
+    /**
+     * Muestra la ventana de error con el título y el mensaje dados.
+     *
+     * @param title título del error
+     * @param message explicación para el usuario
+     */
     protected void showError(String title, String message) {
         ResultDialog.error(getWindow(), title, message);
     }

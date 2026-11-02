@@ -10,6 +10,10 @@ import java.util.Locale;
 /** Pantalla Ajustes: de momento, el idioma de la aplicación. */
 public class SettingsController {
 
+    /** FXMLLoader crea el controlador al cargar settings-view.fxml. */
+    public SettingsController() {
+    }
+
     /** Desplegable con los idiomas disponibles (español, inglés y euskera). */
     @FXML
     private ComboBox<Locale> languageBox;

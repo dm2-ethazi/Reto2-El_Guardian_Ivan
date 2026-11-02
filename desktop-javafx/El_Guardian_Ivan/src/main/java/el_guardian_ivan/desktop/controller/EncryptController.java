@@ -12,6 +12,10 @@ import java.util.Locale;
 /** Pantalla Cifrar: fichero de entrada + contraseña -> contenedor .hgw. */
 public class EncryptController extends FileOperationController {
 
+    /** FXMLLoader crea el controlador al cargar encrypt-view.fxml. */
+    public EncryptController() {
+    }
+
     /** Nombre propuesto para el resultado: "foto.png" pasa a "foto.hgw". */
     @Override
     protected String suggestOutputName(String inputName) {

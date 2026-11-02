@@ -20,17 +20,28 @@ public final class FileTypeDetector {
     private static final int SAMPLE_SIZE = 4096;
 
     // Firmas con las que empiezan siempre estos formatos
+    /** PNG: 89 "PNG" y los bytes de control CR LF SUB LF. */
     private static final byte[] PNG = {(byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n'};
+    /** JPEG: FF D8 FF. */
     private static final byte[] JPG = {(byte) 0xFF, (byte) 0xD8, (byte) 0xFF};
+    /** GIF: "GIF8" (versiones 87a y 89a). */
     private static final byte[] GIF = {'G', 'I', 'F', '8'};
+    /** PDF: "%PDF-". */
     private static final byte[] PDF = {'%', 'P', 'D', 'F', '-'};
+    /** ZIP (también .docx, .xlsx, .jar...): "PK" 03 04. */
     private static final byte[] ZIP = {'P', 'K', 0x03, 0x04};
 
     /** Clase de utilidades: no se crean objetos. */
     private FileTypeDetector() {
     }
 
-    /** Devuelve la extensión sin punto: "png", "jpg", "gif", "pdf", "zip", "txt" o "bin". */
+    /**
+     * Devuelve la extensión sin punto: "png", "jpg", "gif", "pdf", "zip", "txt" o "bin".
+     *
+     * @param file fichero que se analiza
+     * @return la extensión deducida
+     * @throws IOException si no se puede leer el fichero
+     */
     public static String detectExtension(Path file) throws IOException {
         byte[] sample;
         try (InputStream in = Files.newInputStream(file)) {
@@ -48,6 +59,11 @@ public final class FileTypeDetector {
     /**
      * Si {@code file} no tiene extensión, le pone {@code preferredExtension}; si esta viene vacía,
      * la deduce del contenido. Devuelve la ruta final.
+     *
+     * @param file fichero recién descifrado
+     * @param preferredExtension extensión guardada en el .hgw, o vacía
+     * @return la ruta final (la misma si no se ha renombrado)
+     * @throws IOException si no se puede leer o renombrar el fichero
      */
     public static Path addExtensionIfMissing(Path file, String preferredExtension) throws IOException {
         String name = file.getFileName().toString();
@@ -64,12 +80,23 @@ public final class FileTypeDetector {
         return Files.move(file, target);
     }
 
-    /** Si {@code data} empieza por los bytes de {@code prefix}. */
+    /**
+     * Si {@code data} empieza por los bytes de {@code prefix}.
+     *
+     * @param data bytes del fichero
+     * @param prefix firma que se busca
+     * @return {@code true} si coinciden los primeros bytes
+     */
     private static boolean startsWith(byte[] data, byte[] prefix) {
         return data.length >= prefix.length && Arrays.equals(data, 0, prefix.length, prefix, 0, prefix.length);
     }
 
-    /** Es texto si no tiene bytes nulos y los bytes forman UTF-8 válido (que incluye el ASCII). */
+    /**
+     * Es texto si no tiene bytes nulos y los bytes forman UTF-8 válido (que incluye el ASCII).
+     *
+     * @param sample primeros bytes del fichero
+     * @return {@code true} si parece texto
+     */
     private static boolean looksLikeText(byte[] sample) {
         if (sample.length == 0) {
             return true; // Un fichero vacío lo tratamos como texto
@@ -90,7 +117,12 @@ public final class FileTypeDetector {
         }
     }
 
-    /** La muestra puede cortar un carácter UTF-8 por la mitad al final: lo descartamos. */
+    /**
+     * La muestra puede cortar un carácter UTF-8 por la mitad al final: lo descartamos.
+     *
+     * @param sample bytes leídos
+     * @return cuántos bytes usar para no partir el último carácter
+     */
     static int trimIncompleteUtf8(byte[] sample) {
         int end = sample.length;
         int i = end - 1;

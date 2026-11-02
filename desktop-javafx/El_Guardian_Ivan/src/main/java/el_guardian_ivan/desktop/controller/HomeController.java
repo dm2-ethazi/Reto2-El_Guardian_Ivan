@@ -7,6 +7,10 @@ import javafx.fxml.FXML;
 
 /** Pantalla de inicio: dos accesos directos a Cifrar y Descifrar. */
 public class HomeController implements NavigationAware {
+
+    /** FXMLLoader crea el controlador al cargar home-view.fxml. */
+    public HomeController() {
+    }
     /** Quien cambia de pantalla (MainController); lo recibe al cargar esta vista. */
     private Navigator navigator;
 

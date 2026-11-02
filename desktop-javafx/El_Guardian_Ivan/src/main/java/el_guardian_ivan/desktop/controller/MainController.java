@@ -30,6 +30,10 @@ import java.util.Map;
  * haya escrito al cambiar de sección.
  */
 public class MainController implements Navigator {
+
+    /** FXMLLoader crea el controlador al cargar main-view.fxml. */
+    public MainController() {
+    }
     /** Zona central donde se coloca la pantalla elegida. */
     @FXML
     private StackPane contentArea;
@@ -40,18 +44,23 @@ public class MainController implements Navigator {
     private ToggleGroup navigationGroup;
 
     // Botones del menú lateral, uno por pantalla
+    /** Botón Inicio. */
     @FXML
     private ToggleButton homeButton;
 
+    /** Botón Cifrar. */
     @FXML
     private ToggleButton encryptButton;
 
+    /** Botón Descifrar. */
     @FXML
     private ToggleButton decryptButton;
 
+    /** Botón Ajustes. */
     @FXML
     private ToggleButton settingsButton;
 
+    /** Botón Ayuda (abajo del todo). */
     @FXML
     private ToggleButton helpButton;
 
@@ -86,7 +95,11 @@ public class MainController implements Navigator {
         });
     }
 
-    /** Ctrl+1..4 cambia de sección y Ctrl+O abre el selector de archivo de la pantalla actual. */
+    /**
+     * Ctrl+1..4 cambia de sección y Ctrl+O abre el selector de archivo de la pantalla actual.
+     *
+     * @param accelerators atajos de la escena, donde se añaden los nuevos
+     */
     private void registerShortcuts(Map<KeyCombination, Runnable> accelerators) {
         ToggleButton[] sections = {homeButton, encryptButton, decryptButton, settingsButton};
         KeyCode[] digits = {KeyCode.DIGIT1, KeyCode.DIGIT2, KeyCode.DIGIT3, KeyCode.DIGIT4};
@@ -125,10 +138,21 @@ public class MainController implements Navigator {
                 .ifPresent(toggle -> toggle.setSelected(true)); // El listener muestra la pantalla
     }
 
+    /**
+     * Pone en la zona central la pantalla indicada (cargándola si es la primera vez).
+     *
+     * @param view pantalla que se muestra
+     */
     private void show(View view) {
         contentArea.getChildren().setAll(loadedViews.computeIfAbsent(view, this::load));
     }
 
+    /**
+     * Carga el FXML de una pantalla en el idioma actual.
+     *
+     * @param view pantalla que se carga
+     * @return la pantalla ya metida en su panel con desplazamiento
+     */
     private Parent load(View view) {
         FXMLLoader loader = new FXMLLoader(MainController.class.getResource(view.fxml()), I18n.bundle());
         try {
@@ -146,6 +170,9 @@ public class MainController implements Navigator {
     /**
      * Si la ventana es más pequeña que la pantalla, aparece una barra de desplazamiento en lugar
      * de cortar el contenido. El StackPane centra las pantallas que tienen un ancho máximo.
+     *
+     * @param view pantalla que se envuelve
+     * @return el panel con desplazamiento que contiene la pantalla
      */
     private static Parent scrollable(Parent view) {
         StackPane centered = new StackPane(view);

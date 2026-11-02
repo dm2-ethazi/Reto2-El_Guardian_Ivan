@@ -14,7 +14,12 @@ public final class FileLocationOpener {
     private FileLocationOpener() {
     }
 
-    /** Abre la carpeta de {@code file}; lanza IOException si el sistema no puede abrirla. */
+    /**
+     * Abre la carpeta de {@code file}; lanza IOException si el sistema no puede abrirla.
+     *
+     * @param file fichero cuya carpeta se abre
+     * @throws IOException si no se puede lanzar el explorador
+     */
     public static void reveal(Path file) throws IOException {
         Path absolute = file.toAbsolutePath();
         // Cada sistema tiene su propio comando para abrir el explorador

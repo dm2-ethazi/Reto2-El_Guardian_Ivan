@@ -78,6 +78,34 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--
+                Documentación Javadoc en HTML: mvn javadoc:javadoc
+                Se genera en target/reports/apidocs (abrir index.html).
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.11.2</version>
+                <configuration>
+                    <!-- Incluye también métodos y campos privados: sirve para entender todo el código -->
+                    <show>private</show>
+                    <!--
+                        Documenta el módulo entero con todos sus paquetes, no solo el que exporta
+                        module-info (que coincide en nombre con el módulo).
+                    -->
+                    <additionalOptions>
+                        <additionalOption>--show-packages=all</additionalOption>
+                        <additionalOption>--module el_guardian_ivan.desktop</additionalOption>
+                    </additionalOptions>
+                    <encoding>UTF-8</encoding>
+                    <docencoding>UTF-8</docencoding>
+                    <charset>UTF-8</charset>
+                    <locale>es_ES</locale>
+                    <doctitle>El Guardián Iván ${project.version} - Documentación del código</doctitle>
+                    <windowtitle>El Guardián Iván - Javadoc</windowtitle>
+                    <bottom>Reto 2 - Iván Alonso e Iván Salazar</bottom>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>

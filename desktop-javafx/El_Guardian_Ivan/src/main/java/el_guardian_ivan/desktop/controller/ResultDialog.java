@@ -41,16 +41,33 @@ import java.nio.file.Path;
  */
 public class ResultDialog {
 
+    /** FXMLLoader crea el controlador al cargar result-dialog.fxml; desde fuera se usan los métodos estáticos. */
+    public ResultDialog() {
+    }
+
     /** Los tres tipos de ventana: cada uno con su clase CSS, su icono y su título para el lector de pantalla. */
     private enum Kind {
+        /** Operación terminada bien: check verde. */
         SUCCESS("dialog-success", "icon-check-circle", "dialog.success"),
+        /** Algo ha fallado: aviso rojo. */
         ERROR("dialog-error", "icon-error", "dialog.error"),
+        /** Pregunta antes de seguir: interrogación. */
         CONFIRM("dialog-confirm", "icon-help", "dialog.confirm");
 
+        /** Clase CSS del diálogo (color del icono). */
         private final String styleClass;
+        /** Clase CSS con la forma del icono. */
         private final String iconClass;
+        /** Clave del texto que precede al título de la ventana. */
         private final String windowTitleKey;
 
+        /**
+         * Crea un tipo con su estilo, su icono y su título.
+         *
+         * @param styleClass clase CSS del diálogo
+         * @param iconClass clase CSS del icono
+         * @param windowTitleKey clave del prefijo del título de la ventana
+         */
         Kind(String styleClass, String iconClass, String windowTitleKey) {
             this.styleClass = styleClass;
             this.iconClass = iconClass;
@@ -64,9 +81,11 @@ public class ResultDialog {
     @FXML
     private Region icon;
 
+    /** Título en grande, por ejemplo "Archivo cifrado correctamente". */
     @FXML
     private Label titleLabel;
 
+    /** Explicación bajo el título. */
     @FXML
     private Label messageLabel;
 
@@ -82,12 +101,15 @@ public class ResultDialog {
     @FXML
     private HBox fileBox;
 
+    /** Nombre del fichero resultante. */
     @FXML
     private Label fileNameLabel;
 
+    /** Tamaño del fichero resultante. */
     @FXML
     private Label fileSizeLabel;
 
+    /** Carpeta donde ha quedado ("Ubicación: ..."). */
     @FXML
     private Label filePathLabel;
 
@@ -105,6 +127,7 @@ public class ResultDialog {
 
     /** Tamaño máximo de la vista previa, en píxeles de diseño (antes de escalar). */
     private static final int PREVIEW_WIDTH = 480;
+    /** Alto máximo de la vista previa. */
     private static final int PREVIEW_HEIGHT = 220;
 
     /** Ventana propia del diálogo. */
@@ -114,12 +137,27 @@ public class ResultDialog {
     /** En confirmación: si el usuario pulsó el botón de aceptar. */
     private boolean confirmed;
 
-    /** Operación terminada: muestra el fichero resultante y permite abrir su carpeta. */
+    /**
+     * Operación terminada: muestra el fichero resultante y permite abrir su carpeta.
+     *
+     * @param owner ventana sobre la que se abre
+     * @param title título del aviso
+     * @param message mensaje del aviso
+     * @param file fichero creado
+     */
     public static void success(Window owner, String title, String message, Path file) {
         success(owner, title, message, file, false);
     }
 
-    /** Como {@link #success(Window, String, String, Path)}; con {@code preview} enseña la imagen o el texto. */
+    /**
+     * Como {@link #success(Window, String, String, Path)}; con {@code preview} enseña la imagen o el texto.
+     *
+     * @param owner ventana sobre la que se abre
+     * @param title título del aviso
+     * @param message mensaje del aviso
+     * @param file fichero creado
+     * @param preview si se intenta enseñar la imagen o el texto del fichero
+     */
     public static void success(Window owner, String title, String message, Path file, boolean preview) {
         ResultDialog dialog = create(owner, Kind.SUCCESS, title, message);
         dialog.showFile(file);
@@ -131,14 +169,28 @@ public class ResultDialog {
         dialog.showAndWait();
     }
 
-    /** Algo ha fallado: icono rojo, mensaje y solo el botón Cerrar. */
+    /**
+     * Algo ha fallado: icono rojo, mensaje y solo el botón Cerrar.
+     *
+     * @param owner ventana sobre la que se abre
+     * @param title título del error
+     * @param message explicación del error
+     */
     public static void error(Window owner, String title, String message) {
         ResultDialog dialog = create(owner, Kind.ERROR, title, message);
         dialog.hidePrimaryButton();
         dialog.showAndWait();
     }
 
-    /** Pregunta antes de una acción; devuelve {@code true} solo si se pulsa el botón de confirmar. */
+    /**
+     * Pregunta antes de una acción; devuelve {@code true} solo si se pulsa el botón de confirmar.
+     *
+     * @param owner ventana sobre la que se abre
+     * @param title título de la pregunta
+     * @param message la pregunta
+     * @param confirmText texto del botón de aceptar, por ejemplo "Reemplazar"
+     * @return {@code true} si el usuario acepta; {@code false} si cancela o cierra
+     */
     public static boolean confirm(Window owner, String title, String message, String confirmText) {
         ResultDialog dialog = create(owner, Kind.CONFIRM, title, message);
         dialog.primaryButton.setText(confirmText);
@@ -152,7 +204,15 @@ public class ResultDialog {
         return dialog.confirmed;
     }
 
-    /** Carga el FXML del diálogo, lo rellena según el tipo y prepara su ventana (aún sin mostrarla). */
+    /**
+     * Carga el FXML del diálogo, lo rellena según el tipo y prepara su ventana (aún sin mostrarla).
+     *
+     * @param owner ventana sobre la que se abrirá
+     * @param kind tipo de diálogo
+     * @param title título
+     * @param message mensaje
+     * @return el controlador del diálogo, listo para completarlo y mostrarlo
+     */
     private static ResultDialog create(Window owner, Kind kind, String title, String message) {
         FXMLLoader loader = new FXMLLoader(ResultDialog.class.getResource("/el_guardian_ivan/desktop/views/result-dialog.fxml"),
                 I18n.bundle());
@@ -206,7 +266,11 @@ public class ResultDialog {
         stage.close();
     }
 
-    /** Rellena el recuadro del fichero resultante: nombre, tamaño y carpeta. */
+    /**
+     * Rellena el recuadro del fichero resultante: nombre, tamaño y carpeta.
+     *
+     * @param file fichero resultante
+     */
     private void showFile(Path file) {
         this.file = file;
         fileNameLabel.setText(file.getFileName().toString());
@@ -221,7 +285,11 @@ public class ResultDialog {
         fileBox.setManaged(true);
     }
 
-    /** Muestra la imagen o el texto descifrado; si no es ninguno de los dos (o falla), no enseña nada. */
+    /**
+     * Muestra la imagen o el texto descifrado; si no es ninguno de los dos (o falla), no enseña nada.
+     *
+     * @param file fichero descifrado
+     */
     private void showPreview(Path file) {
         Node content;
         try {
@@ -242,7 +310,12 @@ public class ResultDialog {
         dialogBox.setPrefWidth(PREVIEW_WIDTH + 80); // Ventana más ancha para que la vista previa luzca
     }
 
-    /** Imagen reducida dentro de un marco, sin deformarla. */
+    /**
+     * Imagen reducida dentro de un marco, sin deformarla.
+     *
+     * @param file imagen que se muestra
+     * @return el marco con la imagen
+     */
     private Node imagePreview(Path file) {
         // Se decodifica ya reducida y en segundo plano: una foto enorme no bloquea ni llena la memoria
         Image image = new Image(file.toUri().toString(), PREVIEW_WIDTH * 2, PREVIEW_HEIGHT * 2, true, true, true);
@@ -267,7 +340,13 @@ public class ResultDialog {
         return frame;
     }
 
-    /** Texto en un cuadro de solo lectura; si el fichero es muy largo, se avisa de que está recortado. */
+    /**
+     * Texto en un cuadro de solo lectura; si el fichero es muy largo, se avisa de que está recortado.
+     *
+     * @param file fichero de texto
+     * @return el cuadro de texto (y el aviso de recorte si hace falta)
+     * @throws IOException si no se puede leer el fichero
+     */
     private Node textPreview(Path file) throws IOException {
         FilePreview.Text text = FilePreview.readText(file, FilePreview.MAX_TEXT_BYTES);
         TextArea area = new TextArea(text.content());

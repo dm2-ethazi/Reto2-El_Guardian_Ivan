@@ -12,6 +12,10 @@ import java.util.Arrays;
 /** Pantalla Descifrar: contenedor .hgw + contraseña -> fichero original. */
 public class DecryptController extends FileOperationController {
 
+    /** FXMLLoader crea el controlador al cargar decrypt-view.fxml. */
+    public DecryptController() {
+    }
+
     /** Sin extensión: si el usuario no escribe una, se usa la original guardada (cifrada) en el .hgw. */
     @Override
     protected String suggestOutputName(String inputName) {

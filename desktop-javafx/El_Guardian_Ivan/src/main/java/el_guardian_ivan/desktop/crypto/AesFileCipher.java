@@ -83,7 +83,11 @@ public final class AesFileCipher {
         this(DEFAULT_CHUNK_SIZE);
     }
 
-    /** Para los tests: permite usar trozos pequeños y probar varios trozos con ficheros pequeños. */
+    /**
+     * Para los tests: permite usar trozos pequeños y probar varios trozos con ficheros pequeños.
+     *
+     * @param chunkSize tamaño de trozo en bytes
+     */
     AesFileCipher(int chunkSize) {
         this.chunkSize = chunkSize;
     }
@@ -92,12 +96,27 @@ public final class AesFileCipher {
      * Cifra {@code input} y escribe el contenedor en {@code output}.
      * Primero escribe en un fichero temporal junto a la salida y solo al terminar bien
      * lo mueve a su sitio, para no dejar ficheros a medias. El original no se modifica.
+     *
+     * @param input fichero original
+     * @param output fichero .hgw que se crea (si existe, se reemplaza)
+     * @param password contraseña; no se guarda en ningún sitio
+     * @throws IOException si no se puede leer la entrada o escribir la salida
+     * @throws GeneralSecurityException si falla el cifrado
      */
     public void encrypt(Path input, Path output, char[] password) throws IOException, GeneralSecurityException {
         encrypt(input, output, password, ProgressListener.NONE);
     }
 
-    /** Igual que {@link #encrypt(Path, Path, char[])}, avisando del progreso a {@code progress}. */
+    /**
+     * Igual que {@link #encrypt(Path, Path, char[])}, avisando del progreso a {@code progress}.
+     *
+     * @param input fichero original
+     * @param output fichero .hgw que se crea
+     * @param password contraseña
+     * @param progress a quién se avisa del progreso
+     * @throws IOException si no se puede leer la entrada o escribir la salida
+     * @throws GeneralSecurityException si falla el cifrado
+     */
     public void encrypt(Path input, Path output, char[] password, ProgressListener progress)
             throws IOException, GeneralSecurityException {
         checkArguments(input, output, password);
@@ -126,12 +145,28 @@ public final class AesFileCipher {
      * {@link javax.crypto.AEADBadTagException} y no se publica ninguna salida.
      *
      * @return la extensión original sin punto (por ejemplo "ova"), o "" si no tenía
+     *
+     * @param input fichero .hgw
+     * @param output fichero que se recupera
+     * @param password contraseña usada al cifrar
+     * @throws IOException si el fichero no es un .hgw válido o no se puede leer o escribir
+     * @throws GeneralSecurityException si la contraseña es incorrecta o el fichero está alterado
      */
     public String decrypt(Path input, Path output, char[] password) throws IOException, GeneralSecurityException {
         return decrypt(input, output, password, ProgressListener.NONE);
     }
 
-    /** Igual que {@link #decrypt(Path, Path, char[])}, avisando del progreso a {@code progress}. */
+    /**
+     * Igual que {@link #decrypt(Path, Path, char[])}, avisando del progreso a {@code progress}.
+     *
+     * @param input fichero .hgw
+     * @param output fichero que se recupera
+     * @param password contraseña usada al cifrar
+     * @param progress a quién se avisa del progreso
+     * @return la extensión original sin punto, o "" si no tenía
+     * @throws IOException si el fichero no es un .hgw válido o no se puede leer o escribir
+     * @throws GeneralSecurityException si la contraseña es incorrecta o el fichero está alterado
+     */
     public String decrypt(Path input, Path output, char[] password, ProgressListener progress)
             throws IOException, GeneralSecurityException {
         checkArguments(input, output, password);
@@ -155,7 +190,18 @@ public final class AesFileCipher {
         return stripper[0].extension();
     }
 
-    /** Escribe la cabecera y luego cifra la entrada trozo a trozo hasta el último (incompleto). */
+    /**
+     * Escribe la cabecera y luego cifra la entrada trozo a trozo hasta el último (incompleto).
+     *
+     * @param in contenido que se cifra (extensión + fichero)
+     * @param out donde se escribe el .hgw
+     * @param key clave AES derivada de la contraseña
+     * @param header cabecera ya construida
+     * @param nonce nonce base
+     * @param chunkSize tamaño de trozo
+     * @throws IOException si falla la lectura o la escritura
+     * @throws GeneralSecurityException si falla el cifrado
+     */
     private static void encryptChunks(InputStream in, OutputStream out, SecretKey key, byte[] header,
                                       byte[] nonce, int chunkSize) throws IOException, GeneralSecurityException {
         out.write(header);
@@ -172,7 +218,18 @@ public final class AesFileCipher {
         }
     }
 
-    /** Descifra trozo a trozo; cada trozo cifrado ocupa su tamaño más los 16 bytes de la etiqueta. */
+    /**
+     * Descifra trozo a trozo; cada trozo cifrado ocupa su tamaño más los 16 bytes de la etiqueta.
+     *
+     * @param in contenido del .hgw a partir de la cabecera
+     * @param out donde se escribe lo descifrado
+     * @param key clave AES derivada de la contraseña
+     * @param header cabecera leída del fichero
+     * @param nonce nonce base
+     * @param chunkSize tamaño de trozo indicado en la cabecera
+     * @throws IOException si falla la lectura o la escritura
+     * @throws GeneralSecurityException si algún trozo no se puede verificar
+     */
     private static void decryptChunks(InputStream in, OutputStream out, SecretKey key, byte[] header,
                                       byte[] nonce, int chunkSize) throws IOException, GeneralSecurityException {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
@@ -191,6 +248,11 @@ public final class AesFileCipher {
     /**
      * Nonce del trozo {@code index}: el base con sus 4 últimos bytes mezclados (XOR) con el número
      * de trozo. Así cada trozo usa un nonce distinto, que es obligatorio en GCM.
+     *
+     * @param baseNonce nonce base de la cabecera
+     * @param index número de trozo, empezando en 0
+     * @return el nonce de ese trozo
+     * @throws IOException si el fichero tiene más trozos de los que admite el formato
      */
     private static byte[] chunkNonce(byte[] baseNonce, long index) throws IOException {
         // Con 4 bytes de contador caben 2^32 trozos (unos 4 PB con trozos de 1 MB)
@@ -208,6 +270,11 @@ public final class AesFileCipher {
     /**
      * Datos autenticados (no cifrados) del trozo: cabecera + número de trozo + marca de último.
      * Si alguien cambia la cabecera, reordena trozos o corta el fichero, la etiqueta no cuadra.
+     *
+     * @param header cabecera completa
+     * @param index número de trozo
+     * @param last si es el último trozo
+     * @return los bytes que GCM autentica junto al trozo
      */
     private static byte[] chunkAad(byte[] header, long index, boolean last) {
         return ByteBuffer.allocate(header.length + 8 + 1)
@@ -223,16 +290,31 @@ public final class AesFileCipher {
         /** Para cuando no interesa el progreso. */
         ProgressListener NONE = (done, total) -> { };
 
-        /** {@code done} bytes procesados de {@code total}. */
+        /**
+         * {@code done} bytes procesados de {@code total}.
+         *
+         * @param done bytes procesados hasta ahora
+         * @param total bytes totales
+         */
         void onProgress(long done, long total);
     }
 
     /** Cuenta los bytes que se leen del fichero de entrada para informar del progreso. */
     private static final class ProgressInputStream extends FilterInputStream {
+        /** Tamaño total del fichero, en bytes. */
         private final long total;
+        /** A quién se avisa del progreso. */
         private final ProgressListener progress;
+        /** Bytes leídos hasta ahora. */
         private long done;
 
+        /**
+         * Envuelve {@code in} para contar lo que se lee.
+         *
+         * @param in flujo original
+         * @param total tamaño total
+         * @param progress a quién se avisa
+         */
         ProgressInputStream(InputStream in, long total, ProgressListener progress) {
             super(in);
             this.total = total;
@@ -258,13 +340,23 @@ public final class AesFileCipher {
             return read;
         }
 
+        /**
+         * Suma los bytes leídos y avisa del progreso.
+         *
+         * @param bytes bytes recién leídos
+         */
         private void advance(long bytes) {
             done += bytes;
             progress.onProgress(done, total);
         }
     }
 
-    /** Prepara el prefijo con la extensión: longitud (1 byte) + extensión en UTF-8. */
+    /**
+     * Prepara el prefijo con la extensión: longitud (1 byte) + extensión en UTF-8.
+     *
+     * @param input fichero original
+     * @return el prefijo: 1 byte de longitud y la extensión
+     */
     private static byte[] buildMetadata(Path input) {
         String name = input.getFileName().toString();
         int dot = name.lastIndexOf('.');
@@ -284,9 +376,16 @@ public final class AesFileCipher {
      * y deja pasar al fichero solo los bytes originales.
      */
     private static final class MetadataStrippingOutputStream extends FilterOutputStream {
+        /** Longitud de la extensión; -1 hasta que llega el primer byte. */
         private int extensionLength = -1; // -1: todavía no hemos leído el byte de longitud
+        /** Bytes de la extensión que van llegando. */
         private final ByteArrayOutputStream extension = new ByteArrayOutputStream();
 
+        /**
+         * Envuelve {@code out}, el fichero de salida.
+         *
+         * @param out flujo donde acaba el contenido original
+         */
         MetadataStrippingOutputStream(OutputStream out) {
             super(out);
         }
@@ -311,21 +410,36 @@ public final class AesFileCipher {
             out.write(b, off + toExtension, len - toExtension);
         }
 
-        /** Comprueba que al menos ha llegado la extensión entera. */
+        /**
+         * Comprueba que al menos ha llegado la extensión entera.
+         *
+         * @throws IOException si el contenido acabó antes de completar la extensión
+         */
         void checkComplete() throws IOException {
             if (extensionLength < 0 || extension.size() < extensionLength) {
                 throw new IOException(I18n.get("cipher.incomplete"));
             }
         }
 
-        /** Extensión original sin punto; vacía si no era segura. */
+        /**
+         * Extensión original sin punto; vacía si no era segura.
+         *
+         * @return la extensión, por ejemplo "png"
+         */
         String extension() {
             String ext = extension.toString(StandardCharsets.UTF_8);
             return SAFE_EXTENSION.matcher(ext).matches() ? ext : "";
         }
     }
 
-    /** Rechaza contraseña vacía y que entrada y salida sean el mismo fichero (se destruiría). */
+    /**
+     * Rechaza contraseña vacía y que entrada y salida sean el mismo fichero (se destruiría).
+     *
+     * @param input fichero de entrada
+     * @param output fichero de salida
+     * @param password contraseña
+     * @throws IOException si no se puede comprobar si son el mismo fichero
+     */
     private static void checkArguments(Path input, Path output, char[] password) throws IOException {
         if (password == null || password.length == 0) {
             throw new IllegalArgumentException(I18n.get("cipher.emptyPassword"));
@@ -335,7 +449,13 @@ public final class AesFileCipher {
         }
     }
 
-    /** Valida la cabecera y devuelve el tamaño de trozo. */
+    /**
+     * Valida la cabecera y devuelve el tamaño de trozo.
+     *
+     * @param header bytes leídos al principio del fichero
+     * @return el tamaño de trozo
+     * @throws IOException si no es un .hgw, es de otra versión o el tamaño de trozo no es válido
+     */
     private static int checkHeader(byte[] header) throws IOException {
         if (header.length < HEADER_LENGTH
                 || !Arrays.equals(Arrays.copyOf(header, MAGIC.length), MAGIC)) {
@@ -352,7 +472,14 @@ public final class AesFileCipher {
         return chunkSize;
     }
 
-    /** Escribe en un temporal junto a {@code output} y solo lo mueve a su sitio si todo ha ido bien. */
+    /**
+     * Escribe en un temporal junto a {@code output} y solo lo mueve a su sitio si todo ha ido bien.
+     *
+     * @param output fichero final
+     * @param writer lo que se escribe
+     * @throws IOException si falla la escritura o el movimiento final
+     * @throws GeneralSecurityException si falla el cifrado o descifrado
+     */
     private static void writeAtomically(Path output, StreamWriter writer) throws IOException, GeneralSecurityException {
         Path parent = output.toAbsolutePath().getParent();
         // En la misma carpeta, para que el movimiento final sea un simple cambio de nombre
@@ -374,10 +501,24 @@ public final class AesFileCipher {
     /** Lo que se escribe dentro del temporal (cifrado o descifrado). */
     @FunctionalInterface
     private interface StreamWriter {
+        /**
+         * Escribe el contenido en {@code out}.
+         *
+         * @param out flujo del fichero temporal
+         * @throws IOException si falla la escritura
+         * @throws GeneralSecurityException si falla el cifrado o descifrado
+         */
         void write(OutputStream out) throws IOException, GeneralSecurityException;
     }
 
-    /** Convierte contraseña + sal en una clave AES de 256 bits con PBKDF2-HMAC-SHA256. */
+    /**
+     * Convierte contraseña + sal en una clave AES de 256 bits con PBKDF2-HMAC-SHA256.
+     *
+     * @param password contraseña
+     * @param salt sal aleatoria del fichero
+     * @return la clave AES-256
+     * @throws GeneralSecurityException si el sistema no tiene PBKDF2
+     */
     static SecretKey deriveKey(char[] password, byte[] salt) throws GeneralSecurityException {
         PBEKeySpec spec = new PBEKeySpec(password, salt, PBKDF2_ITERATIONS, KEY_LENGTH_BITS);
         try {
@@ -388,7 +529,14 @@ public final class AesFileCipher {
         }
     }
 
-    /** Monta los 37 bytes de la cabecera en el orden del formato. */
+    /**
+     * Monta los 37 bytes de la cabecera en el orden del formato.
+     *
+     * @param salt sal
+     * @param nonce nonce base
+     * @param chunkSize tamaño de trozo
+     * @return la cabecera de 37 bytes
+     */
     private static byte[] buildHeader(byte[] salt, byte[] nonce, int chunkSize) {
         return ByteBuffer.allocate(HEADER_LENGTH)
                 .put(MAGIC)
@@ -399,7 +547,12 @@ public final class AesFileCipher {
                 .array();
     }
 
-    /** {@code length} bytes aleatorios seguros. */
+    /**
+     * {@code length} bytes aleatorios seguros.
+     *
+     * @param length cuántos bytes
+     * @return los bytes aleatorios
+     */
     private byte[] randomBytes(int length) {
         byte[] bytes = new byte[length];
         random.nextBytes(bytes);
