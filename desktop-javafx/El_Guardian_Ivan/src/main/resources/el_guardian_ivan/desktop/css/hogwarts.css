@@ -287,6 +287,13 @@
     -fx-max-height: 22px;
 }
 
+/* Rutas completas: si no caben se recorta el principio, que es lo menos importante */
+.path-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: -carbon;
+    -fx-text-overrun: leading-ellipsis;
+}
+
 .form-actions {
     -fx-padding: 8 0 0 0;
 }
@@ -323,8 +330,9 @@
     -fx-background-color: -pergamino;
 }
 
-.button.icon-button {
-    -fx-padding: 8 12 8 12;
+/* Botón de la carpeta del paso 3: icono y texto, para que se entienda qué hace */
+.button.folder-button {
+    -fx-graphic-text-gap: 8;
 }
 
 /* Botón principal (Cifrar / Descifrar): burdeos con el candado en oro */
@@ -488,4 +496,33 @@
 
 .dialog-buttons .button {
     -fx-padding: 10 18 10 18;
+}
+
+/* ---------- Desplegable (selector de idioma) ---------- */
+
+.combo-box {
+    -fx-background-color: derive(-pergamino, 60%);
+    -fx-background-radius: 6;
+    -fx-border-color: -oro-antiguo;
+    -fx-border-radius: 6;
+    -fx-padding: 3 4 3 4;
+}
+
+.combo-box:focused {
+    -fx-border-color: -azul-noche;
+    -fx-border-width: 2;
+}
+
+.combo-box .arrow {
+    -fx-background-color: -azul-noche;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: derive(-pergamino, 60%);
+    -fx-border-color: -oro-antiguo;
+}
+
+.combo-box-popup .list-cell:filled:selected, .combo-box-popup .list-cell:filled:hover {
+    -fx-background-color: -azul-noche;
+    -fx-text-fill: -pergamino;
 }

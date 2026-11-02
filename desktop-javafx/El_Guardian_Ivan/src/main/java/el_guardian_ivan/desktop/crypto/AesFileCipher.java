@@ -1,5 +1,6 @@
 package el_guardian_ivan.desktop.crypto;
 
+import el_guardian_ivan.desktop.i18n.I18n;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -170,7 +171,7 @@ public final class AesFileCipher {
 
     private static byte[] chunkNonce(byte[] baseNonce, long index) throws IOException {
         if (index > 0xFFFF_FFFFL) {
-            throw new IOException("El fichero es demasiado grande.");
+            throw new IOException(I18n.get("cipher.tooLarge"));
         }
         byte[] nonce = baseNonce.clone();
         int counter = (int) index;
@@ -279,7 +280,7 @@ public final class AesFileCipher {
 
         void checkComplete() throws IOException {
             if (extensionLength < 0 || extension.size() < extensionLength) {
-                throw new IOException("El fichero .hgw está incompleto.");
+                throw new IOException(I18n.get("cipher.incomplete"));
             }
         }
 
@@ -291,10 +292,10 @@ public final class AesFileCipher {
 
     private static void checkArguments(Path input, Path output, char[] password) throws IOException {
         if (password == null || password.length == 0) {
-            throw new IllegalArgumentException("La contraseña no puede estar vacía.");
+            throw new IllegalArgumentException(I18n.get("cipher.emptyPassword"));
         }
         if (Files.exists(output) && Files.isSameFile(input, output)) {
-            throw new IllegalArgumentException("El fichero de salida no puede ser el mismo que el de entrada.");
+            throw new IllegalArgumentException(I18n.get("cipher.sameFile"));
         }
     }
 
@@ -302,15 +303,15 @@ public final class AesFileCipher {
     private static int checkHeader(byte[] header) throws IOException {
         if (header.length < HEADER_LENGTH
                 || !Arrays.equals(Arrays.copyOf(header, MAGIC.length), MAGIC)) {
-            throw new IOException("El fichero no es un contenedor .hgw válido.");
+            throw new IOException(I18n.get("cipher.notHgw"));
         }
         byte version = header[MAGIC.length];
         if (version != VERSION) {
-            throw new IOException("Versión de contenedor .hgw no admitida: " + version);
+            throw new IOException(I18n.get("cipher.version", version));
         }
         int chunkSize = ByteBuffer.wrap(header, BASE_HEADER_LENGTH, 4).getInt();
         if (chunkSize <= 0 || chunkSize > MAX_CHUNK_SIZE) {
-            throw new IOException("El fichero .hgw tiene un tamaño de trozo no válido.");
+            throw new IOException(I18n.get("cipher.chunkSize"));
         }
         return chunkSize;
     }

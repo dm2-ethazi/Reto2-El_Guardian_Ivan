@@ -1,5 +1,6 @@
 package el_guardian_ivan.desktop.controller;
 
+import el_guardian_ivan.desktop.i18n.I18n;
 import el_guardian_ivan.desktop.navigation.NavigationAware;
 import el_guardian_ivan.desktop.navigation.Navigator;
 import el_guardian_ivan.desktop.navigation.View;
@@ -73,7 +74,7 @@ public class MainController implements Navigator {
     }
 
     private Parent load(View view) {
-        FXMLLoader loader = new FXMLLoader(MainController.class.getResource(view.fxml()));
+        FXMLLoader loader = new FXMLLoader(MainController.class.getResource(view.fxml()), I18n.bundle());
         try {
             Parent root = loader.load();
             if (loader.getController() instanceof NavigationAware aware) {

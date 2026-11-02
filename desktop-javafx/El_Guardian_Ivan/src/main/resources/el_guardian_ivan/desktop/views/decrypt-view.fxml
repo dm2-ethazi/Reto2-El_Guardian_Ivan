@@ -19,8 +19,8 @@
     <HBox styleClass="page-header" spacing="18.0" alignment="CENTER_LEFT">
         <Region styleClass="icon,header-icon,icon-lock-open"/>
         <VBox spacing="4.0" minWidth="0.0" HBox.hgrow="ALWAYS">
-            <Label text="Descifrar archivo" styleClass="title"/>
-            <Label text="Selecciona un archivo .hgw e introduce la contraseña para recuperarlo." wrapText="true" minHeight="-Infinity" styleClass="subtitle"/>
+            <Label text="%decrypt.title" styleClass="title"/>
+            <Label text="%decrypt.subtitle" wrapText="true" minHeight="-Infinity" styleClass="subtitle"/>
         </VBox>
     </HBox>
 
@@ -32,18 +32,20 @@
                 <Region styleClass="step-line" VBox.vgrow="ALWAYS"/>
             </VBox>
             <VBox styleClass="step-body" spacing="8.0" HBox.hgrow="ALWAYS">
-                <Label text="Seleccionar archivo .hgw" styleClass="step-label"/>
+                <Label text="%decrypt.step1" styleClass="step-label"/>
                 <HBox spacing="12.0" alignment="CENTER_LEFT">
                     <HBox styleClass="file-box" spacing="10.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
                         <Region styleClass="icon,icon-file"/>
-                        <Label fx:id="inputFileLabel" text="Ningún fichero seleccionado" styleClass="file-name"
+                        <Label fx:id="inputFileLabel" text="%form.noFile" styleClass="file-name"
                                maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
                         <Label fx:id="inputSizeLabel" styleClass="file-size"/>
                     </HBox>
-                    <Button fx:id="selectButton" text="Examinar..." styleClass="secondary"
+                    <Button fx:id="selectButton" text="%form.browse" styleClass="secondary"
                             onAction="#onSelectInputFile"/>
                 </HBox>
-                <Label text="Solo archivos cifrados con El Guardián Iván (.hgw)." wrapText="true" styleClass="hint"/>
+                <!-- Ruta completa del fichero elegido (se oculta mientras no hay ninguno) -->
+                <Label fx:id="inputPathLabel" styleClass="path-label" maxWidth="Infinity"/>
+                <Label text="%decrypt.hint1" wrapText="true" styleClass="hint"/>
             </VBox>
         </HBox>
 
@@ -54,15 +56,15 @@
                 <Region styleClass="step-line" VBox.vgrow="ALWAYS"/>
             </VBox>
             <VBox styleClass="step-body" spacing="8.0" HBox.hgrow="ALWAYS">
-                <Label text="Introducir contraseña" styleClass="step-label"/>
+                <Label text="%form.step2" styleClass="step-label"/>
                 <StackPane styleClass="password-box" alignment="CENTER_RIGHT">
-                    <PasswordField fx:id="passwordField" accessibleText="Contraseña" maxWidth="Infinity"/>
-                    <TextField fx:id="visiblePasswordField" accessibleText="Contraseña" maxWidth="Infinity"/>
+                    <PasswordField fx:id="passwordField" accessibleText="%form.password" maxWidth="Infinity"/>
+                    <TextField fx:id="visiblePasswordField" accessibleText="%form.password" maxWidth="Infinity"/>
                     <ToggleButton fx:id="showPasswordToggle" styleClass="eye-toggle" focusTraversable="true">
                         <graphic><Region styleClass="icon,icon-eye"/></graphic>
                     </ToggleButton>
                 </StackPane>
-                <Label text="Es la contraseña que se usó al cifrar el archivo." wrapText="true" styleClass="hint"/>
+                <Label text="%decrypt.hint2" wrapText="true" styleClass="hint"/>
             </VBox>
         </HBox>
 
@@ -72,25 +74,27 @@
                 <StackPane styleClass="step-number"><Label text="3"/></StackPane>
             </VBox>
             <VBox styleClass="step-body" spacing="8.0" HBox.hgrow="ALWAYS">
-                <Label text="Archivo de salida" styleClass="step-label"/>
+                <Label text="%form.step3" styleClass="step-label"/>
                 <HBox spacing="12.0" alignment="CENTER_LEFT">
-                    <TextField fx:id="outputNameField" accessibleText="Nombre del archivo de salida"
+                    <TextField fx:id="outputNameField" accessibleText="%form.outputName"
                                maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
-                    <Button fx:id="outputFolderButton" styleClass="secondary,icon-button" onAction="#onChooseOutput">
+                    <Button fx:id="outputFolderButton" text="%form.changeFolder" styleClass="secondary,folder-button" onAction="#onChooseOutput" minWidth="-Infinity">
                         <graphic><Region styleClass="icon,icon-folder"/></graphic>
                     </Button>
                 </HBox>
-                <Label text="Se recuperará el archivo original con su extensión." wrapText="true" styleClass="hint"/>
+                <!-- Ruta completa donde se guardará el resultado -->
+                <Label fx:id="outputPathLabel" styleClass="path-label" maxWidth="Infinity"/>
+                <Label text="%decrypt.hint3" wrapText="true" styleClass="hint"/>
             </VBox>
         </HBox>
 
         <!-- Progreso y botón principal -->
         <HBox styleClass="form-actions" spacing="16.0" alignment="CENTER_RIGHT">
             <VBox spacing="6.0" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
-                <ProgressBar fx:id="progressBar" progress="0" maxWidth="Infinity" accessibleText="Progreso"/>
+                <ProgressBar fx:id="progressBar" progress="0" maxWidth="Infinity" accessibleText="%form.progress"/>
                 <Label fx:id="statusLabel" styleClass="hint"/>
             </VBox>
-            <Button fx:id="runButton" text="Descifrar archivo" styleClass="primary" defaultButton="true" onAction="#onDecrypt">
+            <Button fx:id="runButton" text="%decrypt.run" styleClass="primary" defaultButton="true" onAction="#onDecrypt">
                 <graphic><Region styleClass="icon,icon-lock-open"/></graphic>
             </Button>
         </HBox>

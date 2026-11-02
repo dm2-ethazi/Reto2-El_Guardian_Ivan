@@ -1,5 +1,6 @@
 package el_guardian_ivan.desktop.controller;
 
+import el_guardian_ivan.desktop.i18n.I18n;
 import el_guardian_ivan.desktop.crypto.AesFileCipher;
 import el_guardian_ivan.desktop.files.FileNameValidator;
 import el_guardian_ivan.desktop.files.FileSizeFormatter;
@@ -35,6 +36,12 @@ public abstract class FileOperationController {
 
     @FXML
     protected Label inputSizeLabel;
+
+    @FXML
+    protected Label inputPathLabel;
+
+    @FXML
+    protected Label outputPathLabel;
 
     @FXML
     protected PasswordField passwordField;
@@ -80,14 +87,51 @@ public abstract class FileOperationController {
         passwordField.visibleProperty().bind(showPasswordToggle.selectedProperty().not());
         passwordField.managedProperty().bind(showPasswordToggle.selectedProperty().not());
         showPasswordToggle.selectedProperty().addListener((obs, wasShown, shown) -> {
-            String text = shown ? "Ocultar contraseña" : "Mostrar contraseña";
+            String text = I18n.get(shown ? "form.hidePassword" : "form.showPassword");
             showPasswordToggle.setAccessibleText(text);
             showPasswordToggle.setTooltip(new Tooltip(text));
         });
-        showPasswordToggle.setAccessibleText("Mostrar contraseña");
-        showPasswordToggle.setTooltip(new Tooltip("Mostrar contraseña"));
-        outputFolderButton.setAccessibleText("Elegir dónde guardar");
-        outputFolderButton.setTooltip(new Tooltip("Elegir dónde guardar"));
+        showPasswordToggle.setAccessibleText(I18n.get("form.showPassword"));
+        showPasswordToggle.setTooltip(new Tooltip(I18n.get("form.showPassword")));
+        outputFolderButton.setAccessibleText(I18n.get("form.chooseOutput"));
+        outputFolderButton.setTooltip(new Tooltip(I18n.get("form.chooseOutput")));
+
+        // Las rutas solo se ven cuando hay algo que mostrar
+        for (Label pathLabel : new Label[]{inputPathLabel, outputPathLabel}) {
+            pathLabel.managedProperty().bind(pathLabel.textProperty().isNotEmpty());
+            pathLabel.visibleProperty().bind(pathLabel.textProperty().isNotEmpty());
+        }
+        outputNameField.textProperty().addListener((obs, oldName, newName) -> updateOutputPath());
+    }
+
+    /** Nombre final del fichero de salida a partir de lo escrito en el paso 3. */
+    protected String outputFileName() {
+        return outputNameField.getText().trim();
+    }
+
+    /** Muestra bajo el paso 3 la ruta completa donde se guardará el resultado. */
+    private void updateOutputPath() {
+        String name = outputFileName();
+        if (outputDirectory == null || name.isEmpty()) {
+            setPath(outputPathLabel, null, "form.outputPath");
+            return;
+        }
+        try {
+            setPath(outputPathLabel, outputDirectory.resolve(name), "form.outputPath");
+        } catch (InvalidPathException e) {
+            setPath(outputPathLabel, outputDirectory, "form.outputPath"); // El nombre no es válido: solo la carpeta
+        }
+    }
+
+    /** Escribe la ruta con su prefijo ("Ruta: ...") y deja la ruta completa en el tooltip por si se recorta. */
+    private static void setPath(Label label, Path path, String key) {
+        if (path == null) {
+            label.setText("");
+            label.setTooltip(null);
+        } else {
+            label.setText(I18n.get(key, path));
+            label.setTooltip(new Tooltip(path.toString()));
+        }
     }
 
     /** Nombre que se propone para el fichero de salida a partir del de entrada. */
@@ -99,7 +143,7 @@ public abstract class FileOperationController {
     @FXML
     protected void onSelectInputFile() {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Seleccionar fichero de entrada");
+        chooser.setTitle(I18n.get("form.chooseInput"));
         File selected = chooser.showOpenDialog(getWindow());
         if (selected == null) {
             return; // El usuario ha cancelado el diálogo
@@ -108,24 +152,27 @@ public abstract class FileOperationController {
         try {
             Path path = selected.toPath();
             if (!Files.isRegularFile(path)) {
-                throw new IOException("No es un fichero normal.");
+                throw new IOException(I18n.get("error.notRegular"));
             }
             if (!Files.isReadable(path)) {
-                throw new IOException("No se puede leer el fichero.");
+                throw new IOException(I18n.get("error.notReadable"));
             }
             long size = Files.size(path);
             inputFile = path;
             inputFileLabel.setText(path.getFileName().toString());
             inputFileLabel.setTooltip(new Tooltip(path.toString())); // Ruta completa al pasar el ratón
-            inputSizeLabel.setText(FileSizeFormatter.format(size));
+            inputSizeLabel.setText(FileSizeFormatter.format(size, I18n.getLocale()));
+            setPath(inputPathLabel, path.toAbsolutePath(), "form.inputPath");
             outputDirectory = path.toAbsolutePath().getParent();
             outputNameField.setText(suggestOutputName(path.getFileName().toString()));
+            updateOutputPath();
         } catch (IOException | InvalidPathException e) {
             inputFile = null;
-            inputFileLabel.setText("Ningún fichero seleccionado");
+            inputFileLabel.setText(I18n.get("form.noFile"));
             inputFileLabel.setTooltip(null);
             inputSizeLabel.setText("");
-            showError("No se ha podido abrir el fichero", e.getMessage());
+            setPath(inputPathLabel, null, "form.inputPath");
+            showError(I18n.get("error.openFile"), e.getMessage());
         }
     }
 
@@ -144,6 +191,7 @@ public abstract class FileOperationController {
         }
         outputDirectory = selected.toPath().toAbsolutePath().getParent();
         outputNameField.setText(selected.getName());
+        updateOutputPath(); // Por si el nombre no cambia pero sí la carpeta
     }
 
     /**
@@ -162,7 +210,7 @@ public abstract class FileOperationController {
         });
         task.setOnFailed(event -> {
             finishTask();
-            setStatus("✗ La operación ha fallado", "status-error");
+            setStatus("✗ " + I18n.get("form.failed"), "status-error");
             showFailure(task.getException());
         });
 
@@ -188,15 +236,15 @@ public abstract class FileOperationController {
 
     private void showFailure(Throwable error) {
         if (error instanceof AEADBadTagException) {
-            showError("No se ha podido descifrar", "La contraseña es incorrecta o el fichero está dañado.");
+            showError(I18n.get("error.wrongPassword.title"), I18n.get("error.wrongPassword.text"));
         } else if (error instanceof IllegalArgumentException) {
-            showError("Operación no permitida", error.getMessage());
+            showError(I18n.get("error.notAllowed"), error.getMessage());
         } else if (error instanceof IOException) {
-            showError("Error de lectura o escritura", error.getMessage());
+            showError(I18n.get("error.io"), error.getMessage());
         } else if (error instanceof GeneralSecurityException) {
-            showError("Error de cifrado", error.getMessage());
+            showError(I18n.get("error.crypto"), error.getMessage());
         } else {
-            showError("Error inesperado", String.valueOf(error));
+            showError(I18n.get("error.unexpected"), String.valueOf(error));
         }
     }
 
@@ -208,18 +256,18 @@ public abstract class FileOperationController {
     protected Path resolveOutputPath(String name) {
         String problem = FileNameValidator.validate(name);
         if (problem != null) {
-            showError("Nombre de fichero no válido", problem);
+            showError(I18n.get("error.invalidName"), problem);
             return null;
         }
         Path output;
         try {
             output = outputDirectory.resolve(name);
         } catch (InvalidPathException e) {
-            showError("Ruta no válida", "No se puede usar la ruta elegida: " + e.getReason());
+            showError(I18n.get("error.invalidPath"), I18n.get("error.invalidPath.text", e.getReason()));
             return null;
         }
-        if (Files.exists(output) && !ResultDialog.confirm(getWindow(), "El fichero ya existe",
-                "¿Quieres reemplazar " + output.getFileName() + "?", "Reemplazar")) {
+        if (Files.exists(output) && !ResultDialog.confirm(getWindow(), I18n.get("confirm.exists.title"),
+                I18n.get("confirm.exists.text", output.getFileName()), I18n.get("confirm.replace"))) {
             return null;
         }
         return output;

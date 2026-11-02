@@ -25,12 +25,13 @@
             <Label fx:id="fileNameLabel" styleClass="file-name" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
             <Label fx:id="fileSizeLabel" styleClass="file-size"/>
         </HBox>
+        <Label fx:id="filePathLabel" styleClass="path-label" maxWidth="Infinity"/>
 
         <HBox styleClass="dialog-buttons" spacing="14.0" alignment="CENTER">
             <Button fx:id="primaryButton" styleClass="secondary" minWidth="170.0">
                 <graphic><Region styleClass="icon,icon-folder"/></graphic>
             </Button>
-            <Button fx:id="closeButton" text="Cerrar" minWidth="120.0" onAction="#onClose"/>
+            <Button fx:id="closeButton" text="%dialog.close" minWidth="120.0" onAction="#onClose"/>
         </HBox>
     </VBox>
 </StackPane>

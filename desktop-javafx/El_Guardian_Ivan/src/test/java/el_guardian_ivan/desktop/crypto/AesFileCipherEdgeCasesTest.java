@@ -155,7 +155,7 @@ class AesFileCipherEdgeCasesTest {
 
         IOException e = assertThrows(IOException.class,
                 () -> cipher.decrypt(encrypted, dir.resolve("b"), PASSWORD.clone()));
-        assertTrue(e.getMessage().contains("Versión"));
+        assertTrue(e.getMessage().contains("9")); // El mensaje indica la versión encontrada
     }
 
     @ParameterizedTest

@@ -1,5 +1,6 @@
 package el_guardian_ivan.desktop.controller;
 
+import el_guardian_ivan.desktop.i18n.I18n;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.stage.FileChooser;
@@ -16,35 +17,38 @@ public class EncryptController extends FileOperationController {
         return withoutExtension(inputName) + ".hgw";
     }
 
+    /** El resultado siempre es un contenedor .hgw, aunque no se escriba la extensión. */
+    @Override
+    protected String outputFileName() {
+        String name = super.outputFileName();
+        return name.isEmpty() || name.toLowerCase(Locale.ROOT).endsWith(".hgw") ? name : name + ".hgw";
+    }
+
     @Override
     protected void configureOutputChooser(FileChooser chooser) {
-        chooser.setTitle("Guardar fichero cifrado");
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Contenedor cifrado (*.hgw)", "*.hgw"));
+        chooser.setTitle(I18n.get("encrypt.chooserTitle"));
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(I18n.get("form.hgwFilter"), "*.hgw"));
     }
 
     @FXML
     private void onEncrypt() {
         if (inputFile == null) {
-            showError("Falta el fichero", "Selecciona primero el fichero que quieres cifrar.");
+            showError(I18n.get("error.missingFile"), I18n.get("encrypt.missingFile"));
             return;
         }
         if (passwordField.getText().isEmpty()) {
-            showError("Falta la contraseña", "Introduce una contraseña para cifrar el fichero.");
+            showError(I18n.get("error.missingPassword"), I18n.get("encrypt.missingPassword"));
             return;
         }
 
-        String name = outputNameField.getText().trim();
-        if (!name.toLowerCase(Locale.ROOT).endsWith(".hgw")) {
-            name += ".hgw"; // El resultado siempre es un contenedor .hgw
-        }
         Path input = inputFile;
-        Path output = resolveOutputPath(name);
+        Path output = resolveOutputPath(outputFileName());
         if (output == null) {
             return; // Ya se ha mostrado la alerta
         }
         char[] password = takePassword();
-        runInBackground("Cifrando...", "Archivo cifrado correctamente",
-                "El archivo se ha protegido con AES-256.", new Task<>() {
+        runInBackground(I18n.get("encrypt.running"), I18n.get("encrypt.success.title"),
+                I18n.get("encrypt.success.text"), new Task<>() {
             @Override
             protected Path call() throws Exception {
                 try {

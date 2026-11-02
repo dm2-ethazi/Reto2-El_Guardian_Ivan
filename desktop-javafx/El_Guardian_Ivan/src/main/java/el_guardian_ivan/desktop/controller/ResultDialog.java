@@ -1,5 +1,6 @@
 package el_guardian_ivan.desktop.controller;
 
+import el_guardian_ivan.desktop.i18n.I18n;
 import el_guardian_ivan.desktop.files.FileLocationOpener;
 import el_guardian_ivan.desktop.files.FileSizeFormatter;
 import el_guardian_ivan.desktop.ui.ScalingPane;
@@ -11,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -33,18 +35,18 @@ import java.nio.file.Path;
 public class ResultDialog {
 
     private enum Kind {
-        SUCCESS("dialog-success", "icon-check-circle", "Operación completada"),
-        ERROR("dialog-error", "icon-error", "Error"),
-        CONFIRM("dialog-confirm", "icon-help", "Confirmar");
+        SUCCESS("dialog-success", "icon-check-circle", "dialog.success"),
+        ERROR("dialog-error", "icon-error", "dialog.error"),
+        CONFIRM("dialog-confirm", "icon-help", "dialog.confirm");
 
         private final String styleClass;
         private final String iconClass;
-        private final String windowTitle;
+        private final String windowTitleKey;
 
-        Kind(String styleClass, String iconClass, String windowTitle) {
+        Kind(String styleClass, String iconClass, String windowTitleKey) {
             this.styleClass = styleClass;
             this.iconClass = iconClass;
-            this.windowTitle = windowTitle;
+            this.windowTitleKey = windowTitleKey;
         }
     }
 
@@ -67,6 +69,9 @@ public class ResultDialog {
     private Label fileSizeLabel;
 
     @FXML
+    private Label filePathLabel;
+
+    @FXML
     private Button primaryButton;
 
     @FXML
@@ -83,7 +88,7 @@ public class ResultDialog {
     public static void success(Window owner, String title, String message, Path file) {
         ResultDialog dialog = create(owner, Kind.SUCCESS, title, message);
         dialog.showFile(file);
-        dialog.primaryButton.setText("Abrir ubicación");
+        dialog.primaryButton.setText(I18n.get("dialog.openLocation"));
         dialog.primaryButton.setOnAction(event -> dialog.openLocation());
         dialog.showAndWait();
     }
@@ -103,13 +108,14 @@ public class ResultDialog {
             dialog.confirmed = true;
             dialog.stage.close();
         });
-        dialog.closeButton.setText("Cancelar");
+        dialog.closeButton.setText(I18n.get("dialog.cancel"));
         dialog.showAndWait();
         return dialog.confirmed;
     }
 
     private static ResultDialog create(Window owner, Kind kind, String title, String message) {
-        FXMLLoader loader = new FXMLLoader(ResultDialog.class.getResource("/el_guardian_ivan/desktop/views/result-dialog.fxml"));
+        FXMLLoader loader = new FXMLLoader(ResultDialog.class.getResource("/el_guardian_ivan/desktop/views/result-dialog.fxml"),
+                I18n.bundle());
         Parent root;
         try {
             root = loader.load();
@@ -125,7 +131,7 @@ public class ResultDialog {
         Stage stage = new Stage(StageStyle.TRANSPARENT); // Sin la barra de Windows, como en el boceto
         stage.initOwner(owner);
         stage.initModality(Modality.WINDOW_MODAL);
-        stage.setTitle(kind.windowTitle);
+        stage.setTitle(I18n.get(kind.windowTitleKey));
         // Mismo tamaño relativo que la ventana principal; el Group hace que la escena mida el contenido ya escalado
         if (owner != null && owner.getScene() != null && owner.getScene().getRoot() instanceof ScalingPane scaling) {
             root.getTransforms().add(new Scale(scaling.getScale(), scaling.getScale()));
@@ -144,8 +150,10 @@ public class ResultDialog {
     private void initialize() {
         fileBox.setVisible(false);
         fileBox.setManaged(false);
+        filePathLabel.managedProperty().bind(fileBox.managedProperty());
+        filePathLabel.visibleProperty().bind(fileBox.visibleProperty());
         closeButton.setCancelButton(true); // Escape cierra el diálogo
-        cornerCloseButton.setAccessibleText("Cerrar");
+        cornerCloseButton.setAccessibleText(I18n.get("dialog.close"));
     }
 
     @FXML
@@ -156,8 +164,10 @@ public class ResultDialog {
     private void showFile(Path file) {
         this.file = file;
         fileNameLabel.setText(file.getFileName().toString());
+        filePathLabel.setText(I18n.get("dialog.location", file.toAbsolutePath().getParent()));
+        filePathLabel.setTooltip(new Tooltip(file.toAbsolutePath().toString()));
         try {
-            fileSizeLabel.setText(FileSizeFormatter.format(Files.size(file)));
+            fileSizeLabel.setText(FileSizeFormatter.format(Files.size(file), I18n.getLocale()));
         } catch (IOException e) {
             fileSizeLabel.setText("");
         }
@@ -176,7 +186,7 @@ public class ResultDialog {
             FileLocationOpener.reveal(file);
             stage.close();
         } catch (IOException e) {
-            messageLabel.setText("No se ha podido abrir la carpeta: " + e.getMessage());
+            messageLabel.setText(I18n.get("dialog.openLocationFailed", e.getMessage()));
         }
     }
 

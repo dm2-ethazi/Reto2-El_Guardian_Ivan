@@ -11,8 +11,13 @@ public final class FileSizeFormatter {
     private FileSizeFormatter() {
     }
 
-    /** Usa múltiplos de 1024, como el Explorador de Windows. */
+    /** Usa múltiplos de 1024, como el Explorador de Windows, con la coma decimal española. */
     public static String format(long bytes) {
+        return format(bytes, SPANISH);
+    }
+
+    /** Igual, pero con el separador decimal del idioma indicado ("1,5 MB" o "1.5 MB"). */
+    public static String format(long bytes, Locale locale) {
         if (bytes < 0) {
             throw new IllegalArgumentException("El tamaño no puede ser negativo.");
         }
@@ -25,6 +30,6 @@ public final class FileSizeFormatter {
             value /= 1024;
             unit++;
         }
-        return String.format(SPANISH, "%.1f %s", value, UNITS[unit]);
+        return String.format(locale, "%.1f %s", value, UNITS[unit]);
     }
 }

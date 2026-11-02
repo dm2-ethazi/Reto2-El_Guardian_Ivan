@@ -1,5 +1,7 @@
 package el_guardian_ivan.desktop.files;
 
+import el_guardian_ivan.desktop.i18n.I18n;
+
 import java.util.Locale;
 import java.util.Set;
 
@@ -20,32 +22,32 @@ public final class FileNameValidator {
     private FileNameValidator() {
     }
 
-    /** Devuelve un mensaje explicando el problema, o {@code null} si el nombre es válido. */
+    /** Devuelve un mensaje (en el idioma actual) explicando el problema, o {@code null} si el nombre es válido. */
     public static String validate(String name) {
         if (name == null || name.isBlank()) {
-            return "El nombre del fichero no puede estar vacío.";
+            return I18n.get("name.empty");
         }
         if (name.length() > MAX_LENGTH) {
-            return "El nombre del fichero es demasiado largo (máximo " + MAX_LENGTH + " caracteres).";
+            return I18n.get("name.tooLong", MAX_LENGTH);
         }
         for (char c : name.toCharArray()) {
             if (c < 32) {
-                return "El nombre del fichero contiene caracteres de control.";
+                return I18n.get("name.control");
             }
             if (FORBIDDEN_CHARACTERS.indexOf(c) >= 0) {
-                return "El nombre del fichero no puede contener ninguno de estos caracteres: " + FORBIDDEN_CHARACTERS;
+                return I18n.get("name.forbidden", FORBIDDEN_CHARACTERS);
             }
         }
         if (name.endsWith(".") || name.endsWith(" ")) {
-            return "El nombre del fichero no puede terminar en punto ni en espacio.";
+            return I18n.get("name.trailing");
         }
         if (name.equals(".") || name.equals("..")) {
-            return "El nombre del fichero no es válido.";
+            return I18n.get("name.invalid");
         }
         int dot = name.indexOf('.');
         String base = (dot >= 0 ? name.substring(0, dot) : name).trim().toUpperCase(Locale.ROOT);
         if (RESERVED_NAMES.contains(base)) {
-            return "\"" + base + "\" es un nombre reservado de Windows y no se puede usar.";
+            return I18n.get("name.reserved", base);
         }
         return null;
     }

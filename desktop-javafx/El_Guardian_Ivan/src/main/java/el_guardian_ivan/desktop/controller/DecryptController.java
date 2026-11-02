@@ -1,5 +1,6 @@
 package el_guardian_ivan.desktop.controller;
 
+import el_guardian_ivan.desktop.i18n.I18n;
 import el_guardian_ivan.desktop.files.FileTypeDetector;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -19,28 +20,28 @@ public class DecryptController extends FileOperationController {
 
     @Override
     protected void configureOutputChooser(FileChooser chooser) {
-        chooser.setTitle("Guardar fichero descifrado");
+        chooser.setTitle(I18n.get("decrypt.chooserTitle"));
     }
 
     @FXML
     private void onDecrypt() {
         if (inputFile == null) {
-            showError("Falta el fichero", "Selecciona primero el fichero .hgw que quieres descifrar.");
+            showError(I18n.get("error.missingFile"), I18n.get("decrypt.missingFile"));
             return;
         }
         if (passwordField.getText().isEmpty()) {
-            showError("Falta la contraseña", "Introduce la contraseña con la que se cifró el fichero.");
+            showError(I18n.get("error.missingPassword"), I18n.get("decrypt.missingPassword"));
             return;
         }
 
         Path input = inputFile;
-        Path output = resolveOutputPath(outputNameField.getText().trim());
+        Path output = resolveOutputPath(outputFileName());
         if (output == null) {
             return; // Ya se ha mostrado la alerta
         }
         char[] password = takePassword();
-        runInBackground("Descifrando...", "Archivo descifrado correctamente",
-                "El archivo se ha recuperado con éxito.", new Task<>() {
+        runInBackground(I18n.get("decrypt.running"), I18n.get("decrypt.success.title"),
+                I18n.get("decrypt.success.text"), new Task<>() {
             @Override
             protected Path call() throws Exception {
                 try {
