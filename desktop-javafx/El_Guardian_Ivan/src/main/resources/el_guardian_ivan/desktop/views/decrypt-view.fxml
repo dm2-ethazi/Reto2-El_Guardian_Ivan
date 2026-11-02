@@ -18,9 +18,9 @@
     <!-- Cabecera -->
     <HBox styleClass="page-header" spacing="18.0" alignment="CENTER_LEFT">
         <Region styleClass="icon,header-icon,icon-lock-open"/>
-        <VBox spacing="4.0">
+        <VBox spacing="4.0" minWidth="0.0" HBox.hgrow="ALWAYS">
             <Label text="Descifrar archivo" styleClass="title"/>
-            <Label text="Selecciona un archivo .hgw e introduce la contraseña para recuperarlo." wrapText="true" styleClass="subtitle"/>
+            <Label text="Selecciona un archivo .hgw e introduce la contraseña para recuperarlo." wrapText="true" minHeight="-Infinity" styleClass="subtitle"/>
         </VBox>
     </HBox>
 

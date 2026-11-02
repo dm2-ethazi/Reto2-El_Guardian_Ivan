@@ -20,11 +20,6 @@
             <padding>
                 <Insets top="20.0" right="12.0" bottom="20.0" left="12.0"/>
             </padding>
-            <!-- Escudo con la inicial, como en el boceto -->
-            <StackPane styleClass="crest">
-                <Region styleClass="icon,crest-shield"/>
-                <Label text="G" styleClass="crest-letter"/>
-            </StackPane>
             <Label text="El Guardián Iván" styleClass="app-name" maxWidth="Infinity"/>
             <ToggleButton fx:id="homeButton" text="Inicio" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button">
                 <graphic><Region styleClass="icon,icon-home"/></graphic>

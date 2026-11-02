@@ -5,9 +5,7 @@ import el_guardian_ivan.desktop.files.FileNameValidator;
 import el_guardian_ivan.desktop.files.FileSizeFormatter;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressBar;
@@ -152,25 +150,34 @@ public abstract class FileOperationController {
      * Ejecuta la operación en un hilo aparte para que la ventana no se congele con ficheros grandes.
      * Los métodos setOnSucceeded/setOnFailed se ejecutan de vuelta en el hilo de JavaFX.
      */
-    protected void runInBackground(String runningText, String successHeader, Task<Path> task) {
+    protected void runInBackground(String runningText, String successTitle, String successMessage, Task<Path> task) {
         progressBar.progressProperty().bind(task.progressProperty());
-        statusLabel.setText(runningText);
+        setStatus(runningText, null);
         setControlsDisabled(true);
 
         task.setOnSucceeded(event -> {
             finishTask();
-            statusLabel.setText(successHeader);
-            showInfo(successHeader, "Se ha guardado en:\n" + task.getValue());
+            setStatus("✓ " + successTitle, "status-success");
+            ResultDialog.success(getWindow(), successTitle, successMessage, task.getValue());
         });
         task.setOnFailed(event -> {
             finishTask();
-            statusLabel.setText("La operación ha fallado");
+            setStatus("✗ La operación ha fallado", "status-error");
             showFailure(task.getException());
         });
 
         Thread thread = new Thread(task, "cifrado-aes");
         thread.setDaemon(true); // Si se cierra la ventana, no deja la aplicación abierta
         thread.start();
+    }
+
+    /** Texto bajo la barra de progreso; el símbolo ✓/✗ (incluido en Inter) evita que el resultado dependa solo del color. */
+    private void setStatus(String text, String styleClass) {
+        statusLabel.getStyleClass().removeAll("status-success", "status-error");
+        if (styleClass != null) {
+            statusLabel.getStyleClass().add(styleClass);
+        }
+        statusLabel.setText(text);
     }
 
     private void finishTask() {
@@ -211,8 +218,8 @@ public abstract class FileOperationController {
             showError("Ruta no válida", "No se puede usar la ruta elegida: " + e.getReason());
             return null;
         }
-        if (Files.exists(output) && !confirm("El fichero ya existe",
-                "¿Quieres reemplazar " + output.getFileName() + "?")) {
+        if (Files.exists(output) && !ResultDialog.confirm(getWindow(), "El fichero ya existe",
+                "¿Quieres reemplazar " + output.getFileName() + "?", "Reemplazar")) {
             return null;
         }
         return output;
@@ -245,27 +252,7 @@ public abstract class FileOperationController {
         return inputFileLabel.getScene().getWindow();
     }
 
-    protected void showInfo(String header, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Información");
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
-    protected boolean confirm(String header, String content) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmar");
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        return alert.showAndWait().filter(ButtonType.OK::equals).isPresent();
-    }
-
-    protected void showError(String header, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
+    protected void showError(String title, String message) {
+        ResultDialog.error(getWindow(), title, message);
     }
 }

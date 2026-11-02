@@ -5,7 +5,9 @@ import el_guardian_ivan.desktop.navigation.Navigator;
 import el_guardian_ivan.desktop.navigation.View;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.StackPane;
@@ -77,10 +79,25 @@ public class MainController implements Navigator {
             if (loader.getController() instanceof NavigationAware aware) {
                 aware.setNavigator(this);
             }
-            return root;
+            return scrollable(root);
         } catch (IOException e) {
             // Un FXML que no carga es un error de programación, no del usuario
             throw new UncheckedIOException("No se ha podido cargar " + view.fxml(), e);
         }
+    }
+
+    /**
+     * Si la ventana es más pequeña que la pantalla, aparece una barra de desplazamiento en lugar
+     * de cortar el contenido. El StackPane centra las pantallas que tienen un ancho máximo.
+     */
+    private static Parent scrollable(Parent view) {
+        StackPane centered = new StackPane(view);
+        centered.setAlignment(Pos.TOP_CENTER);
+        ScrollPane scroll = new ScrollPane(centered);
+        scroll.setFitToWidth(true);
+        scroll.setFitToHeight(true);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.getStyleClass().add("view-scroll");
+        return scroll;
     }
 }

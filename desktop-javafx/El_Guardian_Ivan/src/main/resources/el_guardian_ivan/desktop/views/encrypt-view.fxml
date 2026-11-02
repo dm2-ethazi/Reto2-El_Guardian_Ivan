@@ -18,9 +18,9 @@
     <!-- Cabecera -->
     <HBox styleClass="page-header" spacing="18.0" alignment="CENTER_LEFT">
         <Region styleClass="icon,header-icon,icon-lock"/>
-        <VBox spacing="4.0">
+        <VBox spacing="4.0" minWidth="0.0" HBox.hgrow="ALWAYS">
             <Label text="Cifrar archivo" styleClass="title"/>
-            <Label text="Selecciona un archivo y define una contraseña para cifrarlo con AES-256." wrapText="true" styleClass="subtitle"/>
+            <Label text="Selecciona un archivo y define una contraseña para cifrarlo con AES-256." wrapText="true" minHeight="-Infinity" styleClass="subtitle"/>
         </VBox>
     </HBox>
 

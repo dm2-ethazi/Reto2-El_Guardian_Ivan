@@ -39,7 +39,8 @@ public class DecryptController extends FileOperationController {
             return; // Ya se ha mostrado la alerta
         }
         char[] password = takePassword();
-        runInBackground("Descifrando...", "Fichero descifrado", new Task<>() {
+        runInBackground("Descifrando...", "Archivo descifrado correctamente",
+                "El archivo se ha recuperado con éxito.", new Task<>() {
             @Override
             protected Path call() throws Exception {
                 try {

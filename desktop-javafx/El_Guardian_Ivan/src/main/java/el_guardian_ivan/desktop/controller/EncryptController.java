@@ -43,7 +43,8 @@ public class EncryptController extends FileOperationController {
             return; // Ya se ha mostrado la alerta
         }
         char[] password = takePassword();
-        runInBackground("Cifrando...", "Fichero cifrado", new Task<>() {
+        runInBackground("Cifrando...", "Archivo cifrado correctamente",
+                "El archivo se ha protegido con AES-256.", new Task<>() {
             @Override
             protected Path call() throws Exception {
                 try {
