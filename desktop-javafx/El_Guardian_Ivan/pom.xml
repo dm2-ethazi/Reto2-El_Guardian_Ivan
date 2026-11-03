@@ -108,4 +108,151 @@
             </plugin>
         </plugins>
     </build>
+
+    <!--
+        Fat jar de prueba (un solo .jar con JavaFX dentro, se abre con doble clic):
+            mvn -Pfatjar clean package
+        Sale el jar en target/fatjar/El_Guardian_Ivan.jar y el ejecutable en
+        dist/El Guardian Ivan/. Hay que generarlo en cada sistema: en Windows sale un .exe
+        y en Linux un ejecutable de Linux, cada uno con su JavaFX y su Java.
+    -->
+    <profiles>
+        <profile>
+            <id>fatjar</id>
+            <properties>
+                <app.icon>${project.basedir}/src/main/jpackage/El_Guardian_Ivan.ico</app.icon>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>3.6.0</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- Se deja en target/fatjar para que jpackage solo meta este jar en el .exe -->
+                                    <outputFile>${project.build.directory}/fatjar/El_Guardian_Ivan.jar</outputFile>
+                                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                                    <transformers>
+                                        <!-- Clase que arranca al hacer doble clic. Es Launcher y no GuardianApp
+                                             porque desde un jar normal JavaFX no arranca si la clase principal
+                                             hereda de Application. -->
+                                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                            <mainClass>el_guardian_ivan.desktop.Launcher</mainClass>
+                                        </transformer>
+                                    </transformers>
+                                    <filters>
+                                        <filter>
+                                            <!-- Fuera los module-info y firmas de las dependencias: en un jar único sobran y dan avisos -->
+                                            <artifact>*:*</artifact>
+                                            <excludes>
+                                                <exclude>module-info.class</exclude>
+                                                <exclude>META-INF/versions/*/module-info.class</exclude>
+                                                <exclude>META-INF/*.SF</exclude>
+                                                <exclude>META-INF/*.DSA</exclude>
+                                                <exclude>META-INF/*.RSA</exclude>
+                                                <exclude>META-INF/MANIFEST.MF</exclude>
+                                            </excludes>
+                                        </filter>
+                                    </filters>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!--
+                        Borra el ejecutable anterior de dist antes de crear el nuevo. Si Windows lo tiene
+                        bloqueado no detiene el build; en ese caso jpackage avisará de que la carpeta ya existe.
+                    -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>borrar-dist-anterior</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                                <configuration>
+                                    <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                                    <failOnError>false</failOnError>
+                                    <filesets>
+                                        <fileset>
+                                            <directory>${project.basedir}/dist</directory>
+                                        </fileset>
+                                    </filesets>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!--
+                        Aplicación con doble clic sin depender de que Windows sepa abrir .jar:
+                        crea target/dist/El Guardian Ivan/El Guardian Ivan.exe con su propio Java dentro.
+                    -->
+                    <plugin>
+                        <groupId>org.panteleyev</groupId>
+                        <artifactId>jpackage-maven-plugin</artifactId>
+                        <version>1.8.0</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jpackage</goal>
+                                </goals>
+                                <configuration>
+                                    <type>APP_IMAGE</type>
+                                    <name>El Guardian Ivan</name>
+                                    <appVersion>1.0</appVersion>
+                                    <vendor>Iván Alonso e Iván Salazar</vendor>
+                                    <input>${project.build.directory}/fatjar</input>
+                                    <mainJar>El_Guardian_Ivan.jar</mainJar>
+                                    <mainClass>el_guardian_ivan.desktop.Launcher</mainClass>
+                                    <!--
+                                        Fuera de target a propósito: Windows (antivirus, Explorador) suele dejar
+                                        el .exe bloqueado un rato y entonces "clean" falla al intentar borrarlo.
+                                        La versión anterior la borra el paso "borrar-dist-anterior" de arriba.
+                                    -->
+                                    <destination>${project.basedir}/dist</destination>
+                                    <!-- .ico en Windows; en Linux el perfil "linux" lo cambia por el .png -->
+                                    <icon>${app.icon}</icon>
+                                    <!-- Solo las partes de Java que usa la aplicación, para que pese menos -->
+                                    <addModules>
+                                        <addModule>java.base</addModule>
+                                        <addModule>java.desktop</addModule>
+                                        <addModule>java.logging</addModule>
+                                        <addModule>java.prefs</addModule>
+                                        <addModule>java.scripting</addModule>
+                                        <addModule>java.xml</addModule>
+                                        <addModule>jdk.unsupported</addModule>
+                                        <addModule>jdk.jsobject</addModule>
+                                    </addModules>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!--
+            Se activa solo al compilar en Linux: allí el icono del ejecutable tiene que ser .png.
+            No hace falta marcarlo a mano en IntelliJ.
+        -->
+        <profile>
+            <id>linux</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                </os>
+            </activation>
+            <properties>
+                <app.icon>${project.basedir}/src/main/jpackage/El_Guardian_Ivan.png</app.icon>
+            </properties>
+        </profile>
+    </profiles>
 </project>
