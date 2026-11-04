@@ -81,6 +81,7 @@ namespace PuertaCastillo.Tests
 
             Assert.IsTrue(target == null);
             Assert.AreEqual(string.Empty, field.text);
+            StringAssert.Contains("Correcto", FeedbackText());
         }
 
         [UnityTest]
@@ -109,9 +110,24 @@ namespace PuertaCastillo.Tests
             Assert.IsTrue(target != null);
             Assert.AreEqual(string.Empty, field.text);
             Assert.AreNotEqual(normal, background.color);
+            StringAssert.Contains("Incorrecto", FeedbackText());
 
             field.text = "A";
             Assert.AreEqual(normal, background.color);
+            Assert.AreEqual(string.Empty, FeedbackText());
+        }
+
+        [UnityTest]
+        public IEnumerator FeedbackDisappearsAfterAFewSeconds()
+        {
+            field.text = "RESPUESTA MALA";
+            field.onSubmit.Invoke(field.text);
+            yield return null;
+            StringAssert.Contains("Incorrecto", FeedbackText());
+
+            yield return new WaitForSeconds(2.5f);
+
+            Assert.AreEqual(string.Empty, FeedbackText());
         }
 
         [UnityTest]
@@ -163,6 +179,11 @@ namespace PuertaCastillo.Tests
 
             Assert.Less(health, 100);
             Assert.AreEqual(health, door.CurrentHealth);
+        }
+
+        private string FeedbackText()
+        {
+            return panel.GetComponentsInChildren<TMP_Text>().First(label => label.name == "TextoRespuesta").text;
         }
 
         private string TopBarText()
