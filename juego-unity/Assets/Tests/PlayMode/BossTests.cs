@@ -62,12 +62,11 @@ namespace PuertaCastillo.Tests
         {
             int defeats = 0;
             spawner.BossDefeated += () => defeats++;
-            spawner.enabled = true;
 
             for (int i = 0; i < BossDecrypts; i++)
             {
-                yield return new WaitUntil(() => targeting.Target == boss);
                 Assert.IsTrue(targeting.TrySolve(boss.Message));
+                yield return null;
             }
 
             yield return null;
@@ -86,7 +85,7 @@ namespace PuertaCastillo.Tests
             yield return new WaitUntil(() => boss.IsAttacking);
             Time.timeScale = 1f;
 
-            yield return new WaitForSeconds(1.5f);
+            yield return new WaitForSeconds(2.5f);
 
             Assert.AreEqual(100 - 6, door.CurrentHealth);
         }

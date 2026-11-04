@@ -26,6 +26,17 @@ namespace PuertaCastillo.Gameplay
             CurrentHealth = maxHealth;
         }
 
+        public void Repair(int amount)
+        {
+            if (amount <= 0 || IsDown)
+            {
+                return;
+            }
+
+            CurrentHealth = Mathf.Min(CurrentHealth + amount, maxHealth);
+            HealthChanged?.Invoke(CurrentHealth, maxHealth);
+        }
+
         public void TakeDamage(int amount)
         {
             if (amount <= 0 || IsDown)

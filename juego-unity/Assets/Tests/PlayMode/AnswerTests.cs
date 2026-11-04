@@ -155,7 +155,7 @@ namespace PuertaCastillo.Tests
             Time.timeScale = 5f;
             yield return new WaitUntil(() => target.IsAttacking);
             Time.timeScale = 1f;
-            yield return new WaitForSeconds(1.5f);
+            yield return new WaitForSeconds(2.5f);
 
             Assert.IsTrue(targeting.TrySolve(target.Message));
             int health = door.CurrentHealth;

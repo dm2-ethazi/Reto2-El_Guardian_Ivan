@@ -13,6 +13,7 @@ namespace PuertaCastillo.Gameplay
         [Min(0.1f)] public float spawnInterval = 6f;
         [Min(0.1f)] public float enemySpeed = 0.4f;
         [Min(1)] public int damagePerHit = 2;
+        [Min(0.1f)] public float secondsBetweenHits = 2f;
         [Min(1f)] public float durationSeconds = 60f;
         [Range(1, 25)] public int caesarShift = 3;
 

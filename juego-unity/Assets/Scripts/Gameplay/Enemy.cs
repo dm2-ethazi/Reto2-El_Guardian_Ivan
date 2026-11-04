@@ -11,7 +11,6 @@ namespace PuertaCastillo.Gameplay
     [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
     public class Enemy : MonoBehaviour
     {
-        private const float SecondsBetweenHits = 1f;
         private const float LabelRowHeight = 0.5f;
 
         [SerializeField] private TMP_Text messageLabel;
@@ -30,6 +29,7 @@ namespace PuertaCastillo.Gameplay
         private Vector2 destination;
         private float speed;
         private int damagePerHit;
+        private float secondsBetweenHits;
         private int caesarShift;
         private float hitTimer;
         private float healthFillWidth;
@@ -61,6 +61,7 @@ namespace PuertaCastillo.Gameplay
             destination = doorPosition;
             speed = config.enemySpeed * speedMultiplier;
             damagePerHit = Mathf.RoundToInt(config.damagePerHit * damageMultiplier);
+            secondsBetweenHits = config.secondsBetweenHits;
             caesarShift = config.caesarShift;
             SetMessage(message);
         }
@@ -121,9 +122,9 @@ namespace PuertaCastillo.Gameplay
             }
 
             hitTimer += Time.fixedDeltaTime;
-            if (hitTimer >= SecondsBetweenHits)
+            if (hitTimer >= secondsBetweenHits)
             {
-                hitTimer -= SecondsBetweenHits;
+                hitTimer -= secondsBetweenHits;
                 door.TakeDamage(damagePerHit);
             }
         }

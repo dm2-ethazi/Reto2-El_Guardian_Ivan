@@ -49,19 +49,19 @@ namespace PuertaCastillo.Tests
         }
 
         [UnityTest]
-        public IEnumerator DoorLosesHealthOncePerSecondWhileInContact()
+        public IEnumerator DoorLosesHealthEveryTwoSecondsWhileInContact()
         {
             Assert.AreEqual(100, door.CurrentHealth);
 
-            yield return new WaitForSeconds(3.5f);
+            yield return new WaitForSeconds(4.5f);
 
-            Assert.AreEqual(94, door.CurrentHealth);
+            Assert.AreEqual(96, door.CurrentHealth);
         }
 
         [UnityTest]
         public IEnumerator DamageStopsWhenTheEnemyIsDestroyed()
         {
-            yield return new WaitForSeconds(1.5f);
+            yield return new WaitForSeconds(2.5f);
             Object.Destroy(enemy.gameObject);
             int health = door.CurrentHealth;
 

@@ -18,7 +18,7 @@ namespace PuertaCastillo.Gameplay
         private readonly List<Enemy> activeEnemies = new List<Enemy>();
         private readonly List<Transform> freePoints = new List<Transform>();
         private Enemy boss;
-        private bool stopped;
+        private bool stopped = true;
         private float timer;
 
         /// <summary>Se lanza cuando se derrota al jefe del nivel.</summary>
@@ -27,11 +27,6 @@ namespace PuertaCastillo.Gameplay
         public IReadOnlyList<Enemy> ActiveEnemies => activeEnemies;
         public LevelConfig Config => config;
         public Enemy Boss => boss;
-
-        private void Start()
-        {
-            StartLevel(config);
-        }
 
         /// <summary>Vacía la escena de enemigos y empieza a generar los del nivel indicado.</summary>
         public void StartLevel(LevelConfig level)
@@ -46,6 +41,13 @@ namespace PuertaCastillo.Gameplay
             {
                 boss = Spawn(config.bossPrefab, spawnPoints[spawnPoints.Length / 2]);
             }
+        }
+
+        /// <summary>Deja de generar y destruye los enemigos que queden.</summary>
+        public void StopLevel()
+        {
+            stopped = true;
+            DestroyActiveEnemies();
         }
 
         private void Update()
@@ -83,8 +85,7 @@ namespace PuertaCastillo.Gameplay
             if (enemy == boss)
             {
                 boss = null;
-                stopped = true;
-                DestroyActiveEnemies();
+                StopLevel();
                 BossDefeated?.Invoke();
             }
         }

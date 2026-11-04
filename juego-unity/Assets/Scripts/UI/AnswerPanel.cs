@@ -46,6 +46,17 @@ namespace PuertaCastillo.UI
             hintLabel.text = spawner.Config.hint;
         }
 
+        public void SetInteractable(bool interactable)
+        {
+            answerField.interactable = interactable;
+            decryptButton.interactable = interactable;
+
+            if (interactable)
+            {
+                answerField.ActivateInputField();
+            }
+        }
+
         private void SubmitField()
         {
             Submit(answerField.text);

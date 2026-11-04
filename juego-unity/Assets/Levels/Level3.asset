@@ -17,6 +17,7 @@ MonoBehaviour:
   spawnInterval: 4.5
   enemySpeed: 0.53
   damagePerHit: 4
+  secondsBetweenHits: 2
   durationSeconds: 80
   caesarShift: 7
   enemyPrefabs:
