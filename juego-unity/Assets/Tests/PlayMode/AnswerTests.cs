@@ -81,7 +81,7 @@ namespace PuertaCastillo.Tests
 
             Assert.IsTrue(target == null);
             Assert.AreEqual(string.Empty, field.text);
-            StringAssert.Contains("Correcto", FeedbackText());
+            Assert.AreEqual(Localization.Get("answer.correct"), FeedbackText());
         }
 
         [UnityTest]
@@ -110,7 +110,7 @@ namespace PuertaCastillo.Tests
             Assert.IsTrue(target != null);
             Assert.AreEqual(string.Empty, field.text);
             Assert.AreNotEqual(normal, background.color);
-            StringAssert.Contains("Incorrecto", FeedbackText());
+            Assert.AreEqual(Localization.Get("answer.wrong"), FeedbackText());
 
             field.text = "A";
             Assert.AreEqual(normal, background.color);
@@ -123,7 +123,7 @@ namespace PuertaCastillo.Tests
             field.text = "RESPUESTA MALA";
             field.onSubmit.Invoke(field.text);
             yield return null;
-            StringAssert.Contains("Incorrecto", FeedbackText());
+            Assert.AreEqual(Localization.Get("answer.wrong"), FeedbackText());
 
             yield return new WaitForSeconds(2.5f);
 

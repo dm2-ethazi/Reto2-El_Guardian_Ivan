@@ -46,7 +46,7 @@ namespace PuertaCastillo.UI
         private void Update()
         {
             int seconds = Mathf.CeilToInt(levelManager.TimeRemaining);
-            statusLabel.text = $"Nivel {levelManager.LevelNumber}  {seconds / 60:00}:{seconds % 60:00}";
+            statusLabel.text = Localization.Format("game.status", levelManager.LevelNumber, $"{seconds / 60:00}:{seconds % 60:00}");
         }
 
         private void HidePanel()
@@ -57,17 +57,17 @@ namespace PuertaCastillo.UI
 
         private void ShowLevelCompleted()
         {
-            ShowPanel($"Nivel {levelManager.LevelNumber} completado", true);
+            ShowPanel(Localization.Format("level.completed", levelManager.LevelNumber), true);
         }
 
         private void ShowVictory()
         {
-            ShowPanel("¡Victoria! El castillo está a salvo", false);
+            ShowPanel(Localization.Get("level.victory"), false);
         }
 
         private void ShowDefeat()
         {
-            ShowPanel("Derrota: la puerta ha caído", false);
+            ShowPanel(Localization.Get("level.defeat"), false);
         }
 
         // El mismo panel sirve para todo: solo cambian el título y los botones visibles.

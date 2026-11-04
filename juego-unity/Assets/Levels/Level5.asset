@@ -24,7 +24,7 @@ MonoBehaviour:
   - {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
   - {fileID: 2571283707677237309, guid: f1225b080ad82bf41ac4e072156d5a72, type: 3}
   bossPrefab: {fileID: 3529589520448922330, guid: aeab1b308f343034c8628275312f7ab1, type: 3}
-  hint: "Pista: la A se cifra como una N."
+  hintKey: hint.level5
   messages:
   - EL ENEMIGO EN EL PUENTE
   - DEFIENDE EL CASTILLO

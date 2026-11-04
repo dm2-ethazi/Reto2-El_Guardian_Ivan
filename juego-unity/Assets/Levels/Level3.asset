@@ -24,7 +24,7 @@ MonoBehaviour:
   - {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
   - {fileID: 2571283707677237309, guid: f1225b080ad82bf41ac4e072156d5a72, type: 3}
   bossPrefab: {fileID: 0}
-  hint: 'Pista: la A se cifra como una H.'
+  hintKey: hint.level3
   messages:
   - ALZA EL ESCUDO
   - CIERRA EL PORTON

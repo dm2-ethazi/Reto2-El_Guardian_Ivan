@@ -37,8 +37,7 @@ namespace PuertaCastillo.Tests
         public void StartsOnLevelOneShowingItsTime()
         {
             Assert.AreEqual(1, manager.LevelNumber);
-            StringAssert.Contains("Nivel 1", Text("TextoEstado"));
-            StringAssert.Contains("01:00", Text("TextoEstado"));
+            Assert.AreEqual(Localization.Format("game.status", 1, "01:00"), Text("TextoEstado"));
             Assert.IsFalse(Panel().activeSelf);
         }
 
@@ -48,7 +47,7 @@ namespace PuertaCastillo.Tests
             yield return FinishLevel();
 
             Assert.IsTrue(Panel().activeSelf);
-            StringAssert.Contains("completado", Text("TituloPanel"));
+            Assert.AreEqual(Localization.Format("level.completed", 1), Text("TituloPanel"));
             Assert.AreEqual(0, spawner.ActiveEnemies.Count);
             Assert.AreEqual(1, manager.LevelNumber);
         }
@@ -79,7 +78,7 @@ namespace PuertaCastillo.Tests
             yield return null;
 
             Assert.IsTrue(Panel().activeSelf);
-            StringAssert.Contains("Derrota", Text("TituloPanel"));
+            Assert.AreEqual(Localization.Get("level.defeat"), Text("TituloPanel"));
             Assert.AreEqual(0, spawner.ActiveEnemies.Count);
 
             Press("BotonReiniciar");
@@ -106,7 +105,7 @@ namespace PuertaCastillo.Tests
             yield return null;
 
             Assert.IsTrue(Panel().activeSelf);
-            StringAssert.Contains("Victoria", Text("TituloPanel"));
+            Assert.AreEqual(Localization.Get("level.victory"), Text("TituloPanel"));
         }
 
         [UnityTest]
@@ -117,7 +116,7 @@ namespace PuertaCastillo.Tests
             yield return FinishLevel();
 
             Assert.IsTrue(Panel().activeSelf);
-            StringAssert.Contains("Victoria", Text("TituloPanel"));
+            Assert.AreEqual(Localization.Get("level.victory"), Text("TituloPanel"));
             Assert.IsFalse(hud.GetComponentsInChildren<Button>(true).First(b => b.name == "BotonSiguiente").gameObject.activeSelf);
         }
 

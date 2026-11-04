@@ -48,8 +48,8 @@ namespace PuertaCastillo.UI
 
         private void Update()
         {
-            targetLabel.text = targeting.Target != null ? $"Objetivo: {targeting.Target.EncryptedMessage}" : "Objetivo: -";
-            hintLabel.text = spawner.Config.hint;
+            targetLabel.text = Localization.Format("game.target", targeting.Target != null ? targeting.Target.EncryptedMessage : "-");
+            hintLabel.text = Localization.Get(spawner.Config.hintKey);
 
             if (feedbackTimer > 0f)
             {
@@ -102,7 +102,7 @@ namespace PuertaCastillo.UI
 
         private void ShowFeedback(bool solved)
         {
-            feedbackLabel.text = solved ? "¡Correcto!" : "Incorrecto, inténtalo de nuevo";
+            feedbackLabel.text = Localization.Get(solved ? "answer.correct" : "answer.wrong");
             feedbackLabel.color = solved ? correctTextColor : wrongTextColor;
             feedbackTimer = feedbackSeconds;
         }

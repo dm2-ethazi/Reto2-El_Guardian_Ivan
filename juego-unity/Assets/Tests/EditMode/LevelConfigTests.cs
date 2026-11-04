@@ -57,7 +57,7 @@ namespace PuertaCastillo.Tests
 
             Assert.Greater(level.messages.Distinct().Count(), level.maxEnemies);
             Assert.IsTrue(level.messages.All(m => m.All(c => c == ' ' || (c >= 'A' && c <= 'Z'))));
-            Assert.IsNotEmpty(level.hint);
+            Assert.That(UI.Localization.Keys, Does.Contain(level.hintKey));
         }
 
         [Test]
