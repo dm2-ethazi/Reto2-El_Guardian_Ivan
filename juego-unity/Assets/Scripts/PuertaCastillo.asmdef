@@ -1,0 +1,10 @@
+{
+    "name": "PuertaCastillo",
+    "rootNamespace": "PuertaCastillo",
+    "references": [
+        "Unity.TextMeshPro",
+        "UnityEngine.UI",
+        "Unity.InputSystem"
+    ],
+    "autoReferenced": true
+}

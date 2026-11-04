@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4dbefbee637373c4f9f79b7d93108e74, type: 3}
+  m_Name: Level5
+  m_EditorClassIdentifier: PuertaCastillo::PuertaCastillo.Gameplay.LevelConfig
+  minEnemies: 4
+  maxEnemies: 5
+  spawnInterval: 3.5
+  enemySpeed: 0.67
+  damagePerHit: 6
+  secondsBetweenHits: 2
+  durationSeconds: 100
+  caesarShift: 13
+  enemyPrefabs:
+  - {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
+  - {fileID: 2571283707677237309, guid: f1225b080ad82bf41ac4e072156d5a72, type: 3}
+  bossPrefab: {fileID: 3529589520448922330, guid: aeab1b308f343034c8628275312f7ab1, type: 3}
+  hint: "Pista: la A se cifra como una N."
+  messages:
+  - EL ENEMIGO EN EL PUENTE
+  - DEFIENDE EL CASTILLO
+  - LA TORRE PIDE AYUDA
+  - EL GUARDIAN RESISTE
+  - LOS MAGOS EN LA MURALLA
+  - NADIE CRUZA EL FOSO
+  - EL ULTIMO ESCUDO
+  - LA VICTORIA ESTA CERCA
