@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Pantalla Descifrar: cabecera y tres pasos numerados, como en el boceto de la propuesta -->
+<VBox styleClass="content" maxWidth="900.0" spacing="18.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="el_guardian_ivan.desktop.controller.DecryptController">
+
+    <!-- Cabecera -->
+    <HBox styleClass="page-header" spacing="18.0" alignment="CENTER_LEFT">
+        <Region styleClass="icon,header-icon,icon-lock-open"/>
+        <VBox spacing="4.0" minWidth="0.0" HBox.hgrow="ALWAYS">
+            <Label text="%decrypt.title" styleClass="title"/>
+            <Label text="%decrypt.subtitle" wrapText="true" minHeight="-Infinity" styleClass="subtitle"/>
+        </VBox>
+    </HBox>
+
+    <VBox styleClass="form-card">
+        <!-- Paso 1 -->
+        <HBox styleClass="step" spacing="16.0">
+            <VBox styleClass="step-marker" alignment="TOP_CENTER">
+                <StackPane styleClass="step-number"><Label text="1"/></StackPane>
+                <Region styleClass="step-line" VBox.vgrow="ALWAYS"/>
+            </VBox>
+            <VBox styleClass="step-body" spacing="8.0" HBox.hgrow="ALWAYS">
+                <Label text="%decrypt.step1" styleClass="step-label"/>
+                <HBox spacing="12.0" alignment="CENTER_LEFT">
+                    <HBox styleClass="file-box" spacing="10.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                        <Region styleClass="icon,icon-file"/>
+                        <Label fx:id="inputFileLabel" text="%form.noFile" styleClass="file-name"
+                               maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="inputSizeLabel" styleClass="file-size"/>
+                    </HBox>
+                    <Button fx:id="selectButton" text="%form.browse" styleClass="secondary" accessibleHelp="%decrypt.hint1"
+                            onAction="#onSelectInputFile"/>
+                </HBox>
+                <!-- Ruta completa del fichero elegido (se oculta mientras no hay ninguno) -->
+                <Label fx:id="inputPathLabel" styleClass="path-label" maxWidth="Infinity"/>
+                <Label text="%decrypt.hint1" wrapText="true" styleClass="hint"/>
+            </VBox>
+        </HBox>
+
+        <!-- Paso 2 -->
+        <HBox styleClass="step" spacing="16.0">
+            <VBox styleClass="step-marker" alignment="TOP_CENTER">
+                <StackPane styleClass="step-number"><Label text="2"/></StackPane>
+                <Region styleClass="step-line" VBox.vgrow="ALWAYS"/>
+            </VBox>
+            <VBox styleClass="step-body" spacing="8.0" HBox.hgrow="ALWAYS">
+                <Label text="%form.step2" styleClass="step-label"/>
+                <StackPane styleClass="password-box" alignment="CENTER_RIGHT">
+                    <PasswordField fx:id="passwordField" accessibleText="%form.password" accessibleHelp="%decrypt.hint2" maxWidth="Infinity"/>
+                    <TextField fx:id="visiblePasswordField" accessibleText="%form.password" accessibleHelp="%decrypt.hint2" maxWidth="Infinity"/>
+                    <ToggleButton fx:id="showPasswordToggle" styleClass="eye-toggle" focusTraversable="true">
+                        <graphic><Region styleClass="icon,icon-eye"/></graphic>
+                    </ToggleButton>
+                </StackPane>
+                <Label text="%decrypt.hint2" wrapText="true" styleClass="hint"/>
+            </VBox>
+        </HBox>
+
+        <!-- Paso 3 -->
+        <HBox styleClass="step" spacing="16.0">
+            <VBox styleClass="step-marker" alignment="TOP_CENTER">
+                <StackPane styleClass="step-number"><Label text="3"/></StackPane>
+            </VBox>
+            <VBox styleClass="step-body" spacing="8.0" HBox.hgrow="ALWAYS">
+                <Label text="%form.step3" styleClass="step-label"/>
+                <HBox spacing="12.0" alignment="CENTER_LEFT">
+                    <TextField fx:id="outputNameField" accessibleText="%form.outputName" accessibleHelp="%decrypt.hint3"
+                               maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="outputFolderButton" text="%form.changeFolder" styleClass="secondary,folder-button" onAction="#onChooseOutput" minWidth="-Infinity">
+                        <graphic><Region styleClass="icon,icon-folder"/></graphic>
+                    </Button>
+                </HBox>
+                <!-- Ruta completa donde se guardará el resultado -->
+                <Label fx:id="outputPathLabel" styleClass="path-label" maxWidth="Infinity"/>
+                <Label text="%decrypt.hint3" wrapText="true" styleClass="hint"/>
+            </VBox>
+        </HBox>
+
+        <!-- Progreso y botón principal -->
+        <HBox styleClass="form-actions" spacing="16.0" alignment="CENTER_RIGHT">
+            <VBox spacing="6.0" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+                <ProgressBar fx:id="progressBar" progress="0" maxWidth="Infinity" accessibleText="%form.progress"/>
+                <Label fx:id="statusLabel" styleClass="hint"/>
+            </VBox>
+            <Button fx:id="runButton" text="%decrypt.run" styleClass="primary" defaultButton="true" onAction="#onDecrypt">
+                <graphic><Region styleClass="icon,icon-lock-open"/></graphic>
+            </Button>
+        </HBox>
+    </VBox>
+</VBox>

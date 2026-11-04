@@ -1,5 +1,7 @@
 package el_guardian_ivan.desktop.files;
 
+import el_guardian_ivan.desktop.i18n.I18n;
+
 import java.util.Locale;
 import java.util.Set;
 
@@ -10,42 +12,53 @@ import java.util.Set;
  */
 public final class FileNameValidator {
 
+    /** Caracteres que Windows no admite en un nombre de fichero. */
     private static final String FORBIDDEN_CHARACTERS = "<>:\"/\\|?*";
+    /** Longitud máxima de un nombre en Windows y en la mayoría de sistemas de ficheros de Linux. */
     private static final int MAX_LENGTH = 255;
+    /** Nombres de dispositivos de Windows: no se pueden usar ni con extensión ("CON.txt" tampoco). */
     private static final Set<String> RESERVED_NAMES = Set.of(
             "CON", "PRN", "AUX", "NUL",
             "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
             "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9");
 
+    /** Clase de utilidades: no se crean objetos. */
     private FileNameValidator() {
     }
 
-    /** Devuelve un mensaje explicando el problema, o {@code null} si el nombre es válido. */
+    /**
+     * Devuelve un mensaje (en el idioma actual) explicando el problema, o {@code null} si el nombre es válido.
+     *
+     * @param name nombre que ha escrito el usuario
+     * @return el motivo por el que no vale, o {@code null} si es válido
+     */
     public static String validate(String name) {
         if (name == null || name.isBlank()) {
-            return "El nombre del fichero no puede estar vacío.";
+            return I18n.get("name.empty");
         }
         if (name.length() > MAX_LENGTH) {
-            return "El nombre del fichero es demasiado largo (máximo " + MAX_LENGTH + " caracteres).";
+            return I18n.get("name.tooLong", MAX_LENGTH);
         }
         for (char c : name.toCharArray()) {
-            if (c < 32) {
-                return "El nombre del fichero contiene caracteres de control.";
+            if (c < 32) { // Caracteres de control (salto de línea, tabulador...)
+                return I18n.get("name.control");
             }
             if (FORBIDDEN_CHARACTERS.indexOf(c) >= 0) {
-                return "El nombre del fichero no puede contener ninguno de estos caracteres: " + FORBIDDEN_CHARACTERS;
+                return I18n.get("name.forbidden", FORBIDDEN_CHARACTERS);
             }
         }
+        // Windows quita en silencio el punto o espacio final: el fichero acabaría con otro nombre
         if (name.endsWith(".") || name.endsWith(" ")) {
-            return "El nombre del fichero no puede terminar en punto ni en espacio.";
+            return I18n.get("name.trailing");
         }
         if (name.equals(".") || name.equals("..")) {
-            return "El nombre del fichero no es válido.";
+            return I18n.get("name.invalid");
         }
+        // Se compara la parte anterior al primer punto, sin distinguir mayúsculas
         int dot = name.indexOf('.');
         String base = (dot >= 0 ? name.substring(0, dot) : name).trim().toUpperCase(Locale.ROOT);
         if (RESERVED_NAMES.contains(base)) {
-            return "\"" + base + "\" es un nombre reservado de Windows y no se puede usar.";
+            return I18n.get("name.reserved", base);
         }
         return null;
     }

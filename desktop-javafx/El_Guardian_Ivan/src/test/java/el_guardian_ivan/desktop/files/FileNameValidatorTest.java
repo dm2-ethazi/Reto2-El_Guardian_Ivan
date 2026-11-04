@@ -7,6 +7,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+/**
+ * Pruebas de FileNameValidator: nombres válidos, reservados de Windows, caracteres prohibidos,
+ * longitud y puntos o espacios al final.
+ */
 class FileNameValidatorTest {
 
     @ParameterizedTest
