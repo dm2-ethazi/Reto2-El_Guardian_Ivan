@@ -1,0 +1,30 @@
+# Carpetas generadas por Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+
+# Ficheros generados por los IDE
+.vs/
+.idea/
+.vscode/
+*.csproj
+*.sln
+*.slnx
+*.user
+*.suo
+*.pidb
+*.pdb
+*.mdb
+
+# Compilaciones y crash reports
+*.apk
+*.aab
+*.unitypackage
+crashlytics-build.properties
+sysinfo.txt
