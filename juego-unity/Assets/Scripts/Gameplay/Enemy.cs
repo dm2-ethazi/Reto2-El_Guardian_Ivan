@@ -15,6 +15,9 @@ namespace PuertaCastillo.Gameplay
         private const float LabelRowHeight = 0.5f;
 
         [SerializeField] private TMP_Text messageLabel;
+        [SerializeField] private GameObject targetFrame;
+        [SerializeField] private Color labelColor = new Color32(0xF2, 0xE8, 0xCF, 0xFF);
+        [SerializeField] private Color targetLabelColor = new Color32(0xD4, 0xA0, 0x17, 0xFF);
 
         private Rigidbody2D body;
         private Vector2 destination;
@@ -23,7 +26,9 @@ namespace PuertaCastillo.Gameplay
         private float hitTimer;
 
         public bool IsAttacking { get; private set; }
+        public bool IsTargeted { get; private set; }
         public string Message { get; private set; }
+        public string EncryptedMessage => messageLabel.text;
 
         /// <summary>Fila del mensaje mientras golpea, para que no se solape con el de otros enemigos.</summary>
         public int LabelRow { get; private set; }
@@ -41,6 +46,13 @@ namespace PuertaCastillo.Gameplay
             damagePerHit = config.damagePerHit;
             Message = message;
             messageLabel.text = CaesarCipher.Encrypt(message, config.caesarShift);
+        }
+
+        public void SetTargeted(bool targeted)
+        {
+            IsTargeted = targeted;
+            targetFrame.SetActive(targeted);
+            messageLabel.color = targeted ? targetLabelColor : labelColor;
         }
 
         private void FixedUpdate()
