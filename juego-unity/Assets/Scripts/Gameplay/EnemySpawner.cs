@@ -61,6 +61,7 @@ namespace PuertaCastillo.Gameplay
             activeEnemies.RemoveAll(enemy => enemy == null);
             timer += Time.deltaTime;
 
+            // Crea uno al momento si falta el mínimo y, si no, cada intervalo mientras quepa en el máximo.
             bool belowMinimum = activeEnemies.Count < config.minEnemies;
             bool intervalDone = timer >= config.spawnInterval && activeEnemies.Count < config.maxEnemies;
 
@@ -90,6 +91,7 @@ namespace PuertaCastillo.Gameplay
             }
         }
 
+        // Crea el enemigo a partir del prefab y le da los valores del nivel y un mensaje libre.
         private Enemy Spawn(Enemy prefab, Transform point)
         {
             Enemy enemy = Instantiate(prefab, point.position, Quaternion.identity);
@@ -123,6 +125,7 @@ namespace PuertaCastillo.Gameplay
             return point;
         }
 
+        // Busca la primera fila de mensaje que no use ningún enemigo activo.
         private int FreeLabelRow()
         {
             return Enumerable.Range(0, config.maxEnemies)

@@ -49,6 +49,7 @@ namespace PuertaCastillo.UI
             confirmPanel.SetActive(false);
         }
 
+        // Application.Quit no hace nada dentro del editor: allí se detiene el modo Play.
         private void Exit()
         {
 #if UNITY_EDITOR

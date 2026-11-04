@@ -8,6 +8,8 @@ namespace PuertaCastillo.UI
 {
     /// <summary>
     /// Regla de ayuda: dos abecedarios alineados, con el de abajo desplazable por el jugador.
+    /// Con el desplazamiento correcto, cada letra cifrada queda justo debajo de su original.
+    /// Se usa con los botones + y - o con las flechas arriba y abajo.
     /// </summary>
     public class CaesarRuler : MonoBehaviour
     {
@@ -81,6 +83,7 @@ namespace PuertaCastillo.UI
             shiftLabel.text = Shift.ToString();
         }
 
+        // Todas las letras ocupan el mismo ancho para que las dos filas queden alineadas.
         private static string Monospaced(string letters)
         {
             return $"<mspace=1em>{letters}</mspace>";

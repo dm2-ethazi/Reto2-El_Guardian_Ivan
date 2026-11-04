@@ -55,6 +55,11 @@ namespace PuertaCastillo.Gameplay
             }
         }
 
+        /// <summary>
+        /// Prepara al enemigo recién creado con los valores del nivel, ajustados por los
+        /// multiplicadores de su tipo. Guarda el mensaje original para comprobar la respuesta
+        /// y muestra en pantalla solo el cifrado.
+        /// </summary>
         public void Init(Vector2 doorPosition, LevelConfig config, string message, int row)
         {
             LabelRow = row;
@@ -77,6 +82,7 @@ namespace PuertaCastillo.Gameplay
         {
             RemainingDecrypts--;
 
+            // La barra se encoge por la derecha: reduce el ancho y mueve el centro a la izquierda.
             if (healthFill != null)
             {
                 float ratio = (float)RemainingDecrypts / decryptsToKill;
@@ -94,6 +100,8 @@ namespace PuertaCastillo.Gameplay
             messageLabel.color = targeted ? targetLabelColor : labelColor;
         }
 
+        // El movimiento va en FixedUpdate porque usa física. Se recalcula la dirección en cada paso
+        // y deja de aplicarse cuando el enemigo ya está golpeando la puerta.
         private void FixedUpdate()
         {
             if (!IsAttacking)
@@ -102,6 +110,7 @@ namespace PuertaCastillo.Gameplay
             }
         }
 
+        // Primer contacto con la puerta: el enemigo se detiene y empieza a contar para golpear.
         private void OnCollisionEnter2D(Collision2D collision)
         {
             if (collision.collider.TryGetComponent<Door>(out _))
@@ -113,6 +122,8 @@ namespace PuertaCastillo.Gameplay
             }
         }
 
+        // Se ejecuta en cada paso de física mientras siga el contacto: acumula tiempo y golpea al
+        // llegar al intervalo del nivel. Por eso el daño no depende de que el enemigo se separe.
         // El Rigidbody2D del prefab no duerme: dormido dejaría de recibir este evento y la puerta de perder vida.
         private void OnCollisionStay2D(Collision2D collision)
         {
@@ -129,6 +140,7 @@ namespace PuertaCastillo.Gameplay
             }
         }
 
+        // Si dejara de tocar la puerta, vuelve a avanzar.
         private void OnCollisionExit2D(Collision2D collision)
         {
             if (collision.collider.TryGetComponent<Door>(out _))

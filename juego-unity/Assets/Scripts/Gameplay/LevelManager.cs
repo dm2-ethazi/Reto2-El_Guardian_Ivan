@@ -53,6 +53,7 @@ namespace PuertaCastillo.Gameplay
             StartLevel(startLevelIndex);
         }
 
+        // Cuenta atrás del nivel: si la puerta sigue en pie al llegar a 0, el nivel está superado.
         private void Update()
         {
             if (!playing || !HasTimer)
@@ -73,6 +74,7 @@ namespace PuertaCastillo.Gameplay
             StartLevel(levelIndex + 1);
         }
 
+        // La vida de la puerta no se toca: se conserva entre niveles, con la reparación ya aplicada.
         private void StartLevel(int index)
         {
             levelIndex = index;

@@ -20,6 +20,7 @@ namespace PuertaCastillo.UI
         [SerializeField] private Button restartButton;
         [SerializeField] private Button menuButton;
 
+        // Conecta los eventos de la partida con los paneles y los botones con sus acciones.
         private void OnEnable()
         {
             levelManager.LevelStarted += HidePanel;
@@ -71,6 +72,7 @@ namespace PuertaCastillo.UI
             ShowPanel("Derrota: la puerta ha caído", false);
         }
 
+        // El mismo panel sirve para todo: solo cambian el título y los botones visibles.
         private void ShowPanel(string title, bool canContinue)
         {
             panelTitle.text = title;
@@ -81,6 +83,7 @@ namespace PuertaCastillo.UI
             answerPanel.SetInteractable(false);
         }
 
+        // Recargar la escena deja la puerta a 100 y la partida en el nivel 1.
         private void Restart()
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);

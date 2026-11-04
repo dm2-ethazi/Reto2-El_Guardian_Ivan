@@ -46,6 +46,7 @@ namespace PuertaCastillo.UI
             hintLabel.text = spawner.Config.hint;
         }
 
+        /// <summary>Bloquea la respuesta mientras se muestra un panel de nivel.</summary>
         public void SetInteractable(bool interactable)
         {
             answerField.interactable = interactable;
@@ -62,6 +63,7 @@ namespace PuertaCastillo.UI
             Submit(answerField.text);
         }
 
+        // Lo llaman tanto Intro como el botón. Un campo vacío no cuenta como fallo.
         private void Submit(string answer)
         {
             if (string.IsNullOrWhiteSpace(answer))

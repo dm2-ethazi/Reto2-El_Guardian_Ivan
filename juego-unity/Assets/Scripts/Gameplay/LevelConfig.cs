@@ -4,6 +4,8 @@ namespace PuertaCastillo.Gameplay
 {
     /// <summary>
     /// Valores de un nivel, para reutilizar las mismas mecánicas en los cinco niveles.
+    /// Es un ScriptableObject: cada nivel es un fichero de Assets/Levels que se edita en el
+    /// Inspector, así que cambiar la dificultad no obliga a tocar el código.
     /// </summary>
     [CreateAssetMenu(fileName = "Level", menuName = "Puerta del Castillo/Nivel")]
     public class LevelConfig : ScriptableObject

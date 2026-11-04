@@ -14,6 +14,7 @@ namespace PuertaCastillo.UI
         [SerializeField] private Slider slider;
         [SerializeField] private TMP_Text label;
 
+        // Se suscribe al evento de la puerta para actualizarse solo cuando cambia la vida.
         private void OnEnable()
         {
             door.HealthChanged += Show;
