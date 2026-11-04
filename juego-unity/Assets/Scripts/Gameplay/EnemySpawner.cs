@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace PuertaCastillo.Gameplay
 {
@@ -10,18 +12,49 @@ namespace PuertaCastillo.Gameplay
     public class EnemySpawner : MonoBehaviour
     {
         [SerializeField] private LevelConfig config;
-        [SerializeField] private Enemy enemyPrefab;
         [SerializeField] private Door door;
         [SerializeField] private Transform[] spawnPoints;
 
         private readonly List<Enemy> activeEnemies = new List<Enemy>();
         private readonly List<Transform> freePoints = new List<Transform>();
+        private Enemy boss;
+        private bool stopped;
         private float timer;
 
+        /// <summary>Se lanza cuando se derrota al jefe del nivel.</summary>
+        public event Action BossDefeated;
+
         public IReadOnlyList<Enemy> ActiveEnemies => activeEnemies;
+        public LevelConfig Config => config;
+        public Enemy Boss => boss;
+
+        private void Start()
+        {
+            StartLevel(config);
+        }
+
+        /// <summary>Vacía la escena de enemigos y empieza a generar los del nivel indicado.</summary>
+        public void StartLevel(LevelConfig level)
+        {
+            config = level;
+            DestroyActiveEnemies();
+            freePoints.Clear();
+            timer = 0f;
+            stopped = false;
+
+            if (config.bossPrefab != null)
+            {
+                boss = Spawn(config.bossPrefab, spawnPoints[spawnPoints.Length / 2]);
+            }
+        }
 
         private void Update()
         {
+            if (stopped)
+            {
+                return;
+            }
+
             // Los enemigos destruidos quedan como null en la lista.
             activeEnemies.RemoveAll(enemy => enemy == null);
             timer += Time.deltaTime;
@@ -31,32 +64,48 @@ namespace PuertaCastillo.Gameplay
 
             if (belowMinimum || intervalDone)
             {
-                Spawn();
+                Enemy prefab = config.enemyPrefabs[Random.Range(0, config.enemyPrefabs.Length)];
+                Spawn(prefab, NextSpawnPoint());
             }
         }
 
-        private void Spawn()
+        /// <summary>Aplica un mensaje descifrado: el enemigo muere o, si es el jefe, recibe un mensaje nuevo.</summary>
+        public void ResolveDecrypt(Enemy enemy)
         {
-            Enemy enemy = Instantiate(enemyPrefab, NextSpawnPoint().position, Quaternion.identity);
+            if (!enemy.TakeDecrypt())
+            {
+                enemy.SetMessage(PickMessage());
+                return;
+            }
+
+            Destroy(enemy.gameObject);
+
+            if (enemy == boss)
+            {
+                boss = null;
+                stopped = true;
+                DestroyActiveEnemies();
+                BossDefeated?.Invoke();
+            }
+        }
+
+        private Enemy Spawn(Enemy prefab, Transform point)
+        {
+            Enemy enemy = Instantiate(prefab, point.position, Quaternion.identity);
             enemy.Init(door.transform.position, config, PickMessage(), FreeLabelRow());
             activeEnemies.Add(enemy);
             timer = 0f;
+            return enemy;
         }
 
-        private int FreeLabelRow()
+        private void DestroyActiveEnemies()
         {
-            return Enumerable.Range(0, config.maxEnemies)
-                .First(row => activeEnemies.All(enemy => enemy.LabelRow != row));
-        }
+            foreach (Enemy enemy in activeEnemies.Where(enemy => enemy != null))
+            {
+                Destroy(enemy.gameObject);
+            }
 
-        // Elige un mensaje que no tenga ningún enemigo activo.
-        private string PickMessage()
-        {
-            string[] free = config.messages
-                .Where(message => activeEnemies.All(enemy => enemy.Message != message))
-                .ToArray();
-
-            return free[Random.Range(0, free.Length)];
+            activeEnemies.Clear();
         }
 
         // Reparte los puntos sin repetir hasta agotarlos, para que no aparezcan enemigos solapados.
@@ -71,6 +120,22 @@ namespace PuertaCastillo.Gameplay
             Transform point = freePoints[index];
             freePoints.RemoveAt(index);
             return point;
+        }
+
+        private int FreeLabelRow()
+        {
+            return Enumerable.Range(0, config.maxEnemies)
+                .First(row => activeEnemies.All(enemy => enemy == null || enemy.LabelRow != row));
+        }
+
+        // Elige un mensaje que no tenga ningún enemigo activo.
+        private string PickMessage()
+        {
+            string[] free = config.messages
+                .Where(message => activeEnemies.All(enemy => enemy == null || enemy.Message != message))
+                .ToArray();
+
+            return free[Random.Range(0, free.Length)];
         }
     }
 }

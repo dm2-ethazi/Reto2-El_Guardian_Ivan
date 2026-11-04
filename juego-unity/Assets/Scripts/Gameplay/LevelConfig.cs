@@ -13,9 +13,18 @@ namespace PuertaCastillo.Gameplay
         [Min(0.1f)] public float spawnInterval = 6f;
         [Min(0.1f)] public float enemySpeed = 0.4f;
         [Min(1)] public int damagePerHit = 2;
+        [Min(1f)] public float durationSeconds = 60f;
         [Range(1, 25)] public int caesarShift = 3;
 
-        [Tooltip("En mayúsculas, sin tildes ni Ñ. Debe haber al menos tantos como maxEnemies.")]
+        [Tooltip("Tipos de enemigo que pueden aparecer en este nivel.")]
+        public Enemy[] enemyPrefabs;
+
+        [Tooltip("Jefe que aparece al empezar el nivel. Vacío si el nivel no tiene jefe.")]
+        public Enemy bossPrefab;
+
+        [TextArea] public string hint;
+
+        [Tooltip("En mayúsculas, sin tildes ni Ñ. Debe haber más que maxEnemies.")]
         public string[] messages;
     }
 }

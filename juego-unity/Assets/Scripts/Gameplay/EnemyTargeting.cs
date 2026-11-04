@@ -34,7 +34,7 @@ namespace PuertaCastillo.Gameplay
         }
 
         /// <summary>
-        /// Destruye el objetivo si la respuesta coincide con su mensaje, sin espacios sobrantes y en mayúsculas.
+        /// Da por descifrado al objetivo si la respuesta coincide con su mensaje, sin espacios sobrantes y en mayúsculas.
         /// </summary>
         public bool TrySolve(string answer)
         {
@@ -43,8 +43,7 @@ namespace PuertaCastillo.Gameplay
                 return false;
             }
 
-            Destroy(Target.gameObject);
-            Target = null;
+            spawner.ResolveDecrypt(Target);
             return true;
         }
 

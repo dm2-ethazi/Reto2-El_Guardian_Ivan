@@ -6,7 +6,7 @@ namespace PuertaCastillo.Gameplay
 {
     /// <summary>
     /// Enemigo que avanza hacia la puerta y la golpea mientras está en contacto con ella.
-    /// Lo configura <see cref="EnemySpawner"/> al crearlo.
+    /// Lo configura <see cref="EnemySpawner"/> al crearlo. Los tipos de enemigo son variantes del prefab.
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
     public class Enemy : MonoBehaviour
@@ -19,16 +19,27 @@ namespace PuertaCastillo.Gameplay
         [SerializeField] private Color labelColor = new Color32(0xF2, 0xE8, 0xCF, 0xFF);
         [SerializeField] private Color targetLabelColor = new Color32(0xD4, 0xA0, 0x17, 0xFF);
 
+        [Header("Tipo de enemigo")]
+        [SerializeField, Min(0.1f)] private float speedMultiplier = 1f;
+        [SerializeField, Min(0.1f)] private float damageMultiplier = 1f;
+        [SerializeField, Min(1)] private int decryptsToKill = 1;
+        [Tooltip("Relleno de la barra de vida. Solo lo usa el jefe.")]
+        [SerializeField] private Transform healthFill;
+
         private Rigidbody2D body;
         private Vector2 destination;
         private float speed;
         private int damagePerHit;
+        private int caesarShift;
         private float hitTimer;
+        private float healthFillWidth;
 
         public bool IsAttacking { get; private set; }
         public bool IsTargeted { get; private set; }
         public string Message { get; private set; }
         public string EncryptedMessage => messageLabel.text;
+        public float SpeedMultiplier => speedMultiplier;
+        public int RemainingDecrypts { get; private set; }
 
         /// <summary>Fila del mensaje mientras golpea, para que no se solape con el de otros enemigos.</summary>
         public int LabelRow { get; private set; }
@@ -36,16 +47,43 @@ namespace PuertaCastillo.Gameplay
         private void Awake()
         {
             body = GetComponent<Rigidbody2D>();
+            RemainingDecrypts = decryptsToKill;
+
+            if (healthFill != null)
+            {
+                healthFillWidth = healthFill.localScale.x;
+            }
         }
 
         public void Init(Vector2 doorPosition, LevelConfig config, string message, int row)
         {
             LabelRow = row;
             destination = doorPosition;
-            speed = config.enemySpeed;
-            damagePerHit = config.damagePerHit;
+            speed = config.enemySpeed * speedMultiplier;
+            damagePerHit = Mathf.RoundToInt(config.damagePerHit * damageMultiplier);
+            caesarShift = config.caesarShift;
+            SetMessage(message);
+        }
+
+        public void SetMessage(string message)
+        {
             Message = message;
-            messageLabel.text = CaesarCipher.Encrypt(message, config.caesarShift);
+            messageLabel.text = CaesarCipher.Encrypt(message, caesarShift);
+        }
+
+        /// <summary>Resta un descifrado. Devuelve true si el enemigo ya no puede seguir.</summary>
+        public bool TakeDecrypt()
+        {
+            RemainingDecrypts--;
+
+            if (healthFill != null)
+            {
+                float ratio = (float)RemainingDecrypts / decryptsToKill;
+                healthFill.localScale = new Vector3(healthFillWidth * ratio, healthFill.localScale.y, 1f);
+                healthFill.localPosition = new Vector3(-healthFillWidth * (1f - ratio) / 2f, healthFill.localPosition.y, 0f);
+            }
+
+            return RemainingDecrypts <= 0;
         }
 
         public void SetTargeted(bool targeted)

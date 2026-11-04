@@ -15,6 +15,8 @@ namespace PuertaCastillo.UI
         [SerializeField] private TMP_InputField answerField;
         [SerializeField] private Button decryptButton;
         [SerializeField] private TMP_Text targetLabel;
+        [SerializeField] private EnemySpawner spawner;
+        [SerializeField] private TMP_Text hintLabel;
         [SerializeField] private Image fieldBackground;
         [SerializeField] private Color normalColor = new Color32(0xF2, 0xE8, 0xCF, 0xFF);
         [SerializeField] private Color errorColor = new Color32(0xC0, 0x39, 0x2B, 0xFF);
@@ -41,6 +43,7 @@ namespace PuertaCastillo.UI
         private void Update()
         {
             targetLabel.text = targeting.Target != null ? $"Objetivo: {targeting.Target.EncryptedMessage}" : "Objetivo: -";
+            hintLabel.text = spawner.Config.hint;
         }
 
         private void SubmitField()
