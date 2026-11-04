@@ -15,5 +15,13 @@ MonoBehaviour:
   minEnemies: 1
   maxEnemies: 2
   spawnInterval: 6
-  enemySpeed: 0.6
+  enemySpeed: 0.4
   damagePerHit: 2
+  caesarShift: 3
+  messages:
+  - ABRE LA PUERTA
+  - CUIDA EL CASTILLO
+  - ALERTA EN LA TORRE
+  - CIERRA EL PORTON
+  - LA MAGIA PROTEGE
+  - EL GUARDIAN VIGILA

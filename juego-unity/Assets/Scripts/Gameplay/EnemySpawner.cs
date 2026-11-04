@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PuertaCastillo.Gameplay
@@ -37,9 +38,25 @@ namespace PuertaCastillo.Gameplay
         private void Spawn()
         {
             Enemy enemy = Instantiate(enemyPrefab, NextSpawnPoint().position, Quaternion.identity);
-            enemy.Init(door.transform.position, config.enemySpeed, config.damagePerHit);
+            enemy.Init(door.transform.position, config, PickMessage(), FreeLabelRow());
             activeEnemies.Add(enemy);
             timer = 0f;
+        }
+
+        private int FreeLabelRow()
+        {
+            return Enumerable.Range(0, config.maxEnemies)
+                .First(row => activeEnemies.All(enemy => enemy.LabelRow != row));
+        }
+
+        // Elige un mensaje que no tenga ningún enemigo activo.
+        private string PickMessage()
+        {
+            string[] free = config.messages
+                .Where(message => activeEnemies.All(enemy => enemy.Message != message))
+                .ToArray();
+
+            return free[Random.Range(0, free.Length)];
         }
 
         // Reparte los puntos sin repetir hasta agotarlos, para que no aparezcan enemigos solapados.
