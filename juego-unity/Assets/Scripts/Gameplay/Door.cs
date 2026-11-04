@@ -29,15 +29,10 @@ namespace PuertaCastillo.Gameplay
             CurrentHealth = maxHealth;
         }
 
-        /// <summary>Recupera vida sin pasar del máximo. Una puerta caída ya no se repara.</summary>
-        public void Repair(int amount)
+        /// <summary>Devuelve la puerta a su vida máxima. Se usa al empezar cada nivel.</summary>
+        public void ResetHealth()
         {
-            if (amount <= 0 || IsDown)
-            {
-                return;
-            }
-
-            CurrentHealth = Mathf.Min(CurrentHealth + amount, maxHealth);
+            CurrentHealth = maxHealth;
             HealthChanged?.Invoke(CurrentHealth, maxHealth);
         }
 

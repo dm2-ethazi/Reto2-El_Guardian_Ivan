@@ -3175,7 +3175,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 96abc89b37ff9ee46bc72da4a839a7ae, type: 2}
   spawner: {fileID: 766701034}
   door: {fileID: 966779025}
-  repairPerLevel: 20
   startLevelIndex: 0
 --- !u!4 &830662625
 Transform:

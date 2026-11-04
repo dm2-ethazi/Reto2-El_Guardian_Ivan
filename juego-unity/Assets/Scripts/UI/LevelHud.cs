@@ -45,10 +45,8 @@ namespace PuertaCastillo.UI
 
         private void Update()
         {
-            string time = levelManager.HasTimer
-                ? $"{Mathf.CeilToInt(levelManager.TimeRemaining) / 60:00}:{Mathf.CeilToInt(levelManager.TimeRemaining) % 60:00}"
-                : "¡Derrota al jefe!";
-            statusLabel.text = $"Nivel {levelManager.LevelNumber}  {time}";
+            int seconds = Mathf.CeilToInt(levelManager.TimeRemaining);
+            statusLabel.text = $"Nivel {levelManager.LevelNumber}  {seconds / 60:00}:{seconds % 60:00}";
         }
 
         private void HidePanel()
