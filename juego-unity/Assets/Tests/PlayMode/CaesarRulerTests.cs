@@ -35,8 +35,8 @@ namespace PuertaCastillo.Tests
             Press("BotonSubir", 3);
 
             Assert.AreEqual(3, ruler.Shift);
-            Assert.AreEqual("ABCDEFGHIJKLMNOPQRSTUVWXYZ", Row("FilaOriginal"));
-            Assert.AreEqual("DEFGHIJKLMNOPQRSTUVWXYZABC", Row("FilaCifrada"));
+            Assert.AreEqual("ABCDEFGHIJKLMNÑOPQRSTUVWXYZ", Row("FilaOriginal"));
+            Assert.AreEqual("DEFGHIJKLMNÑOPQRSTUVWXYZABC", Row("FilaCifrada"));
         }
 
         [Test]
@@ -44,8 +44,8 @@ namespace PuertaCastillo.Tests
         {
             Press("BotonBajar", 1);
 
-            Assert.AreEqual(25, ruler.Shift);
-            Assert.AreEqual("ZABCDEFGHIJKLMNOPQRSTUVWXY", Row("FilaCifrada"));
+            Assert.AreEqual(26, ruler.Shift);
+            Assert.AreEqual("ZABCDEFGHIJKLMNÑOPQRSTUVWXY", Row("FilaCifrada"));
         }
 
         private void Press(string button, int times)

@@ -11,8 +11,6 @@ namespace PuertaCastillo.UI
     /// </summary>
     public class CaesarRuler : MonoBehaviour
     {
-        private const string Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
         [SerializeField] private TMP_Text cipherRow;
         [SerializeField] private TMP_Text plainRow;
         [SerializeField] private TMP_Text shiftLabel;
@@ -71,14 +69,15 @@ namespace PuertaCastillo.UI
 
         private void ChangeShift(int delta)
         {
-            Shift = (Shift + delta + Alphabet.Length) % Alphabet.Length;
+            int size = CaesarCipher.Alphabet.Length;
+            Shift = (Shift + delta + size) % size;
             Show();
         }
 
         private void Show()
         {
-            plainRow.text = Monospaced(Alphabet);
-            cipherRow.text = Monospaced(CaesarCipher.Encrypt(Alphabet, Shift));
+            plainRow.text = Monospaced(CaesarCipher.Alphabet);
+            cipherRow.text = Monospaced(CaesarCipher.Encrypt(CaesarCipher.Alphabet, Shift));
             shiftLabel.text = Shift.ToString();
         }
 

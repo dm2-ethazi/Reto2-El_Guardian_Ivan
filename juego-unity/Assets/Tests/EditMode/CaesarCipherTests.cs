@@ -35,9 +35,18 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(message, CaesarCipher.Decrypt(CaesarCipher.Encrypt(message, shift), shift));
         }
 
+        [Test]
+        public void TheEñeIsPartOfTheAlphabet()
+        {
+            Assert.AreEqual("Ñ", CaesarCipher.Encrypt("N", 1));
+            Assert.AreEqual("O", CaesarCipher.Encrypt("Ñ", 1));
+            Assert.AreEqual("N", CaesarCipher.Decrypt("Ñ", 1));
+            Assert.AreEqual("Ñ", CaesarCipher.Decrypt(CaesarCipher.Encrypt("Ñ", 13), 13));
+        }
+
         [TestCase(0)]
-        [TestCase(26)]
-        [TestCase(-26)]
+        [TestCase(27)]
+        [TestCase(-27)]
         public void WholeTurnsLeaveTheTextUnchanged(int shift)
         {
             Assert.AreEqual("PUERTA", CaesarCipher.Encrypt("PUERTA", shift));

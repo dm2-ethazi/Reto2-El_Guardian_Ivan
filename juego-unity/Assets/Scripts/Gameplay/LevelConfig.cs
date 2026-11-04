@@ -15,7 +15,7 @@ namespace PuertaCastillo.Gameplay
         [Min(1)] public int damagePerHit = 2;
         [Min(0.1f)] public float secondsBetweenHits = 2f;
         [Min(1f)] public float durationSeconds = 60f;
-        [Range(1, 25)] public int caesarShift = 3;
+        [Range(1, 26)] public int caesarShift = 3;
 
         [Tooltip("Tipos de enemigo que pueden aparecer en este nivel.")]
         public Enemy[] enemyPrefabs;
