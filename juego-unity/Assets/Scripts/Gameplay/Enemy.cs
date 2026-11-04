@@ -3,29 +3,74 @@ using UnityEngine;
 namespace PuertaCastillo.Gameplay
 {
     /// <summary>
-    /// Enemigo que avanza hacia la puerta. Lo configura <see cref="EnemySpawner"/> al crearlo.
+    /// Enemigo que avanza hacia la puerta y la golpea mientras está en contacto con ella.
+    /// Lo configura <see cref="EnemySpawner"/> al crearlo.
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
     public class Enemy : MonoBehaviour
     {
+        private const float SecondsBetweenHits = 1f;
+
         private Rigidbody2D body;
         private Vector2 destination;
         private float speed;
+        private int damagePerHit;
+        private float hitTimer;
+
+        public bool IsAttacking { get; private set; }
 
         private void Awake()
         {
             body = GetComponent<Rigidbody2D>();
         }
 
-        public void Init(Vector2 doorPosition, float moveSpeed)
+        public void Init(Vector2 doorPosition, float moveSpeed, int damage)
         {
             destination = doorPosition;
             speed = moveSpeed;
+            damagePerHit = damage;
         }
 
         private void FixedUpdate()
         {
-            body.linearVelocity = (destination - body.position).normalized * speed;
+            if (!IsAttacking)
+            {
+                body.linearVelocity = (destination - body.position).normalized * speed;
+            }
+        }
+
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            if (collision.collider.TryGetComponent<Door>(out _))
+            {
+                IsAttacking = true;
+                hitTimer = 0f;
+                body.linearVelocity = Vector2.zero;
+            }
+        }
+
+        // El Rigidbody2D del prefab no duerme: dormido dejaría de recibir este evento y la puerta de perder vida.
+        private void OnCollisionStay2D(Collision2D collision)
+        {
+            if (!collision.collider.TryGetComponent(out Door door))
+            {
+                return;
+            }
+
+            hitTimer += Time.fixedDeltaTime;
+            if (hitTimer >= SecondsBetweenHits)
+            {
+                hitTimer -= SecondsBetweenHits;
+                door.TakeDamage(damagePerHit);
+            }
+        }
+
+        private void OnCollisionExit2D(Collision2D collision)
+        {
+            if (collision.collider.TryGetComponent<Door>(out _))
+            {
+                IsAttacking = false;
+            }
         }
     }
 }

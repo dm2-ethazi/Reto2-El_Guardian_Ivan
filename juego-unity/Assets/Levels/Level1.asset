@@ -16,3 +16,4 @@ MonoBehaviour:
   maxEnemies: 2
   spawnInterval: 6
   enemySpeed: 0.6
+  damagePerHit: 2

@@ -37,7 +37,7 @@ namespace PuertaCastillo.Gameplay
         private void Spawn()
         {
             Enemy enemy = Instantiate(enemyPrefab, NextSpawnPoint().position, Quaternion.identity);
-            enemy.Init(door.transform.position, config.enemySpeed);
+            enemy.Init(door.transform.position, config.enemySpeed, config.damagePerHit);
             activeEnemies.Add(enemy);
             timer = 0f;
         }

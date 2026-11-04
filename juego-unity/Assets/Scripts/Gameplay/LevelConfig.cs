@@ -12,5 +12,6 @@ namespace PuertaCastillo.Gameplay
         [Min(1)] public int maxEnemies = 2;
         [Min(0.1f)] public float spawnInterval = 6f;
         [Min(0.1f)] public float enemySpeed = 0.6f;
+        [Min(1)] public int damagePerHit = 2;
     }
 }

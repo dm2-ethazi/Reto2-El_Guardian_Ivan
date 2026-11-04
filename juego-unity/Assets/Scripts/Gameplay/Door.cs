@@ -41,12 +41,5 @@ namespace PuertaCastillo.Gameplay
                 Fell?.Invoke();
             }
         }
-
-        // Permite probar la barra de vida desde el Inspector hasta que existan los enemigos.
-        [ContextMenu("Prueba: recibir 10 de daño")]
-        private void TakeTestDamage()
-        {
-            TakeDamage(10);
-        }
     }
 }
