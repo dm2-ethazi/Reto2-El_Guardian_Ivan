@@ -3,7 +3,8 @@
     "rootNamespace": "PuertaCastillo",
     "references": [
         "Unity.TextMeshPro",
-        "UnityEngine.UI"
+        "UnityEngine.UI",
+        "Unity.InputSystem"
     ],
     "autoReferenced": true
 }

@@ -1,0 +1,90 @@
+using PuertaCastillo.Crypto;
+using TMPro;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
+
+namespace PuertaCastillo.UI
+{
+    /// <summary>
+    /// Regla de ayuda: dos abecedarios alineados, con el de abajo desplazable por el jugador.
+    /// </summary>
+    public class CaesarRuler : MonoBehaviour
+    {
+        private const string Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        [SerializeField] private TMP_Text cipherRow;
+        [SerializeField] private TMP_Text plainRow;
+        [SerializeField] private TMP_Text shiftLabel;
+        [SerializeField] private Button increaseButton;
+        [SerializeField] private Button decreaseButton;
+        [SerializeField] private TMP_InputField answerField;
+
+        public int Shift { get; private set; }
+
+        private void OnEnable()
+        {
+            increaseButton.onClick.AddListener(Increase);
+            decreaseButton.onClick.AddListener(Decrease);
+        }
+
+        private void OnDisable()
+        {
+            increaseButton.onClick.RemoveListener(Increase);
+            decreaseButton.onClick.RemoveListener(Decrease);
+        }
+
+        private void Start()
+        {
+            Show();
+        }
+
+        private void Update()
+        {
+            Keyboard keyboard = Keyboard.current;
+            if (keyboard == null)
+            {
+                return;
+            }
+
+            if (keyboard.upArrowKey.wasPressedThisFrame)
+            {
+                ChangeShift(1);
+            }
+            else if (keyboard.downArrowKey.wasPressedThisFrame)
+            {
+                ChangeShift(-1);
+            }
+        }
+
+        private void Increase()
+        {
+            ChangeShift(1);
+            answerField.ActivateInputField();
+        }
+
+        private void Decrease()
+        {
+            ChangeShift(-1);
+            answerField.ActivateInputField();
+        }
+
+        private void ChangeShift(int delta)
+        {
+            Shift = (Shift + delta + Alphabet.Length) % Alphabet.Length;
+            Show();
+        }
+
+        private void Show()
+        {
+            plainRow.text = Monospaced(Alphabet);
+            cipherRow.text = Monospaced(CaesarCipher.Encrypt(Alphabet, Shift));
+            shiftLabel.text = Shift.ToString();
+        }
+
+        private static string Monospaced(string letters)
+        {
+            return $"<mspace=1em>{letters}</mspace>";
+        }
+    }
+}
