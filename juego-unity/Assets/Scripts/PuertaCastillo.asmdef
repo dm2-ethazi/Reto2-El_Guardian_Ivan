@@ -1,0 +1,9 @@
+{
+    "name": "PuertaCastillo",
+    "rootNamespace": "PuertaCastillo",
+    "references": [
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
+    ],
+    "autoReferenced": true
+}
