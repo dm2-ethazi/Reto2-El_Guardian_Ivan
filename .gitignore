@@ -31,3 +31,6 @@ htmlcov/
 # Archivos del sistema operativo
 .DS_Store
 Thumbs.db
+
+# Logs generados por Vigenère
+crypto-python/logs/

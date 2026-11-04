@@ -1,6 +1,7 @@
 """Gestión segura de archivos .txt para el módulo Vigenère."""
 
 import errno
+import logging
 import os
 import shutil
 import tempfile
@@ -29,6 +30,9 @@ NOMBRES_RESERVADOS = frozenset(
     | {f"LPT{n}" for n in "¹²³"}
 )
 CARACTERES_PROHIBIDOS = '<>:"/\\|?*'
+
+# Logger compartido con el resto de la aplicacion.
+logger = logging.getLogger("vigenere")
 
 
 class ArchivoSinTextoError(ValueError):
@@ -213,6 +217,19 @@ def procesar_archivo_grande(
     # En UTF-8, cifrar exclusivamente letras ASCII conserva el total de bytes.
     comprobar_espacio(carpeta_salida, tamano_total)
 
+    # Identificamos el tipo de operacion.
+    operacion = "cifrado" if cifrar else "descifrado"
+
+    # Guardamos el momento de inicio para medir la duracion.
+    inicio = time.perf_counter()
+
+    # Registramos el inicio sin almacenar claves ni contenido.
+    logger.info(
+        "Inicio de %s de archivo grande (%d bytes)",
+        operacion,
+        tamano_total,
+    )
+
     posicion_clave = 0
     bytes_procesados = 0
     contiene_texto = False
@@ -250,6 +267,16 @@ def procesar_archivo_grande(
             )
 
         publicar_sin_sobrescribir(temporal, archivo_salida)
+
+        # Calculamos la duracion total del procesamiento.
+        duracion = time.perf_counter() - inicio
+
+        logger.info(
+            "Fin de %s de archivo grande (duracion: %.2f segundos)",
+            operacion,
+            duracion,
+        )
+
         return archivo_salida
     finally:
         # Finalmente eliminamos el nombre temporal, incluso si se cancela
