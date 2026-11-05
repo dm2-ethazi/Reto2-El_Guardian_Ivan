@@ -178,12 +178,12 @@
 .button.card {
     -fx-background-color: -pergamino;
     -borde-boton: -oro-antiguo;
-    -anillo-foco: -oro-antiguo; /* Sobre el fondo azul noche de Inicio el anillo azul no se vería */
+    -anillo-foco: -oro-antiguo;
     -fx-border-color: -borde-boton;
     -fx-border-width: 1.5;
     -fx-background-radius: 12;
     -fx-border-radius: 12;
-    -fx-effect: dropshadow(gaussian, rgba(37, 37, 37, 0.45), 16, 0, 0, 4);
+    -fx-effect: none;
 }
 
 .button.card:hover {
@@ -603,4 +603,69 @@
 .combo-box-popup .list-cell:filled:selected, .combo-box-popup .list-cell:filled:hover {
     -fx-background-color: -azul-noche;
     -fx-text-fill: -pergamino;
+}
+
+/* Fondo de pergamino */
+.content-area {
+    -fx-background-image: url("../images/fondo_pergamino.png");
+    /* Ligero recorte inferior: oculta la raya horizontal oscura del marco. */
+    -fx-background-size: 100% 104%;
+    -fx-background-position: left top;
+    -fx-background-repeat: no-repeat;
+}
+
+/* Dejar visible el fondo en Inicio */
+.hero {
+    -fx-background-color: transparent;
+}
+
+.hero-title,
+.hero-subtitle,
+.hero-text {
+    -fx-text-fill: #102B40;
+}
+
+.hero .icon-info {
+    -fx-background-color: #102B40;
+}
+
+/* ---------- Ajustes de legibilidad y adaptación de los textos ---------- */
+/* El texto de Ayuda se divide en líneas dentro de cada tarjeta. */
+.help-content .label {
+    -fx-wrap-text: true;
+}
+
+/* Nombres largos de archivos: mostrar puntos suspensivos, sin ensanchar el formulario. */
+.file-box {
+    -fx-min-width: 0;
+}
+.file-name {
+    -fx-min-width: 0;
+    -fx-text-overrun: center-ellipsis;
+}
+.file-size {
+    -fx-text-overrun: trailing-ellipsis;
+}
+.path-label {
+    -fx-min-width: 0;
+}
+
+/* Al reducir la ventana, los bloques no fuerzan un ancho mayor que el disponible. */
+.step-body, .password-box, .form-actions {
+    -fx-min-width: 0;
+}
+
+/* El panel desplazable nunca añade su propio fondo opaco en la zona inferior. */
+.view-scroll {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+}
+.view-scroll > .viewport {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+}
+.view-scroll .corner {
+    -fx-background-color: transparent;
 }
