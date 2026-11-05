@@ -19,6 +19,8 @@ namespace PuertaCastillo.UI
         [SerializeField] private Button nextLevelButton;
         [SerializeField] private Button restartButton;
         [SerializeField] private Button menuButton;
+        [SerializeField] private Color victoryColor = new Color32(0x3C, 0x8D, 0x5A, 0xFF);
+        [SerializeField] private Color defeatColor = new Color32(0xC0, 0x39, 0x2B, 0xFF);
 
         // Conecta los eventos de la partida con los paneles y los botones con sus acciones.
         private void OnEnable()
@@ -57,16 +59,19 @@ namespace PuertaCastillo.UI
 
         private void ShowLevelCompleted()
         {
+            panelTitle.color = victoryColor;
             ShowPanel(Localization.Format("level.completed", levelManager.LevelNumber), true);
         }
 
         private void ShowVictory()
         {
+            panelTitle.color = victoryColor;
             ShowPanel(Localization.Get("level.victory"), false);
         }
 
         private void ShowDefeat()
         {
+            panelTitle.color = defeatColor;
             ShowPanel(Localization.Get("level.defeat"), false);
         }
 

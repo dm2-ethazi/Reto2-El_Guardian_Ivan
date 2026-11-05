@@ -11,7 +11,7 @@ namespace PuertaCastillo.Gameplay
     [RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D))]
     public class Enemy : MonoBehaviour
     {
-        private const float LabelRowHeight = 0.5f;
+        private const float LabelRowHeight = 0.4f;
 
         [SerializeField] private TMP_Text messageLabel;
         [SerializeField] private GameObject targetFrame;
@@ -41,7 +41,7 @@ namespace PuertaCastillo.Gameplay
         public float SpeedMultiplier => speedMultiplier;
         public int RemainingDecrypts { get; private set; }
 
-        /// <summary>Fila del mensaje mientras golpea, para que no se solape con el de otros enemigos.</summary>
+        /// <summary>Fila del mensaje, para que no se solape con el de otros enemigos.</summary>
         public int LabelRow { get; private set; }
 
         private void Awake()
@@ -63,12 +63,22 @@ namespace PuertaCastillo.Gameplay
         public void Init(Vector2 doorPosition, LevelConfig config, string message, int row)
         {
             LabelRow = row;
+            PlaceLabel(row);
             destination = doorPosition;
             speed = config.enemySpeed * speedMultiplier;
             damagePerHit = Mathf.RoundToInt(config.damagePerHit * damageMultiplier);
             secondsBetweenHits = config.secondsBetweenHits;
             caesarShift = config.caesarShift;
             SetMessage(message);
+        }
+
+        // Las filas pares van encima del enemigo y las impares debajo, para no llegar a la barra superior.
+        private void PlaceLabel(int row)
+        {
+            Vector2 position = messageLabel.rectTransform.anchoredPosition;
+            float offset = position.y + row / 2 * LabelRowHeight;
+            position.y = row % 2 == 0 ? offset : -offset;
+            messageLabel.rectTransform.anchoredPosition = position;
         }
 
         public void SetMessage(string message)
@@ -118,7 +128,6 @@ namespace PuertaCastillo.Gameplay
                 IsAttacking = true;
                 hitTimer = 0f;
                 body.linearVelocity = Vector2.zero;
-                MoveLabel(LabelRow * LabelRowHeight);
             }
         }
 
@@ -146,13 +155,7 @@ namespace PuertaCastillo.Gameplay
             if (collision.collider.TryGetComponent<Door>(out _))
             {
                 IsAttacking = false;
-                MoveLabel(-LabelRow * LabelRowHeight);
             }
-        }
-
-        private void MoveLabel(float height)
-        {
-            messageLabel.rectTransform.anchoredPosition += Vector2.up * height;
         }
     }
 }

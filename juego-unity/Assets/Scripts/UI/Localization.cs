@@ -23,7 +23,7 @@ namespace PuertaCastillo.UI
         // Cada entrada: clave y sus textos en español, inglés y euskera.
         private static readonly Dictionary<string, string[]> Texts = new Dictionary<string, string[]>
         {
-            ["menu.title"] = new[] { "La Puerta del Castillo", "The Castle Gate", "Gazteluko Atea" },
+            ["menu.title"] = new[] { "El guardián Iván", "El guardián Iván", "El guardián Iván" },
             ["menu.start"] = new[] { "Iniciar partida", "Start game", "Hasi partida" },
             ["menu.exit"] = new[] { "Salir", "Exit", "Irten" },
             ["menu.confirm"] = new[] { "¿Seguro que quieres salir?", "Are you sure you want to exit?", "Ziur irten nahi duzula?" },

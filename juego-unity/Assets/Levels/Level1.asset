@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: PuertaCastillo::PuertaCastillo.Gameplay.LevelConfig
   minEnemies: 1
   maxEnemies: 2
-  spawnInterval: 6
+  spawnInterval: 10
   enemySpeed: 0.4
   damagePerHit: 2
   secondsBetweenHits: 2
-  durationSeconds: 60
-  caesarShift: 3
+  durationSeconds: 2
+  caesarShift: 1
   enemyPrefabs:
   - {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
   bossPrefab: {fileID: 0}

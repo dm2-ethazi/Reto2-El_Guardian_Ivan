@@ -16,7 +16,7 @@ namespace PuertaCastillo.Tests
         [TestCase(2, 5, 2, 3, 5f, 3)]
         [TestCase(3, 7, 3, 3, 4.5f, 4)]
         [TestCase(4, 11, 3, 4, 4f, 5)]
-        [TestCase(5, 13, 4, 5, 3.5f, 6)]
+        [TestCase(5, 13, 1, 1, 3.5f, 6)]
         public void MatchesTheProposalTables(int number, int shift, int min, int max, float interval, int damage)
         {
             LevelConfig level = Level(number);
@@ -67,7 +67,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(1, Level(2).enemyPrefabs.Length);
             Assert.AreEqual(2, Level(3).enemyPrefabs.Length);
             Assert.AreEqual(2, Level(4).enemyPrefabs.Length);
-            Assert.AreEqual(2, Level(5).enemyPrefabs.Length);
+            Assert.AreEqual(0, Level(5).enemyPrefabs.Length);
             Assert.Greater(Level(3).enemyPrefabs[1].SpeedMultiplier, Level(3).enemyPrefabs[0].SpeedMultiplier);
         }
 

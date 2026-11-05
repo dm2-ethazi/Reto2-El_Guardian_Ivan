@@ -21,8 +21,8 @@ namespace PuertaCastillo.UI
         [SerializeField] private Color normalColor = new Color32(0xF2, 0xE8, 0xCF, 0xFF);
         [SerializeField] private Color errorColor = new Color32(0xC0, 0x39, 0x2B, 0xFF);
         [SerializeField] private TMP_Text feedbackLabel;
-        [SerializeField] private Color correctTextColor = new Color32(0x6F, 0xCF, 0x6B, 0xFF);
-        [SerializeField] private Color wrongTextColor = new Color32(0xFF, 0x7A, 0x6B, 0xFF);
+        [SerializeField] private Color correctTextColor = new Color32(0x3C, 0x8D, 0x5A, 0xFF);
+        [SerializeField] private Color wrongTextColor = new Color32(0xC0, 0x39, 0x2B, 0xFF);
         [SerializeField, Min(0.1f)] private float feedbackSeconds = 2f;
 
         private float feedbackTimer;

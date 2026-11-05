@@ -62,8 +62,8 @@ namespace PuertaCastillo.Tests
 
             Press("BotonEs");
             Press("BotonEu");
-            Assert.AreEqual(Localization.Get("menu.title"), Title());
-            Assert.AreEqual("Gazteluko Atea", Title());
+            Assert.AreEqual(Localization.Get("menu.exit"), ExitLabel());
+            Assert.AreEqual("Irten", ExitLabel());
             Assert.IsFalse(LanguageButton("BotonEu").interactable);
             Assert.IsTrue(LanguageButton("BotonEs").interactable);
 
@@ -71,15 +71,15 @@ namespace PuertaCastillo.Tests
             yield return null;
             menu = Object.FindAnyObjectByType<MainMenu>();
 
-            Assert.AreEqual("Gazteluko Atea", Title());
+            Assert.AreEqual("Irten", ExitLabel());
             Assert.IsFalse(LanguageButton("BotonEu").interactable);
 
             Localization.SetLanguage(previous);
         }
 
-        private string Title()
+        private string ExitLabel()
         {
-            return menu.GetComponentsInChildren<TMPro.TMP_Text>(true).First(label => label.name == "Titulo").text;
+            return LanguageButton("BotonSalir").GetComponentInChildren<TMPro.TMP_Text>(true).text;
         }
 
         private Button LanguageButton(string name)

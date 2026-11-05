@@ -90,6 +90,18 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(100 - 6, door.CurrentHealth);
         }
 
+        [UnityTest]
+        public IEnumerator OnlyTheBossAppearsInLevelFive()
+        {
+            spawner.enabled = true;
+            Time.timeScale = 5f;
+
+            yield return new WaitForSeconds(20f);
+
+            Assert.AreEqual(1, spawner.ActiveEnemies.Count);
+            Assert.AreSame(boss, spawner.ActiveEnemies[0]);
+        }
+
         [TearDown]
         public void RestoreTime()
         {
