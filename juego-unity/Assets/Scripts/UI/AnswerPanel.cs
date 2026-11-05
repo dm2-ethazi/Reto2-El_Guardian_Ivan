@@ -20,6 +20,12 @@ namespace PuertaCastillo.UI
         [SerializeField] private Image fieldBackground;
         [SerializeField] private Color normalColor = new Color32(0xF2, 0xE8, 0xCF, 0xFF);
         [SerializeField] private Color errorColor = new Color32(0xC0, 0x39, 0x2B, 0xFF);
+        [SerializeField] private TMP_Text feedbackLabel;
+        [SerializeField] private Color correctTextColor = new Color32(0x6F, 0xCF, 0x6B, 0xFF);
+        [SerializeField] private Color wrongTextColor = new Color32(0xFF, 0x7A, 0x6B, 0xFF);
+        [SerializeField, Min(0.1f)] private float feedbackSeconds = 2f;
+
+        private float feedbackTimer;
 
         private void OnEnable()
         {
@@ -42,8 +48,18 @@ namespace PuertaCastillo.UI
 
         private void Update()
         {
-            targetLabel.text = targeting.Target != null ? $"Objetivo: {targeting.Target.EncryptedMessage}" : "Objetivo: -";
-            hintLabel.text = spawner.Config.hint;
+            targetLabel.text = Localization.Format("game.target", targeting.Target != null ? targeting.Target.EncryptedMessage : "-");
+            hintLabel.text = Localization.Get(spawner.Config.hintKey);
+
+            if (feedbackTimer > 0f)
+            {
+                feedbackTimer -= Time.deltaTime;
+
+                if (feedbackTimer <= 0f)
+                {
+                    feedbackLabel.text = string.Empty;
+                }
+            }
         }
 
         /// <summary>Bloquea la respuesta mientras se muestra un panel de nivel.</summary>
@@ -55,6 +71,10 @@ namespace PuertaCastillo.UI
             if (interactable)
             {
                 answerField.ActivateInputField();
+            }
+            else
+            {
+                HideFeedback();
             }
         }
 
@@ -76,12 +96,28 @@ namespace PuertaCastillo.UI
             // Vaciar sin avisar para que el color de error se mantenga hasta que vuelva a escribir.
             answerField.SetTextWithoutNotify(string.Empty);
             fieldBackground.color = solved ? normalColor : errorColor;
+            ShowFeedback(solved);
             StartCoroutine(RefocusField());
         }
 
+        private void ShowFeedback(bool solved)
+        {
+            feedbackLabel.text = Localization.Get(solved ? "answer.correct" : "answer.wrong");
+            feedbackLabel.color = solved ? correctTextColor : wrongTextColor;
+            feedbackTimer = feedbackSeconds;
+        }
+
+        private void HideFeedback()
+        {
+            feedbackLabel.text = string.Empty;
+            feedbackTimer = 0f;
+        }
+
+        // Al volver a escribir desaparecen el color de error y el mensaje.
         private void ClearError(string _)
         {
             fieldBackground.color = normalColor;
+            HideFeedback();
         }
 
         // Intro y el botón le quitan el foco al campo: se devuelve un frame después para seguir escribiendo.

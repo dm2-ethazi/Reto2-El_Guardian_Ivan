@@ -37,33 +37,23 @@ namespace PuertaCastillo.Tests
         public void StartsOnLevelOneShowingItsTime()
         {
             Assert.AreEqual(1, manager.LevelNumber);
-            StringAssert.Contains("Nivel 1", Text("TextoEstado"));
-            StringAssert.Contains("01:00", Text("TextoEstado"));
+            Assert.AreEqual(Localization.Format("game.status", 1, "01:00"), Text("TextoEstado"));
             Assert.IsFalse(Panel().activeSelf);
         }
 
         [UnityTest]
-        public IEnumerator TimerEndsTheLevelAndRepairsTheDoor()
+        public IEnumerator TimerEndsTheLevelAndWaitsForTheButton()
         {
-            door.TakeDamage(50);
             yield return FinishLevel();
 
             Assert.IsTrue(Panel().activeSelf);
-            StringAssert.Contains("completado", Text("TituloPanel"));
+            Assert.AreEqual(Localization.Format("level.completed", 1), Text("TituloPanel"));
             Assert.AreEqual(0, spawner.ActiveEnemies.Count);
-            Assert.AreEqual(70, door.CurrentHealth);
+            Assert.AreEqual(1, manager.LevelNumber);
         }
 
         [UnityTest]
-        public IEnumerator RepairNeverExceedsTheMaximum()
-        {
-            yield return FinishLevel();
-
-            Assert.AreEqual(100, door.CurrentHealth);
-        }
-
-        [UnityTest]
-        public IEnumerator NextLevelButtonLoadsTheNextLevelKeepingTheDoor()
+        public IEnumerator NextLevelButtonLoadsTheNextLevelWithTheDoorAtFullHealth()
         {
             door.TakeDamage(50);
             yield return FinishLevel();
@@ -76,7 +66,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(2, manager.LevelNumber);
             Assert.AreEqual(5, spawner.Config.caesarShift);
             Assert.That(manager.TimeRemaining, Is.GreaterThan(69f));
-            Assert.AreEqual(70, door.CurrentHealth);
+            Assert.AreEqual(100, door.CurrentHealth);
             Assert.IsFalse(Panel().activeSelf);
             Assert.GreaterOrEqual(spawner.ActiveEnemies.Count, 1);
         }
@@ -88,7 +78,7 @@ namespace PuertaCastillo.Tests
             yield return null;
 
             Assert.IsTrue(Panel().activeSelf);
-            StringAssert.Contains("Derrota", Text("TituloPanel"));
+            Assert.AreEqual(Localization.Get("level.defeat"), Text("TituloPanel"));
             Assert.AreEqual(0, spawner.ActiveEnemies.Count);
 
             Press("BotonReiniciar");
@@ -103,20 +93,10 @@ namespace PuertaCastillo.Tests
         }
 
         [UnityTest]
-        public IEnumerator DefeatingTheBossShowsVictory()
+        public IEnumerator DefeatingTheBossShowsVictoryBeforeTheTimeRunsOut()
         {
-            for (int level = 1; level < 5; level++)
-            {
-                yield return FinishLevel();
-                Press("BotonSiguiente");
-                yield return null;
-            }
-
-            Time.timeScale = 1f;
-            yield return null;
-            Assert.AreEqual(5, manager.LevelNumber);
-            Assert.IsFalse(manager.HasTimer);
-            StringAssert.Contains("jefe", Text("TextoEstado"));
+            yield return GoToLevelFive();
+            Assert.That(manager.TimeRemaining, Is.GreaterThan(90f));
 
             for (int i = 0; i < 5; i++)
             {
@@ -125,7 +105,19 @@ namespace PuertaCastillo.Tests
             yield return null;
 
             Assert.IsTrue(Panel().activeSelf);
-            StringAssert.Contains("Victoria", Text("TituloPanel"));
+            Assert.AreEqual(Localization.Get("level.victory"), Text("TituloPanel"));
+        }
+
+        [UnityTest]
+        public IEnumerator ResistingLevelFiveShowsVictoryWithoutNextButton()
+        {
+            yield return GoToLevelFive();
+
+            yield return FinishLevel();
+
+            Assert.IsTrue(Panel().activeSelf);
+            Assert.AreEqual(Localization.Get("level.victory"), Text("TituloPanel"));
+            Assert.IsFalse(hud.GetComponentsInChildren<Button>(true).First(b => b.name == "BotonSiguiente").gameObject.activeSelf);
         }
 
         [UnityTest]
@@ -148,6 +140,21 @@ namespace PuertaCastillo.Tests
             int level = manager.LevelNumber;
             yield return new WaitUntil(() => manager.TimeRemaining <= 0f && manager.LevelNumber == level);
             yield return null;
+        }
+
+        private IEnumerator GoToLevelFive()
+        {
+            for (int level = 1; level < 5; level++)
+            {
+                yield return FinishLevel();
+                Press("BotonSiguiente");
+                yield return null;
+            }
+
+            Time.timeScale = 1f;
+            yield return null;
+            Assert.AreEqual(5, manager.LevelNumber);
+            Assert.AreEqual(13, spawner.Config.caesarShift);
         }
 
         private void FindObjects()

@@ -25,7 +25,8 @@ namespace PuertaCastillo.Gameplay
         [Tooltip("Jefe que aparece al empezar el nivel. Vacío si el nivel no tiene jefe.")]
         public Enemy bossPrefab;
 
-        [TextArea] public string hint;
+        [Tooltip("Clave de la pista en los textos traducidos, como hint.level1.")]
+        public string hintKey;
 
         [Tooltip("En mayúsculas, sin tildes ni Ñ. Debe haber más que maxEnemies.")]
         public string[] messages;

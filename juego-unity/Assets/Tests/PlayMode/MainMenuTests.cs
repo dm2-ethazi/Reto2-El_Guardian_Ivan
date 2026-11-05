@@ -55,6 +55,38 @@ namespace PuertaCastillo.Tests
             Assert.IsFalse(ConfirmPanel().activeSelf);
         }
 
+        [UnityTest]
+        public IEnumerator LanguageButtonTranslatesTheMenuAndIsKeptAfterReloading()
+        {
+            Language previous = Localization.Current;
+
+            Press("BotonEs");
+            Press("BotonEu");
+            Assert.AreEqual(Localization.Get("menu.title"), Title());
+            Assert.AreEqual("Gazteluko Atea", Title());
+            Assert.IsFalse(LanguageButton("BotonEu").interactable);
+            Assert.IsTrue(LanguageButton("BotonEs").interactable);
+
+            yield return SceneManager.LoadSceneAsync(MainMenu.SceneName);
+            yield return null;
+            menu = Object.FindAnyObjectByType<MainMenu>();
+
+            Assert.AreEqual("Gazteluko Atea", Title());
+            Assert.IsFalse(LanguageButton("BotonEu").interactable);
+
+            Localization.SetLanguage(previous);
+        }
+
+        private string Title()
+        {
+            return menu.GetComponentsInChildren<TMPro.TMP_Text>(true).First(label => label.name == "Titulo").text;
+        }
+
+        private Button LanguageButton(string name)
+        {
+            return menu.GetComponentsInChildren<Button>(true).First(b => b.name == name);
+        }
+
         private GameObject ConfirmPanel()
         {
             return menu.transform.Cast<Transform>().First(child => child.name == "PanelConfirmacion").gameObject;
