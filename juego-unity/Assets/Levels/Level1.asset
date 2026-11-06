@@ -18,16 +18,16 @@ MonoBehaviour:
   enemySpeed: 0.4
   damagePerHit: 2
   secondsBetweenHits: 2
-  durationSeconds: 2
-  caesarShift: 1
+  durationSeconds: 60
+  caesarShift: 3
   enemyPrefabs:
   - {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
   bossPrefab: {fileID: 0}
   hintKey: hint.level1
   messages:
-  - ABRE
-  - TORRE
-  - MAGIA
-  - PUERTA
-  - ESCUDO
-  - FOSO
+  - ALERTA EN LA TORRE
+  - EL GUARDIAN VIGILA
+  - LOS ARCOS DEFIENDEN
+  - LA MAGIA NOS GUARDA
+  - CIERRA EL PORTON YA
+  - AVISA AL CAPITAN YA

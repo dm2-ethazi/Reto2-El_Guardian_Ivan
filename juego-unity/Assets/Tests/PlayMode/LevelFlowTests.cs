@@ -133,6 +133,44 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(MainMenu.SceneName, SceneManager.GetActiveScene().name);
         }
 
+        [UnityTest]
+        public IEnumerator InGameRestartButtonGoesBackToLevelOne()
+        {
+            door.TakeDamage(50);
+
+            Press("BotonPartidaReiniciar");
+            yield return null;
+            yield return null;
+            yield return null;
+            FindObjects();
+
+            Assert.AreEqual(1, manager.LevelNumber);
+            Assert.AreEqual(100, door.CurrentHealth);
+        }
+
+        [UnityTest]
+        public IEnumerator InGameMenuButtonGoesBackToTheMainMenu()
+        {
+            Press("BotonPartidaMenu");
+            yield return null;
+            yield return null;
+
+            Assert.AreEqual(MainMenu.SceneName, SceneManager.GetActiveScene().name);
+        }
+
+        [UnityTest]
+        public IEnumerator InGameButtonsHideWhileThePanelIsShown()
+        {
+            Assert.IsTrue(hud.InGameMenuButton.gameObject.activeSelf);
+            Assert.IsTrue(hud.InGameRestartButton.gameObject.activeSelf);
+
+            door.TakeDamage(100);
+            yield return null;
+
+            Assert.IsFalse(hud.InGameMenuButton.gameObject.activeSelf);
+            Assert.IsFalse(hud.InGameRestartButton.gameObject.activeSelf);
+        }
+
         private IEnumerator FinishLevel()
         {
             spawner.StopLevel();

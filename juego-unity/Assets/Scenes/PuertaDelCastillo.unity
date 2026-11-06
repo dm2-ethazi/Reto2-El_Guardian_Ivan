@@ -173,7 +173,7 @@ Transform:
   m_GameObject: {fileID: 174766621}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -30, y: -4.975, z: 0}
+  m_LocalPosition: {x: -30, y: -3.8499999999999996, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -432,7 +432,7 @@ Transform:
   m_GameObject: {fileID: 338121059}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 30, y: -4.975, z: 0}
+  m_LocalPosition: {x: 30, y: -3.8499999999999996, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -643,7 +643,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 431246018}
-  - component: {fileID: 2093000100}
   - component: {fileID: 431246021}
   - component: {fileID: 431246020}
   - component: {fileID: 431246019}
@@ -1229,7 +1228,6 @@ MonoBehaviour:
   shiftLabel: {fileID: 1810304627}
   increaseButton: {fileID: 828608422}
   decreaseButton: {fileID: 431246019}
-  answerField: {fileID: 1890703266}
 --- !u!1 &511311632
 GameObject:
   m_ObjectHideFlags: 0
@@ -1239,7 +1237,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 511311633}
-  - component: {fileID: 2093000101}
   - component: {fileID: 511311636}
   - component: {fileID: 511311635}
   - component: {fileID: 511311634}
@@ -2478,6 +2475,7 @@ MonoBehaviour:
   feedbackText: {fileID: 2099000002}
   answerField: {fileID: 1890703265}
   decryptButton: {fileID: 511311633}
+  answerPanel: {fileID: 2001392458}
 --- !u!1 &716855624
 GameObject:
   m_ObjectHideFlags: 0
@@ -2579,7 +2577,7 @@ Transform:
   m_GameObject: {fileID: 765544108}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -4.975, z: 0}
+  m_LocalPosition: {x: 0, y: -3.8499999999999996, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3434,7 +3432,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 828608421}
-  - component: {fileID: 2093000102}
   - component: {fileID: 828608424}
   - component: {fileID: 828608423}
   - component: {fileID: 828608422}
@@ -3957,7 +3954,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1036331282}
-  - component: {fileID: 2093000103}
   - component: {fileID: 1036331285}
   - component: {fileID: 1036331284}
   - component: {fileID: 1036331283}
@@ -4415,7 +4411,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1300760649}
-  - component: {fileID: 2093000104}
   - component: {fileID: 1300760652}
   - component: {fileID: 1300760651}
   - component: {fileID: 1300760650}
@@ -5100,7 +5095,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1507205734}
-  - component: {fileID: 2093000105}
   - component: {fileID: 1507205737}
   - component: {fileID: 1507205736}
   - component: {fileID: 1507205735}
@@ -6399,7 +6393,7 @@ MonoBehaviour:
   m_KeyboardType: 0
   m_LineType: 0
   m_HideMobileInput: 1
-  m_HideSoftKeyboard: 0
+  m_HideSoftKeyboard: 1
   m_CharacterValidation: 0
   m_RegexValue: 
   m_GlobalPointSize: 38
@@ -6434,7 +6428,7 @@ MonoBehaviour:
   m_Text: 
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
-  m_ReadOnly: 0
+  m_ReadOnly: 1
   m_RichText: 1
   m_GlobalFontAsset: {fileID: 11400000, guid: a89ed75dbcb50fb4fa31cd611980a574, type: 2}
   m_OnFocusSelectAll: 1
@@ -6647,6 +6641,10 @@ MonoBehaviour:
   correctTextColor: {r: 0.23529412, g: 0.5529412, b: 0.3529412, a: 1}
   wrongTextColor: {r: 0.7529412, g: 0.22352941, b: 0.16862746, a: 1}
   feedbackSeconds: 2
+  keyTemplate: {fileID: 828608422}
+  keySprite: {fileID: 21300000, guid: 7b3f2c9e4d1a4e8f9c6b5a2d1e0f3a47, type: 3}
+  keyTextColor: {r: 0.13333334, g: 0.13333334, b: 0.23137255, a: 1}
+  maxLength: 40
 --- !u!1 &2009828885
 GameObject:
   m_ObjectHideFlags: 0
@@ -6769,78 +6767,6 @@ MonoBehaviour:
   pieceScale: 0.6
   motionScale: 1
   flameFramesPerSecond: 9
---- !u!114 &2093000100
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 431246017}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e26451b38aeb47049cd4721db33b5423, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PuertaCastillo::PuertaCastillo.UI.ButtonAnimation
---- !u!114 &2093000101
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 511311632}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e26451b38aeb47049cd4721db33b5423, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PuertaCastillo::PuertaCastillo.UI.ButtonAnimation
---- !u!114 &2093000102
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 828608420}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e26451b38aeb47049cd4721db33b5423, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PuertaCastillo::PuertaCastillo.UI.ButtonAnimation
---- !u!114 &2093000103
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1036331281}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e26451b38aeb47049cd4721db33b5423, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PuertaCastillo::PuertaCastillo.UI.ButtonAnimation
---- !u!114 &2093000104
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1300760648}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e26451b38aeb47049cd4721db33b5423, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PuertaCastillo::PuertaCastillo.UI.ButtonAnimation
---- !u!114 &2093000105
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1507205733}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e26451b38aeb47049cd4721db33b5423, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PuertaCastillo::PuertaCastillo.UI.ButtonAnimation
 --- !u!1 &2094000011
 GameObject:
   m_ObjectHideFlags: 0

@@ -26,7 +26,7 @@ namespace PuertaCastillo.Tests
         public void StartsAlignedWithoutShift()
         {
             Assert.AreEqual(0, ruler.Shift);
-            Assert.AreEqual(Row("FilaCifrada"), Row("FilaOriginal"));
+            Assert.AreEqual(ruler.PlainLetters, ruler.CipherLetters);
         }
 
         [Test]
@@ -35,8 +35,8 @@ namespace PuertaCastillo.Tests
             Press("BotonSubir", 3);
 
             Assert.AreEqual(3, ruler.Shift);
-            Assert.AreEqual("ABCDEFGHIJKLMNÑOPQRSTUVWXYZ", Row("FilaOriginal"));
-            Assert.AreEqual("DEFGHIJKLMNÑOPQRSTUVWXYZABC", Row("FilaCifrada"));
+            Assert.AreEqual("ABCDEFGHIJKLMNÑOPQRSTUVWXYZ", ruler.PlainLetters);
+            Assert.AreEqual("DEFGHIJKLMNÑOPQRSTUVWXYZABC", ruler.CipherLetters);
         }
 
         [Test]
@@ -45,7 +45,20 @@ namespace PuertaCastillo.Tests
             Press("BotonBajar", 1);
 
             Assert.AreEqual(26, ruler.Shift);
-            Assert.AreEqual("ZABCDEFGHIJKLMNÑOPQRSTUVWXY", Row("FilaCifrada"));
+            Assert.AreEqual("ZABCDEFGHIJKLMNÑOPQRSTUVWXY", ruler.CipherLetters);
+        }
+
+        [Test]
+        public void EachCellShowsTheOriginalLetterAboveItsCipher()
+        {
+            Press("BotonSubir", 3);
+
+            TMP_Text[] labels = ruler.Cells[0].GetComponentsInChildren<TMP_Text>();
+
+            Assert.AreEqual(27, ruler.Cells.Count);
+            Assert.AreEqual("A", labels[0].text);
+            Assert.AreEqual("D", labels[1].text);
+            Assert.Greater(labels[0].rectTransform.anchorMin.y, labels[1].rectTransform.anchorMin.y);
         }
 
         private void Press(string button, int times)
@@ -55,13 +68,6 @@ namespace PuertaCastillo.Tests
             {
                 target.onClick.Invoke();
             }
-        }
-
-        private string Row(string name)
-        {
-            TMP_Text row = ruler.GetComponentsInChildren<TMP_Text>().First(label => label.name == name);
-            row.ForceMeshUpdate();
-            return row.GetParsedText();
         }
     }
 }

@@ -77,6 +77,29 @@ namespace PuertaCastillo.Tests
             Localization.SetLanguage(previous);
         }
 
+        [TestCase(1080, 1920)]
+        [TestCase(1080, 2400)]
+        [TestCase(1920, 1080)]
+        [TestCase(1024, 768)]
+        [TestCase(3440, 1440)]
+        public void MenuStaysCenteredAndButtonsDoNotAnimate(int width, int height)
+        {
+            var layout = menu.GetComponent<MenuLayout>();
+            var safe = new Rect(24, 32, width - 64, height - 80);
+            layout.Apply(width, height, safe);
+            var column = (RectTransform)menu.transform.Find("Columna");
+            var logical = ScreenFit.LogicalSize(width, height);
+            var expected = (safe.center - new Vector2(width, height) / 2f) * (logical.x / width);
+            Assert.Less(Vector2.Distance(expected, column.anchoredPosition), 0.01f);
+            Assert.IsEmpty(menu.GetComponentsInChildren<ButtonAnimation>(true));
+            foreach (Button button in menu.GetComponentsInChildren<Button>(true))
+            {
+                Assert.AreEqual(0f, button.colors.fadeDuration);
+                Assert.IsNotNull(button.image.sprite);
+            }
+            layout.Apply(width, height);
+            Assert.Less(column.anchoredPosition.magnitude, 0.01f);
+        }
         private string ExitLabel()
         {
             return LanguageButton("BotonSalir").GetComponentInChildren<TMPro.TMP_Text>(true).text;

@@ -1,13 +1,17 @@
-using System.Collections;
+using PuertaCastillo.Crypto;
 using PuertaCastillo.Gameplay;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using PhysicalKeyboard = UnityEngine.InputSystem.Keyboard;
 using UnityEngine.UI;
 
 namespace PuertaCastillo.UI
 {
     /// <summary>
-    /// Campo de respuesta del jugador y barra superior con el mensaje del enemigo objetivo.
+    /// Respuesta del jugador y barra superior con el mensaje del enemigo objetivo.
+    /// La respuesta se escribe pulsando las letras del abecedario en pantalla, así en Android no
+    /// sale el teclado del sistema. En el ordenador también se puede escribir con el teclado físico.
     /// </summary>
     public class AnswerPanel : MonoBehaviour
     {
@@ -25,13 +29,47 @@ namespace PuertaCastillo.UI
         [SerializeField] private Color wrongTextColor = new Color32(0xC0, 0x39, 0x2B, 0xFF);
         [SerializeField, Min(0.1f)] private float feedbackSeconds = 2f;
 
+        [Header("Abecedario en pantalla")]
+        [Tooltip("Botón que se copia para crear cada tecla.")]
+        [SerializeField] private Button keyTemplate;
+        [SerializeField] private Sprite keySprite;
+        [SerializeField] private Color keyTextColor = new Color32(0x22, 0x22, 0x3B, 0xFF);
+        [SerializeField, Min(1)] private int maxLength = 40;
+
         private float feedbackTimer;
+
+        /// <summary>Teclado de letras. Solo existe mientras se juega.</summary>
+        public LetterKeyboard OnScreenKeyboard { get; private set; }
+
+        private void Awake()
+        {
+            // El campo solo muestra lo escrito: si se pudiera editar, Android abriría su teclado.
+            answerField.readOnly = true;
+            answerField.shouldHideSoftKeyboard = true;
+            answerField.shouldHideMobileInput = true;
+
+            if (keyTemplate != null)
+            {
+                OnScreenKeyboard = LetterKeyboard.Create(transform, keyTemplate, keySprite, keyTextColor);
+            }
+        }
 
         private void OnEnable()
         {
             answerField.onSubmit.AddListener(Submit);
             answerField.onValueChanged.AddListener(ClearError);
             decryptButton.onClick.AddListener(SubmitField);
+
+            if (OnScreenKeyboard != null)
+            {
+                OnScreenKeyboard.CharacterPressed += Type;
+                OnScreenKeyboard.DeletePressed += DeleteLast;
+            }
+
+            if (PhysicalKeyboard.current != null)
+            {
+                PhysicalKeyboard.current.onTextInput += OnPhysicalText;
+            }
         }
 
         private void OnDisable()
@@ -39,11 +77,17 @@ namespace PuertaCastillo.UI
             answerField.onSubmit.RemoveListener(Submit);
             answerField.onValueChanged.RemoveListener(ClearError);
             decryptButton.onClick.RemoveListener(SubmitField);
-        }
 
-        private void Start()
-        {
-            answerField.ActivateInputField();
+            if (OnScreenKeyboard != null)
+            {
+                OnScreenKeyboard.CharacterPressed -= Type;
+                OnScreenKeyboard.DeletePressed -= DeleteLast;
+            }
+
+            if (PhysicalKeyboard.current != null)
+            {
+                PhysicalKeyboard.current.onTextInput -= OnPhysicalText;
+            }
         }
 
         private void Update()
@@ -60,6 +104,8 @@ namespace PuertaCastillo.UI
                     feedbackLabel.text = string.Empty;
                 }
             }
+
+            ReadPhysicalKeys();
         }
 
         /// <summary>Bloquea la respuesta mientras se muestra un panel de nivel.</summary>
@@ -68,27 +114,52 @@ namespace PuertaCastillo.UI
             answerField.interactable = interactable;
             decryptButton.interactable = interactable;
 
-            if (interactable)
+            if (OnScreenKeyboard != null)
             {
-                answerField.ActivateInputField();
+                OnScreenKeyboard.SetInteractable(interactable);
             }
-            else
+
+            if (!interactable)
             {
                 HideFeedback();
             }
         }
 
+        /// <summary>Añade una letra o un espacio a la respuesta, como al pulsar su tecla.</summary>
+        public void Type(char character)
+        {
+            ReleaseFocus();
+            if (!answerField.interactable || answerField.text.Length >= maxLength)
+            {
+                return;
+            }
+
+            answerField.text += character;
+        }
+
+        /// <summary>Borra la última letra de la respuesta.</summary>
+        public void DeleteLast()
+        {
+            ReleaseFocus();
+            if (!answerField.interactable || answerField.text.Length == 0)
+            {
+                return;
+            }
+
+            answerField.text = answerField.text.Substring(0, answerField.text.Length - 1);
+        }
+
         private void SubmitField()
         {
+            ReleaseFocus();
             Submit(answerField.text);
         }
 
-        // Lo llaman tanto Intro como el botón. Un campo vacío no cuenta como fallo.
+        // Lo llaman el botón de descifrar e Intro. Un campo vacío no cuenta como fallo.
         private void Submit(string answer)
         {
             if (string.IsNullOrWhiteSpace(answer))
             {
-                StartCoroutine(RefocusField());
                 return;
             }
 
@@ -97,7 +168,35 @@ namespace PuertaCastillo.UI
             answerField.SetTextWithoutNotify(string.Empty);
             fieldBackground.color = solved ? normalColor : errorColor;
             ShowFeedback(solved);
-            StartCoroutine(RefocusField());
+        }
+
+        // Teclado físico: letras y espacio llegan como texto; borrar e Intro, como teclas.
+        private void OnPhysicalText(char character)
+        {
+            char upper = char.ToUpperInvariant(character);
+            if (upper == ' ' || CaesarCipher.Alphabet.IndexOf(upper) >= 0)
+            {
+                Type(upper);
+            }
+        }
+
+        private void ReadPhysicalKeys()
+        {
+            PhysicalKeyboard keyboard = PhysicalKeyboard.current;
+            if (keyboard == null || !answerField.interactable)
+            {
+                return;
+            }
+
+            if (keyboard.backspaceKey.wasPressedThisFrame)
+            {
+                DeleteLast();
+            }
+
+            if (keyboard.enterKey.wasPressedThisFrame || keyboard.numpadEnterKey.wasPressedThisFrame)
+            {
+                SubmitField();
+            }
         }
 
         private void ShowFeedback(bool solved)
@@ -120,11 +219,13 @@ namespace PuertaCastillo.UI
             HideFeedback();
         }
 
-        // Intro y el botón le quitan el foco al campo: se devuelve un frame después para seguir escribiendo.
-        private IEnumerator RefocusField()
+        // Un botón pulsado se queda con el foco y el Intro lo volvería a pulsar: se le quita.
+        private static void ReleaseFocus()
         {
-            yield return null;
-            answerField.ActivateInputField();
+            if (EventSystem.current != null)
+            {
+                EventSystem.current.SetSelectedGameObject(null);
+            }
         }
     }
 }

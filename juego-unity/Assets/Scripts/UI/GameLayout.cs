@@ -6,8 +6,11 @@ namespace PuertaCastillo.UI
 {
     /// <summary>
     /// Coloca la interfaz de la partida según la pantalla y encuadra el escenario en el hueco libre.
-    /// El escenario ocupa toda la pantalla, con la interfaz flotando encima. En vertical los datos
-    /// van arriba y la respuesta abajo; en horizontal, todo en una columna a la izquierda.
+    /// El escenario ocupa toda la pantalla, con la interfaz encima. Los botones no se mueven solos:
+    /// solo cambian de sitio y de tamaño al cambiar la pantalla o girarla.
+    /// En vertical los datos y la regla van arriba, y la respuesta con el abecedario abajo.
+    /// En horizontal el escenario queda a la izquierda, con la vida y el objetivo encima, y la
+    /// pista, la regla y el abecedario en una columna a la derecha, al alcance del pulgar.
     /// </summary>
     [ExecuteAlways]
     public class GameLayout : MonoBehaviour
@@ -17,10 +20,17 @@ namespace PuertaCastillo.UI
         private const float Gap = 10f;
         private const float RowHeight = 64f;
         private const float HintHeight = 76f;
-        private const float CaptionHeight = 36f;
-        private const float TouchSize = 124f;
-        private const float MaxColumnWidth = 720f;
-        private const float ColumnRatio = 0.4f;
+        private const float TouchSize = 110f;
+        private const float InGameButtonWidth = 150f;
+        private const float PortraitCellHeight = 112f;
+        private const float LandscapeCellHeight = 100f;
+        private const float FieldHeight = 96f;
+        private const float FeedbackHeight = 46f;
+        private const float KeyHeight = 96f;
+        private const float ColumnRatio = 0.46f;
+        private const float MinColumnWidth = 760f;
+        private const float MaxColumnWidth = 960f;
+        private const float ShiftWidth = 120f;
 
         // Parte del mundo que debe verse siempre en el hueco libre.
         private const float WorldWidth = 10f;
@@ -65,6 +75,8 @@ namespace PuertaCastillo.UI
         [SerializeField] private RectTransform feedbackText;
         [SerializeField] private RectTransform answerField;
         [SerializeField] private RectTransform decryptButton;
+        [Tooltip("Crea el abecedario en pantalla al empezar a jugar.")]
+        [SerializeField] private AnswerPanel answerPanel;
 
         private Vector2 lastScreen;
         private Rect lastSafeArea;
@@ -99,106 +111,147 @@ namespace PuertaCastillo.UI
             // El hueco libre se mide desde la esquina inferior izquierda.
             Rect free = ScreenFit.IsPortrait(width, height)
                 ? ApplyPortrait(left, right, top, bottom)
-                : ApplyLandscape(left, top, bottom);
+                : ApplyLandscape(left, right, top, bottom);
 
             FitCamera(free);
         }
 
-        // Datos arriba y respuesta abajo, con los botones de la regla a los lados de los abecedarios.
+        // Datos y regla arriba; respuesta y abecedario abajo, a todo el ancho.
         private Rect ApplyPortrait(float left, float right, float top, float bottom)
         {
             float cardWidth = LogicalSize.x - left - right;
             float x = left + Padding;
             float width = cardWidth - 2f * Padding;
-            float y = PlaceData(x, top + Padding, width);
 
-            Place(plainCaption, x, y, width / 2f - 40f, CaptionHeight);
-            Place(shiftText, x + width / 2f - 40f, y, 80f, CaptionHeight);
-            Place(cipherCaption, x + width / 2f + 40f, y, width / 2f - 40f, CaptionHeight);
-            y += CaptionHeight + Gap;
+            float y = PlaceStatus(x, top + Padding, width);
+            y = PlaceHint(x, y, width);
+            y = PlaceRuler(x, y, width, PortraitCellHeight);
+            Place(topPanel, left, top, cardWidth, y - Gap + Padding - top);
+            float topEnd = y - Gap + Padding;
 
-            float rowsWidth = width - 2f * (TouchSize + Gap);
-            Place(decreaseButton, x, y, TouchSize, TouchSize);
-            Place(rulerPlate, x + TouchSize + Gap, y, rowsWidth, TouchSize);
-            PlaceRows(x + TouchSize + Gap, y, rowsWidth, TouchSize);
-            Place(increaseButton, x + width - TouchSize, y, TouchSize, TouchSize);
-            y += TouchSize + Padding;
-
-            Place(topPanel, left, top, cardWidth, y - top);
-
-            float buttonWidth = 300f;
-            float cardHeight = TouchSize + 2f * Padding;
+            float keysHeight = LetterKeyboard.HeightFor(KeyHeight);
+            float cardHeight = Padding + FieldHeight + Gap + keysHeight + Padding;
             float cardY = LogicalSize.y - bottom - cardHeight;
-            float rowY = cardY + Padding;
             Place(bottomPanel, left, cardY, cardWidth, cardHeight);
-            Place(answerField, x, rowY, width - buttonWidth - Gap, TouchSize);
-            Place(decryptButton, x + width - buttonWidth, rowY, buttonWidth, TouchSize);
-            Place(feedbackText, x, cardY - 58f, width, 50f);
+            Place(feedbackText, x, cardY - FeedbackHeight - 8f, width, FeedbackHeight);
+            Place(answerField, x, cardY + Padding, width, FieldHeight);
+            PlaceKeys(x, cardY + Padding + FieldHeight + Gap, width, keysHeight);
 
             float freeBottom = LogicalSize.y - cardY;
-            return new Rect(0f, freeBottom, LogicalSize.x, cardY - y);
+            return new Rect(0f, freeBottom, LogicalSize.x, cardY - topEnd);
         }
 
-        // Todo en una columna a la izquierda, centrada y sin más alto del que necesita.
-        private Rect ApplyLandscape(float left, float top, float bottom)
+        // Escenario a la izquierda con la vida y el objetivo encima; regla y abecedario a la derecha.
+        private Rect ApplyLandscape(float left, float right, float top, float bottom)
         {
-            float cardWidth = Mathf.Min(MaxColumnWidth, LogicalSize.x * ColumnRatio);
-            float x = left + Padding;
-            float width = cardWidth - 2f * Padding;
+            float columnWidth = Mathf.Clamp(LogicalSize.x * ColumnRatio, MinColumnWidth, MaxColumnWidth);
+            float columnX = LogicalSize.x - right - columnWidth;
+            float x = columnX + Padding;
+            float width = columnWidth - 2f * Padding;
 
-            float content = RowHeight + Gap + RowHeight + 8f + Gap + HintHeight + Gap
-                + CaptionHeight + Gap + TouchSize + Gap + TouchSize + Gap
-                + 46f + TouchSize + Gap + TouchSize;
+            float keysHeight = LetterKeyboard.HeightFor(KeyHeight);
+            float content = HintHeight + Gap + TouchSize + Gap + CaesarRuler.GridHeight(LandscapeCellHeight) + Gap
+                + FeedbackHeight + FieldHeight + Gap + keysHeight;
             float cardHeight = content + 2f * Padding;
-            float cardY = Mathf.Max(top, (LogicalSize.y - cardHeight) / 2f);
-            float y = PlaceData(x, cardY + Padding, width);
+            float available = LogicalSize.y - top - bottom;
+            float cardY = top + Mathf.Max(0f, (available - cardHeight) / 2f);
 
-            Place(plainCaption, x, y, width / 2f, CaptionHeight);
-            Place(cipherCaption, x + width / 2f, y, width / 2f, CaptionHeight);
-            y += CaptionHeight + Gap;
+            float y = PlaceHint(x, cardY + Padding, width);
+            y = PlaceRuler(x, y, width, LandscapeCellHeight);
+            Place(feedbackText, x, y, width, FeedbackHeight);
+            y += FeedbackHeight;
+            Place(answerField, x, y, width, FieldHeight);
+            y += FieldHeight + Gap;
+            PlaceKeys(x, y, width, keysHeight);
+            Place(bottomPanel, columnX, cardY, columnWidth, cardHeight);
 
-            Place(rulerPlate, x, y, width, TouchSize);
-            PlaceRows(x, y, width, TouchSize);
-            y += TouchSize + Gap;
+            // La vida, el tiempo y el objetivo van en una franja sobre el escenario.
+            float gameRight = columnX - Margin;
+            float stripWidth = gameRight - left;
+            float stripEnd = PlaceStatus(left + Padding, top + Padding, stripWidth - 2f * Padding) - Gap + Padding;
+            Place(topPanel, left, top, stripWidth, stripEnd - top);
 
-            Place(decreaseButton, x, y, TouchSize, TouchSize);
-            Place(shiftText, x + TouchSize, y, width - 2f * TouchSize, TouchSize);
-            Place(increaseButton, x + width - TouchSize, y, TouchSize, TouchSize);
-            y += TouchSize + Gap;
-
-            Place(feedbackText, x, y, width, 46f);
-            y += 46f;
-            Place(answerField, x, y, width, TouchSize);
-            y += TouchSize + Gap;
-            Place(decryptButton, x, y, width, TouchSize);
-
-            Place(topPanel, left, cardY, cardWidth, cardHeight);
-            Place(bottomPanel, 0f, 0f, 0f, 0f);
-
-            float freeX = left + cardWidth + Margin;
-            return new Rect(freeX, 0f, LogicalSize.x - freeX, LogicalSize.y);
+            return new Rect(0f, 0f, gameRight, LogicalSize.y - stripEnd);
         }
 
-        // Vida, tiempo, objetivo y pista, iguales en las dos orientaciones. Devuelve dónde acaban.
-        private float PlaceData(float left, float y, float width)
+        // Vida, tiempo y botones de la partida en una fila, y el objetivo debajo. Devuelve dónde acaban.
+        private float PlaceStatus(float left, float y, float width)
         {
-            float statusWidth = Mathf.Min(300f, width * 0.42f);
-            Place(healthIcon, left, y + 4f, RowHeight - 8f, RowHeight - 8f);
-            Place(healthBar, left + RowHeight, y, width - statusWidth - RowHeight - Gap, RowHeight);
-            Place(statusPlate, left + width - statusWidth, y, statusWidth, RowHeight);
-            Place(timeIcon, left + width - statusWidth + 10f, y + 12f, 40f, 40f);
-            Place(statusText, left + width - statusWidth + 54f, y, statusWidth - 62f, RowHeight);
-            y += RowHeight + Gap;
+            PlaceInGameButtons(left + width, y);
+
+            float dataWidth = width - 2f * (InGameButtonWidth + Gap);
+            float statusWidth = Mathf.Min(300f, dataWidth * 0.42f);
+            float rowY = y + (TouchSize - RowHeight) / 2f;
+            Place(healthIcon, left, rowY + 4f, RowHeight - 8f, RowHeight - 8f);
+            Place(healthBar, left + RowHeight, rowY, dataWidth - statusWidth - RowHeight - Gap, RowHeight);
+            Place(statusPlate, left + dataWidth - statusWidth, rowY, statusWidth, RowHeight);
+            Place(timeIcon, left + dataWidth - statusWidth + 10f, rowY + 12f, 40f, 40f);
+            Place(statusText, left + dataWidth - statusWidth + 54f, rowY, statusWidth - 62f, RowHeight);
+            y += TouchSize + Gap;
 
             Place(targetBar, left, y, width, RowHeight + 8f);
-            y += RowHeight + 8f + Gap;
+            return y + RowHeight + 8f + Gap;
+        }
 
+        // Los botones solo existen jugando: los crea LevelHud al empezar.
+        private void PlaceInGameButtons(float right, float y)
+        {
+            LevelHud hud = statusText.GetComponentInParent<LevelHud>(true);
+            if (!Application.isPlaying || hud == null)
+            {
+                return;
+            }
+
+            Place(hud.InGameRestartButton, right - InGameButtonWidth, y, InGameButtonWidth, TouchSize);
+            Place(hud.InGameMenuButton, right - 2f * InGameButtonWidth - Gap, y, InGameButtonWidth, TouchSize);
+        }
+
+        private float PlaceHint(float left, float y, float width)
+        {
             Place(hintPlate, left, y, width, HintHeight);
             Place(hintIcon, left + 12f, y + 18f, 40f, 40f);
             Place(hintText, left + 60f, y + 4f, width - 72f, HintHeight - 8f);
             return y + HintHeight + Gap;
         }
 
+        // Botones - y + con los rótulos y el desplazamiento entre ellos y, debajo, las casillas.
+        private float PlaceRuler(float x, float y, float width, float cellHeight)
+        {
+            float captionsX = x + TouchSize + Gap;
+            float captionWidth = (width - 2f * (TouchSize + Gap) - ShiftWidth) / 2f;
+            Place(decreaseButton, x, y, TouchSize, TouchSize);
+            Place(plainCaption, captionsX, y, captionWidth, TouchSize);
+            Place(shiftText, captionsX + captionWidth, y, ShiftWidth, TouchSize);
+            Place(cipherCaption, captionsX + captionWidth + ShiftWidth, y, captionWidth, TouchSize);
+            Place(increaseButton, x + width - TouchSize, y, TouchSize, TouchSize);
+            y += TouchSize + Gap;
+
+            float gridHeight = CaesarRuler.GridHeight(cellHeight);
+            Place(rulerPlate, x, y, width, gridHeight);
+            PlaceRows(x, y, width, gridHeight);
+            if (Application.isPlaying)
+            {
+                plainCaption.GetComponentInParent<CaesarRuler>(true).Arrange(x, y, width, cellHeight);
+            }
+
+            return y + gridHeight + Gap;
+        }
+
+        // El abecedario solo existe jugando; en el editor se coloca al menos el botón de descifrar.
+        private void PlaceKeys(float x, float y, float width, float height)
+        {
+            LetterKeyboard keyboard = answerPanel != null ? answerPanel.OnScreenKeyboard : null;
+            if (keyboard != null)
+            {
+                keyboard.Arrange(x, y, width, height, decryptButton);
+                return;
+            }
+
+            Rect submit = LetterKeyboard.SubmitKeyRect(x, y, width, height);
+            Place(decryptButton, submit.x, submit.y, submit.width, submit.height);
+        }
+
+        // Las filas de la escena solo se ven en el editor: al jugar sirven de modelo para las casillas.
         private void PlaceRows(float x, float y, float width, float height)
         {
             float rowHeight = height / 2f - 6f;
@@ -206,8 +259,8 @@ namespace PuertaCastillo.UI
             Place(cipherRow, x + 10f, y + height / 2f, width - 20f, rowHeight);
         }
 
-        // Todo se mide desde la esquina superior izquierda, en unidades lógicas.
-        private static void Place(RectTransform rect, float x, float y, float width, float height)
+        /// <summary>Coloca un elemento midiendo desde la esquina superior izquierda, en unidades lógicas.</summary>
+        public static void Place(RectTransform rect, float x, float y, float width, float height)
         {
             rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0f, 1f);
             rect.anchoredPosition = new Vector2(x, -y);

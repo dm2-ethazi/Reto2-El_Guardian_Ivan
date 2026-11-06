@@ -38,11 +38,11 @@ namespace PuertaCastillo.Tests
         }
 
         [Test]
-        public void MessagesGetLongerEveryLevel()
+        public void MessagesGetShorterUntilLevelFour()
         {
-            for (int number = 2; number <= 5; number++)
+            for (int number = 2; number <= 4; number++)
             {
-                Assert.Greater(Level(number).messages.Average(m => m.Length), Level(number - 1).messages.Average(m => m.Length));
+                Assert.Less(Level(number).messages.Max(m => m.Length), Level(number - 1).messages.Min(m => m.Length));
             }
         }
 

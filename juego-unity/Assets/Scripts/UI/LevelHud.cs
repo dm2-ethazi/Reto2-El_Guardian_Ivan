@@ -8,6 +8,7 @@ namespace PuertaCastillo.UI
 {
     /// <summary>
     /// Muestra el nivel y el tiempo restante, y los paneles de nivel completado, victoria y derrota.
+    /// También crea los botones de reiniciar y volver al menú que se ven durante la partida.
     /// </summary>
     public class LevelHud : MonoBehaviour
     {
@@ -22,6 +23,18 @@ namespace PuertaCastillo.UI
         [SerializeField] private Color victoryColor = new Color32(0x3C, 0x8D, 0x5A, 0xFF);
         [SerializeField] private Color defeatColor = new Color32(0xC0, 0x39, 0x2B, 0xFF);
 
+        private Button inGameRestartButton;
+        private Button inGameMenuButton;
+
+        public RectTransform InGameRestartButton => (RectTransform)inGameRestartButton.transform;
+        public RectTransform InGameMenuButton => (RectTransform)inGameMenuButton.transform;
+
+        private void Awake()
+        {
+            inGameRestartButton = CreateInGameButton(restartButton, "BotonPartidaReiniciar");
+            inGameMenuButton = CreateInGameButton(menuButton, "BotonPartidaMenu");
+        }
+
         // Conecta los eventos de la partida con los paneles y los botones con sus acciones.
         private void OnEnable()
         {
@@ -32,6 +45,8 @@ namespace PuertaCastillo.UI
             nextLevelButton.onClick.AddListener(levelManager.NextLevel);
             restartButton.onClick.AddListener(Restart);
             menuButton.onClick.AddListener(GoToMenu);
+            inGameRestartButton.onClick.AddListener(Restart);
+            inGameMenuButton.onClick.AddListener(GoToMenu);
         }
 
         private void OnDisable()
@@ -43,6 +58,8 @@ namespace PuertaCastillo.UI
             nextLevelButton.onClick.RemoveListener(levelManager.NextLevel);
             restartButton.onClick.RemoveListener(Restart);
             menuButton.onClick.RemoveListener(GoToMenu);
+            inGameRestartButton.onClick.RemoveListener(Restart);
+            inGameMenuButton.onClick.RemoveListener(GoToMenu);
         }
 
         private void Update()
@@ -54,6 +71,7 @@ namespace PuertaCastillo.UI
         private void HidePanel()
         {
             panel.SetActive(false);
+            SetInGameButtonsVisible(true);
             answerPanel.SetInteractable(true);
         }
 
@@ -83,7 +101,43 @@ namespace PuertaCastillo.UI
             restartButton.gameObject.SetActive(!canContinue);
             menuButton.gameObject.SetActive(!canContinue);
             panel.SetActive(true);
+            SetInGameButtonsVisible(false);
             answerPanel.SetInteractable(false);
+        }
+
+        private void SetInGameButtonsVisible(bool visible)
+        {
+            inGameRestartButton.gameObject.SetActive(visible);
+            inGameMenuButton.gameObject.SetActive(visible);
+        }
+
+        // Copia un botón del panel, sin animaciones, y lo deja por debajo del panel. Lo coloca GameLayout.
+        private Button CreateInGameButton(Button template, string buttonName)
+        {
+            Button button = Instantiate(template, transform, false);
+            button.name = buttonName;
+            button.gameObject.SetActive(true);
+            button.transform.SetSiblingIndex(panel.transform.GetSiblingIndex());
+
+            foreach (ButtonAnimation animation in button.GetComponentsInChildren<ButtonAnimation>(true))
+            {
+                DestroyImmediate(animation);
+            }
+
+            button.transform.localScale = Vector3.one;
+
+            // El texto se reduce lo que haga falta para no tocar el borde en ningún idioma.
+            TMP_Text label = button.GetComponentInChildren<TMP_Text>();
+            label.enableAutoSizing = true;
+            label.fontSizeMin = 12f;
+            label.fontSizeMax = 30f;
+            label.margin = new Vector4(10f, 0f, 10f, 0f);
+
+            // Que el botón no se quede con el foco: así las flechas y el Intro siguen siendo del juego.
+            Navigation navigation = button.navigation;
+            navigation.mode = Navigation.Mode.None;
+            button.navigation = navigation;
+            return button;
         }
 
         // Recargar la escena deja la puerta a 100 y la partida en el nivel 1.

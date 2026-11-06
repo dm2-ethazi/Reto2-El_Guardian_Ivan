@@ -33,8 +33,10 @@ namespace PuertaCastillo.UI
             ["game.restart"] = new[] { "Reiniciar", "Restart", "Berrabiarazi" },
             ["game.menu"] = new[] { "Menú", "Menu", "Menua" },
             ["game.next"] = new[] { "Siguiente nivel", "Next level", "Hurrengo maila" },
-            ["game.placeholder"] = new[] { "Escribe el mensaje descifrado", "Type the decrypted message", "Idatzi deszifratutako mezua" },
+            ["game.placeholder"] = new[] { "Pulsa las letras del mensaje", "Tap the letters of the message", "Sakatu mezuaren letrak" },
             ["game.decrypt"] = new[] { "Descifrar", "Decrypt", "Deszifratu" },
+            ["game.space"] = new[] { "Espacio", "Space", "Zuriunea" },
+            ["game.delete"] = new[] { "Borrar", "Delete", "Ezabatu" },
             ["game.status"] = new[] { "Nivel {0}  {1}", "Level {0}  {1}", "{0}. maila  {1}" },
             ["game.target"] = new[] { "Objetivo: {0}", "Target: {0}", "Helburua: {0}" },
 
@@ -48,8 +50,8 @@ namespace PuertaCastillo.UI
             ["level.victory"] = new[] { "¡Victoria! El castillo está a salvo", "Victory! The castle is safe", "Garaipena! Gaztelua salbu dago" },
             ["level.defeat"] = new[] { "Derrota: la puerta ha caído", "Defeat: the gate has fallen", "Porrota: atea erori da" },
 
-            ["hint.level1"] = new[] { "Pista: resta 3 a cada letra. La D es la A.", "Hint: subtract 3 from each letter. D is A.", "Pista: kendu 3 letra bakoitzari. D letra A da." },
-            ["hint.level2"] = new[] { "Pista: resta 5 a cada letra. La F es la A.", "Hint: subtract 5 from each letter. F is A.", "Pista: kendu 5 letra bakoitzari. F letra A da." },
+            ["hint.level1"] = new[] { "Pista: suma 3 a cada letra. La A pasa a ser la D.", "Hint: add 3 to each letter. A becomes D.", "Pista: gehitu 3 letra bakoitzari. A letra D bihurtzen da." },
+            ["hint.level2"] = new[] { "Pista: suma 5 a cada letra. La A pasa a ser la F.", "Hint: add 5 to each letter. A becomes F.", "Pista: gehitu 5 letra bakoitzari. A letra F bihurtzen da." },
             ["hint.level3"] = new[] { "Pista: la A se cifra como una H.", "Hint: A is encrypted as H.", "Pista: A letra H gisa zifratzen da." },
             ["hint.level4"] = new[] { "Pista: la letra más repetida suele ser la E o la A.", "Hint: the most repeated letter is usually E or A.", "Pista: gehien errepikatzen den letra E edo A izan ohi da." },
             ["hint.level5"] = new[] { "Pista: la A se cifra como una N.", "Hint: A is encrypted as N.", "Pista: A letra N gisa zifratzen da." }

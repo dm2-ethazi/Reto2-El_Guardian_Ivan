@@ -14,20 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: PuertaCastillo::PuertaCastillo.Gameplay.LevelConfig
   minEnemies: 1
   maxEnemies: 3
-  spawnInterval: 10
+  spawnInterval: 20
   enemySpeed: 0.4
   damagePerHit: 2
   secondsBetweenHits: 2
-  durationSeconds: 10
-  caesarShift: 1
+  durationSeconds: 70
+  caesarShift: 5
   enemyPrefabs:
   - {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
   bossPrefab: {fileID: 0}
   hintKey: hint.level2
   messages:
-  - LA TORRE
-  - EL FOSO
-  - EL PUENTE
-  - ABRE FUEGO
-  - ALZA ARCOS
-  - LA MURALLA
+  - ALZA EL ESCUDO
+  - CIERRA EL PORTON
+  - LA TORRE CAE
+  - CUIDA EL FOSO
+  - ABRE LA PUERTA
+  - LA MAGIA VUELVE

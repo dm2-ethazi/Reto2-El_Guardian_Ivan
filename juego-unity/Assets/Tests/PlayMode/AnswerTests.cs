@@ -181,6 +181,71 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(health, door.CurrentHealth);
         }
 
+        [Test]
+        public void KeyboardFollowsQwertyWithEveryLetterIncludingEnye()
+        {
+            string letters = string.Concat(panel.OnScreenKeyboard.LetterKeys.Select(key => key.GetComponentInChildren<TMP_Text>().text));
+
+            Assert.AreEqual("QWERTYUIOPASDFGHJKLÑZXCVBNM", letters);
+            CollectionAssert.AreEquivalent(PuertaCastillo.Crypto.CaesarCipher.Alphabet, letters);
+        }
+
+        [Test]
+        public void AnswerFieldNeverOpensTheSystemKeyboard()
+        {
+            Assert.IsTrue(field.readOnly);
+            Assert.IsTrue(field.shouldHideSoftKeyboard);
+        }
+
+        [UnityTest]
+        public IEnumerator TappingLettersWritesTheAnswerAndSolvesTheTarget()
+        {
+            Enemy target = targeting.Target;
+            LetterKeyboard keyboard = panel.OnScreenKeyboard;
+
+            foreach (char letter in target.Message)
+            {
+                if (letter == ' ')
+                {
+                    keyboard.SpaceKey.onClick.Invoke();
+                }
+                else
+                {
+                    keyboard.KeyFor(letter).onClick.Invoke();
+                }
+            }
+
+            Assert.AreEqual(target.Message, field.text);
+
+            panel.GetComponentInChildren<Button>().onClick.Invoke();
+            yield return null;
+
+            Assert.IsTrue(target == null);
+        }
+
+        [Test]
+        public void DeleteKeyRemovesTheLastLetter()
+        {
+            LetterKeyboard keyboard = panel.OnScreenKeyboard;
+            keyboard.KeyFor('A').onClick.Invoke();
+            keyboard.KeyFor('Ñ').onClick.Invoke();
+
+            Assert.AreEqual("AÑ", field.text);
+
+            keyboard.DeleteKey.onClick.Invoke();
+            Assert.AreEqual("A", field.text);
+        }
+
+        [Test]
+        public void KeysDoNothingWhileALevelPanelIsShown()
+        {
+            panel.SetInteractable(false);
+            panel.OnScreenKeyboard.LetterKeys[0].onClick.Invoke();
+
+            Assert.AreEqual(string.Empty, field.text);
+            Assert.IsFalse(panel.OnScreenKeyboard.LetterKeys[0].interactable);
+        }
+
         private string FeedbackText()
         {
             return panel.GetComponentsInChildren<TMP_Text>().First(label => label.name == "TextoRespuesta").text;
