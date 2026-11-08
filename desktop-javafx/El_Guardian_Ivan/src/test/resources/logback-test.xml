@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- En los tests Logback usa este fichero en lugar de logback.xml: solo consola y sin crear ficheros de log -->
+<configuration>
+    <conversionRule conversionWord="maskedMsg" class="el_guardian_ivan.desktop.logging.MaskedMessageConverter"/>
+    <conversionRule conversionWord="maskedEx" class="el_guardian_ivan.desktop.logging.MaskedThrowableConverter"/>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-5level %logger{36} - %maskedMsg%n%maskedEx</pattern>
+        </encoder>
+    </appender>
+    <root level="WARN">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

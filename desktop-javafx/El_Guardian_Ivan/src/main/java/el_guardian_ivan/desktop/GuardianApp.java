@@ -13,6 +13,8 @@ import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,12 +31,21 @@ public class GuardianApp extends Application {
     public GuardianApp() {
     }
 
+    /** Registro de esta clase (ver logback.xml). */
+    private static final Logger log = LoggerFactory.getLogger(GuardianApp.class);
+
     /** Fuentes incluidas en resources/.../fonts (licencia OFL). */
     private static final String[] FONTS = {"Cinzel-Bold.ttf", "Inter-Regular.ttf", "Inter-SemiBold.ttf"};
 
     /** JavaFX llama a este método al arrancar, con la ventana principal ya creada. */
     @Override
     public void start(Stage stage) {
+        // Datos del entorno que ayudan a entender un error; nada que identifique al usuario
+        log.info("Iniciando El Guardián Iván (Java {}, {} {}, idioma {})", System.getProperty("java.version"),
+                System.getProperty("os.name"), System.getProperty("os.arch"), I18n.getLocale().getLanguage());
+        // Cualquier error que no se haya capturado queda registrado (enmascarado) en lugar de perderse
+        Thread.setDefaultUncaughtExceptionHandler((thread, error) ->
+                log.error("Error no controlado en el hilo {}", thread.getName(), error));
         loadFonts();
         // Tamaño inicial de diseño, salvo en pantallas pequeñas, donde se usa el 90 % del espacio disponible
         Rectangle2D screen = Screen.getPrimary().getVisualBounds();
@@ -54,9 +65,16 @@ public class GuardianApp extends Application {
 
         // Al cambiar de idioma en Ajustes se vuelven a cargar las pantallas con los nuevos textos
         I18n.localeProperty().addListener((obs, oldLocale, newLocale) -> {
+            log.info("Idioma cambiado de {} a {}", oldLocale.getLanguage(), newLocale.getLanguage());
             scene.setRoot(loadMainWindow(View.SETTINGS));
             stage.setTitle(I18n.get("app.title"));
         });
+    }
+
+    /** JavaFX lo llama al cerrar la ventana principal. */
+    @Override
+    public void stop() {
+        log.info("Aplicación cerrada");
     }
 
     /**

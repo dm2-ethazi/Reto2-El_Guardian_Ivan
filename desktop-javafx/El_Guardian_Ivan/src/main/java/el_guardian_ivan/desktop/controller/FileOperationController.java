@@ -15,6 +15,9 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
+import el_guardian_ivan.desktop.logging.LogFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.AEADBadTagException;
 import java.io.File;
@@ -35,6 +38,12 @@ public abstract class FileOperationController {
     /** Lo usan las pantallas Cifrar y Descifrar al crearse. */
     protected FileOperationController() {
     }
+
+    /**
+     * Registro de la pantalla: sale como EncryptController o DecryptController en el log.
+     * Nunca se registran la contraseña, el contenido ni el nombre o la ruta de los ficheros.
+     */
+    protected final Logger log = LoggerFactory.getLogger(getClass());
     // ---- Paso 1: fichero de entrada ----
 
     /** Nombre del fichero elegido (o "Ningún fichero seleccionado"). */
@@ -214,6 +223,7 @@ public abstract class FileOperationController {
                 throw new IOException(I18n.get("error.notReadable"));
             }
             long size = Files.size(path);
+            log.debug("Fichero de entrada elegido: {}", LogFormat.describe(path, size));
             inputFile = path;
             inputFileLabel.setText(path.getFileName().toString());
             inputFileLabel.setTooltip(new Tooltip(path.toString())); // Ruta completa al pasar el ratón
@@ -225,6 +235,7 @@ public abstract class FileOperationController {
             outputNameField.setText(suggestOutputName(path.getFileName().toString()));
             updateOutputPath();
         } catch (IOException | InvalidPathException e) {
+            log.warn("El fichero elegido no se puede usar: {}", e.toString());
             // No se puede usar: volvemos al estado "sin fichero" y explicamos el motivo
             inputFile = null;
             inputFileLabel.setText(I18n.get("form.noFile"));
@@ -268,13 +279,19 @@ public abstract class FileOperationController {
         progressBar.progressProperty().bind(task.progressProperty());
         setStatus(runningText, null);
         setControlsDisabled(true);
+        long start = System.nanoTime();
+        log.info("Operación iniciada con {}", LogFormat.describe(inputFile, sizeOrUnknown(inputFile)));
 
         task.setOnSucceeded(event -> {
+            Path result = task.getValue();
+            log.info("Operación terminada en {} ms: {}", (System.nanoTime() - start) / 1_000_000,
+                    LogFormat.describe(result, sizeOrUnknown(result)));
             finishTask();
             setStatus("✓ " + successTitle, "status-success");
             ResultDialog.success(getWindow(), successTitle, successMessage, task.getValue(), showsPreview());
         });
         task.setOnFailed(event -> {
+            logFailure(task.getException(), (System.nanoTime() - start) / 1_000_000);
             finishTask();
             setStatus("✗ " + I18n.get("form.failed"), "status-error");
             showFailure(task.getException());
@@ -314,6 +331,37 @@ public abstract class FileOperationController {
         progressBar.progressProperty().unbind();
         progressBar.setProgress(0);
         setControlsDisabled(false);
+    }
+
+    /**
+     * Registra por qué ha fallado la operación. Una contraseña incorrecta es algo normal y va sin traza;
+     * los demás errores llevan la traza completa (Logback la enmascara antes de escribirla).
+     *
+     * @param error excepción con la que terminó la tarea
+     * @param millis milisegundos que duró
+     */
+    private void logFailure(Throwable error, long millis) {
+        if (error instanceof AEADBadTagException) {
+            log.warn("Operación rechazada tras {} ms: contraseña incorrecta o fichero alterado", millis);
+        } else if (error instanceof IllegalArgumentException) {
+            log.warn("Operación no permitida: {}", error.getMessage());
+        } else {
+            log.error("La operación ha fallado tras {} ms", millis, error);
+        }
+    }
+
+    /**
+     * Tamaño del fichero para el registro, sin que un error al leerlo afecte a la operación.
+     *
+     * @param file fichero (puede ser {@code null})
+     * @return el tamaño en bytes, o -1 si no se puede saber
+     */
+    private static long sizeOrUnknown(Path file) {
+        try {
+            return file == null ? -1 : Files.size(file);
+        } catch (IOException | SecurityException e) {
+            return -1;
+        }
     }
 
     /**

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Configuración de los registros (logs) de El Guardián Iván.
+
+    - Consola: lo que se ve al ejecutar desde IntelliJ o con "mvn javafx:run".
+    - Fichero: %LOCALAPPDATA%\ElGuardianIvan\logs\guardian.log en Windows
+      (en Linux, ~/.local/share/ElGuardianIvan/logs). Rota cada día y al llegar a 1 MB,
+      guarda 14 días y nunca ocupa más de 20 MB.
+
+    Nada se escribe tal cual: %maskedMsg y %maskedEx son como %msg y %ex, pero pasan el texto
+    por SensitiveDataMasker (carpeta y nombre del usuario, contraseñas y claves quedan ocultas).
+
+    Para ver más detalle (nivel DEBUG) se arranca con -Dguardian.log.level=DEBUG.
+-->
+<configuration>
+    <!-- Conversores propios: enmascaran el mensaje y la traza de las excepciones -->
+    <conversionRule conversionWord="maskedMsg" class="el_guardian_ivan.desktop.logging.MaskedMessageConverter"/>
+    <conversionRule conversionWord="maskedEx" class="el_guardian_ivan.desktop.logging.MaskedThrowableConverter"/>
+
+    <!-- Carpeta de los logs: en Windows LOCALAPPDATA; si no existe (Linux), la carpeta de datos del usuario -->
+    <property name="LOG_DIR" value="${LOCALAPPDATA:-${user.home}/.local/share}/ElGuardianIvan/logs"/>
+    <!-- Nivel de los mensajes de la aplicación; se puede cambiar al arrancar sin tocar este fichero -->
+    <property name="APP_LEVEL" value="${guardian.log.level:-INFO}"/>
+    <!-- Formato común: fecha, nivel, hilo, clase, mensaje y (si hay) la traza del error -->
+    <property name="PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{0} - %maskedMsg%n%maskedEx"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- Fichero que rota por día y por tamaño (en la demo de clase el FileAppender no rotaba nunca) -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/guardian.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/guardian.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>1MB</maxFileSize>
+            <maxHistory>14</maxHistory>
+            <totalSizeCap>20MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!--
+        Mensajes de la aplicación. additivity="false" evita que también los escriba el root:
+        sin él, cada línea saldría dos veces en consola y en fichero.
+    -->
+    <logger name="el_guardian_ivan" level="${APP_LEVEL}" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <!-- Bibliotecas de terceros: solo avisos y errores -->
+    <root level="WARN">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>

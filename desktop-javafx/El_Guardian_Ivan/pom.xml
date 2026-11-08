@@ -12,6 +12,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.12.1</junit.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <logback.version>1.5.18</logback.version>
     </properties>
 
     <dependencies>
@@ -24,6 +26,21 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>21.0.6</version>
+        </dependency>
+
+        <!--
+            Registros (logs): el código usa SLF4J y Logback los escribe en consola y en fichero.
+            La configuración está en src/main/resources/logback.xml.
+        -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
         </dependency>
 
         <dependency>
@@ -229,6 +246,8 @@
                                         <addModule>java.base</addModule>
                                         <addModule>java.desktop</addModule>
                                         <addModule>java.logging</addModule>
+                                        <!-- Logback lo necesita al leer logback.xml (aunque no se use JNDI) -->
+                                        <addModule>java.naming</addModule>
                                         <addModule>java.prefs</addModule>
                                         <addModule>java.scripting</addModule>
                                         <addModule>java.xml</addModule>

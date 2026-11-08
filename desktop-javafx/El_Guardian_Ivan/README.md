@@ -88,6 +88,7 @@ src/main/java/el_guardian_ivan/desktop/
 ├── crypto/                AesFileCipher: cifrado y descifrado del formato .hgw
 ├── files/                 Validación de nombres, tamaños, tipo de archivo, vista previa y abrir ubicación
 ├── i18n/                  Idioma actual y textos traducidos
+├── logging/               Enmascarado de datos sensibles en los registros (logs)
 ├── navigation/            Cambio entre pantallas
 └── ui/                    ScalingPane: escala la interfaz según el tamaño de la ventana
 
@@ -98,6 +99,8 @@ src/main/resources/el_guardian_ivan/desktop/
 ├── fonts/                 Cinzel e Inter (licencia OFL)
 └── images/                Logo e iconos de la ventana
 
+src/main/resources/logback.xml   Configuración de los registros (consola y fichero)
+
 src/main/jpackage/         Icono del ejecutable (.ico para Windows, .png para Linux)
 ```
 
@@ -107,9 +110,49 @@ src/main/jpackage/         Icono del ejecutable (.ico para Windows, .png para Li
 .\mvnw.cmd test
 ```
 
-Hay 120 tests con JUnit 5. Comprueban el cifrado (ida y vuelta, contraseña incorrecta, archivos alterados,
+Hay 139 tests con JUnit 5. Comprueban el cifrado (ida y vuelta, contraseña incorrecta, archivos alterados,
 truncados, vacíos y de tamaños límite), la validación de nombres, el formato de tamaños, la detección del tipo
-de archivo y la vista previa.
+de archivo, la vista previa y que los registros no muestren datos sensibles.
+
+## Registros (logs)
+
+La aplicación usa **SLF4J** en el código y **Logback** para escribir los mensajes
+(configuración en `src/main/resources/logback.xml`):
+
+- **Consola**: lo que se ve al ejecutar desde IntelliJ o con `mvnw javafx:run`.
+- **Fichero**: `%LOCALAPPDATA%\ElGuardianIvan\logs\guardian.log` en Windows
+  (en Linux, `~/.local/share/ElGuardianIvan/logs`). Se puede abrir escribiendo
+  `%LOCALAPPDATA%\ElGuardianIvan\logs` en la barra del Explorador. Rota cada día y al llegar a 1 MB,
+  guarda 14 días y nunca ocupa más de 20 MB.
+
+Cada línea lleva fecha, nivel, hilo y clase:
+
+```
+2026-11-08 21:59:27.517 INFO  [JavaFX Application Thread] GuardianApp - Iniciando El Guardián Iván (Java 21.0.6, Windows 11 amd64, idioma es)
+2026-11-08 22:01:10.204 INFO  [JavaFX Application Thread] EncryptController - Operación iniciada con fichero .png de 1.5 MB
+2026-11-08 22:01:10.611 INFO  [JavaFX Application Thread] EncryptController - Operación terminada en 407 ms: fichero .hgw de 1.5 MB
+2026-11-08 22:01:31.020 WARN  [JavaFX Application Thread] DecryptController - Operación rechazada tras 380 ms: contraseña incorrecta o fichero alterado
+```
+
+**Qué se registra**: arranque y cierre, cambio de idioma, inicio y resultado de cada cifrado o descifrado
+(tipo de fichero, tamaño y duración), contraseñas incorrectas y errores con su traza. En nivel DEBUG, además,
+la pantalla que se abre y el tipo de fichero elegido.
+
+**Qué no se registra nunca**: la contraseña, el contenido de los ficheros (ni la vista previa), la clave,
+la sal o el nonce, y el nombre o la ruta de los ficheros. Además, todo pasa por `SensitiveDataMasker` antes de
+escribirse (`%maskedMsg` y `%maskedEx` en `logback.xml`), por si algún mensaje o excepción llevara algo:
+
+| Dato | Se escribe como |
+|------|-----------------|
+| Carpeta del usuario (`C:\Users\ivan\...`) | `~\...` |
+| Nombre de usuario de Windows | `<usuario>` |
+| `contraseña=...`, `password: ...`, `clave=...`, `token=...` | `contraseña=****` |
+| Cadenas hexadecimales o Base64 largas (claves, sales) | `[oculto]` |
+
+**Más detalle (DEBUG)**: arrancar con la opción de la máquina virtual `-Dguardian.log.level=DEBUG`
+(en IntelliJ: *Run > Edit Configurations > Modify options > Add VM options*).
+
+En los tests se usa `src/test/resources/logback-test.xml`, que solo escribe avisos en consola y no crea ficheros.
 
 ## Documentación del código (Javadoc)
 
