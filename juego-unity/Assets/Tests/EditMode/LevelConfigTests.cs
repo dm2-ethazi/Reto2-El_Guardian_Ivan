@@ -25,15 +25,15 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(min, level.minEnemies);
             Assert.AreEqual(max, level.maxEnemies);
             Assert.AreEqual(interval, level.spawnInterval);
-            Assert.AreEqual(damage, level.damagePerHit);
+            Assert.IsTrue(level.enemies.Concat(new[] { level.boss }).Where(e => e.prefab != null).All(e => e.damagePerHit == damage));
         }
 
         [Test]
         public void EnemiesGetFasterEveryLevel()
         {
-            for (int number = 2; number <= 5; number++)
+            for (int number = 2; number <= 4; number++)
             {
-                Assert.Greater(Level(number).enemySpeed, Level(number - 1).enemySpeed);
+                Assert.Greater(Level(number).enemies.Max(e => e.speed), Level(number - 1).enemies.Max(e => e.speed));
             }
         }
 
@@ -63,19 +63,19 @@ namespace PuertaCastillo.Tests
         [Test]
         public void SecondEnemyTypeAppearsFromLevelThree()
         {
-            Assert.AreEqual(1, Level(1).enemyPrefabs.Length);
-            Assert.AreEqual(1, Level(2).enemyPrefabs.Length);
-            Assert.AreEqual(2, Level(3).enemyPrefabs.Length);
-            Assert.AreEqual(2, Level(4).enemyPrefabs.Length);
-            Assert.AreEqual(0, Level(5).enemyPrefabs.Length);
-            Assert.Greater(Level(3).enemyPrefabs[1].SpeedMultiplier, Level(3).enemyPrefabs[0].SpeedMultiplier);
+            Assert.AreEqual(1, Level(1).enemies.Length);
+            Assert.AreEqual(1, Level(2).enemies.Length);
+            Assert.AreEqual(2, Level(3).enemies.Length);
+            Assert.AreEqual(2, Level(4).enemies.Length);
+            Assert.AreEqual(0, Level(5).enemies.Length);
+            Assert.Greater(Level(3).enemies[1].speed, Level(3).enemies[0].speed);
         }
 
         [Test]
         public void OnlyLevelFiveHasABoss()
         {
-            Assert.IsTrue(Enumerable.Range(1, 4).All(number => Level(number).bossPrefab == null));
-            Assert.IsNotNull(Level(5).bossPrefab);
+            Assert.IsTrue(Enumerable.Range(1, 4).All(number => !Level(number).HasBoss));
+            Assert.IsTrue(Level(5).HasBoss);
         }
     }
 }

@@ -13,6 +13,9 @@ namespace PuertaCastillo.UI
         [SerializeField] private Sprite landscapeBackground;
         [SerializeField] private Sprite portraitBackground;
 
+        private const float ColumnHeight = 700f;
+        private const float ColumnHeightWithContinue = 760f;
+
         private Vector2 lastSize;
         private Rect lastSafeArea;
 
@@ -50,11 +53,40 @@ namespace PuertaCastillo.UI
 
             column.anchorMin = column.anchorMax = column.pivot = new Vector2(0.5f, 0.5f);
             column.anchoredPosition = (safeArea.center - new Vector2(width, height) / 2f) * unitsPerPixel;
-            // La columna completa mide 640 x 700; mantiene un margen incluso en ventanas pequeñas.
+            float columnHeight = PlaceContinueButton() ? ColumnHeightWithContinue : ColumnHeight;
+            // La columna completa mide 640 x 700 (760 con Continuar); mantiene un margen incluso en ventanas pequeñas.
             float fit = Mathf.Min(1f, Mathf.Min(
                 Mathf.Max(1f, safeArea.width * unitsPerPixel - 64f) / 640f,
-                Mathf.Max(1f, safeArea.height * unitsPerPixel - 64f) / 700f));
+                Mathf.Max(1f, safeArea.height * unitsPerPixel - 64f) / columnHeight));
             column.localScale = Vector3.one * fit;
+        }
+
+        // Con partida guardada hay un botón más (Continuar, encima de Iniciar partida): los botones
+        // se compactan un poco para que todo quepa bajo el título. Sin él, se queda como en la escena.
+        private bool PlaceContinueButton()
+        {
+            var continueButton = column.Find("BotonContinuar") as RectTransform;
+            if (continueButton == null || !continueButton.gameObject.activeSelf)
+            {
+                return false;
+            }
+
+            Place(continueButton, 40f, 120f);
+            Place(column.Find("BotonIniciar"), -90f, 120f);
+            Place(column.Find("BotonSalir"), -220f, 120f);
+            Place(column.Find("BotonEs"), -345f, 110f);
+            Place(column.Find("BotonEn"), -345f, 110f);
+            Place(column.Find("BotonEu"), -345f, 110f);
+            return true;
+        }
+
+        private static void Place(Transform child, float y, float height)
+        {
+            if (child is RectTransform rect)
+            {
+                rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, y);
+                rect.sizeDelta = new Vector2(rect.sizeDelta.x, height);
+            }
         }
     }
 }

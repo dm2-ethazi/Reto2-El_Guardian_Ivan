@@ -23,8 +23,9 @@ namespace PuertaCastillo.UI
         // Cada entrada: clave y sus textos en español, inglés y euskera.
         private static readonly Dictionary<string, string[]> Texts = new Dictionary<string, string[]>
         {
-            ["menu.title"] = new[] { "El guardián Iván", "El guardián Iván", "El guardián Iván" },
+            ["menu.title"] = new[] { "El Guardián Iván", "El Guardián Iván", "El Guardián Iván" },
             ["menu.start"] = new[] { "Iniciar partida", "Start game", "Hasi partida" },
+            ["menu.continue"] = new[] { "Continuar (nivel {0})", "Continue (level {0})", "Jarraitu ({0}. maila)" },
             ["menu.exit"] = new[] { "Salir", "Exit", "Irten" },
             ["menu.confirm"] = new[] { "¿Seguro que quieres salir?", "Are you sure you want to exit?", "Ziur irten nahi duzula?" },
             ["menu.yes"] = new[] { "Sí, salir", "Yes, exit", "Bai, irten" },
@@ -39,6 +40,9 @@ namespace PuertaCastillo.UI
             ["game.delete"] = new[] { "Borrar", "Delete", "Ezabatu" },
             ["game.status"] = new[] { "Nivel {0}  {1}", "Level {0}  {1}", "{0}. maila  {1}" },
             ["game.target"] = new[] { "Objetivo: {0}", "Target: {0}", "Helburua: {0}" },
+
+            ["swipe.menu"] = new[] { "Menú", "Menu", "Menua" },
+            ["swipe.level"] = new[] { "Nivel {0}", "Level {0}", "{0}. maila" },
 
             ["ruler.plain"] = new[] { "Original", "Plain", "Jatorrizkoa" },
             ["ruler.cipher"] = new[] { "Cifrada", "Cipher", "Zifratua" },

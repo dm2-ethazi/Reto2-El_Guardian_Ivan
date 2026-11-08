@@ -20,6 +20,17 @@ namespace PuertaCastillo.Gameplay
         /// <summary>Se lanza una sola vez, cuando la vida llega a 0.</summary>
         public event Action Fell;
 
+        [Header("Golpe recibido")]
+        [SerializeField] private Color hitFlashColor = new Color(1f, 0.55f, 0.45f, 1f);
+        [SerializeField, Min(0f)] private float shakeAmplitude = 0.08f;
+        [SerializeField, Min(0.01f)] private float shakeDuration = 0.18f;
+
+        // Temblor y destello sobre un hijo visual: el collider de la puerta no se mueve.
+        private SpriteRenderer visual;
+        private Color visualColor;
+        private float shakeTimer = -1f;
+        private float shakeStrength;
+
         public int MaxHealth => maxHealth;
         public int CurrentHealth { get; private set; }
         public bool IsDown => CurrentHealth <= 0;
@@ -51,6 +62,50 @@ namespace PuertaCastillo.Gameplay
             {
                 Fell?.Invoke();
             }
+        }
+
+        /// <summary>
+        /// Tiembla y destella un instante. Lo llama el enemigo justo al golpear.
+        /// <paramref name="strength"/> 1 es un golpe normal; el jefe usa más.
+        /// </summary>
+        public void PlayHitFeedback(float strength)
+        {
+            if (visual == null)
+            {
+                visual = SpriteVisual.MoveToChild(gameObject);
+                if (visual == null)
+                {
+                    return;
+                }
+                visualColor = visual.color;
+            }
+
+            shakeStrength = Mathf.Max(strength, shakeTimer >= 0f ? shakeStrength : 0f);
+            shakeTimer = 0f;
+        }
+
+        private void LateUpdate()
+        {
+            if (visual == null || shakeTimer < 0f)
+            {
+                return;
+            }
+
+            shakeTimer += Time.deltaTime;
+            float duration = shakeDuration * Mathf.Sqrt(shakeStrength);
+            float t = shakeTimer / duration;
+            if (t >= 1f)
+            {
+                shakeTimer = -1f;
+                visual.transform.localPosition = Vector3.zero;
+                visual.color = visualColor;
+                return;
+            }
+
+            float fade = 1f - t;
+            Vector2 jitter = UnityEngine.Random.insideUnitCircle * (shakeAmplitude * shakeStrength * fade);
+            visual.transform.localPosition = transform.InverseTransformVector(jitter);
+            visual.color = Color.Lerp(visualColor, hitFlashColor, fade * fade);
         }
     }
 }

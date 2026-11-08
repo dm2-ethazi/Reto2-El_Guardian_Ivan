@@ -15,7 +15,16 @@ namespace PuertaCastillo.Gameplay
 
         private void Awake()
         {
-            spriteRenderer = GetComponent<SpriteRenderer>();
+            if (spriteRenderer == null)
+            {
+                spriteRenderer = GetComponent<SpriteRenderer>();
+            }
+        }
+
+        /// <summary>Anima otro SpriteRenderer (el hijo visual del enemigo) en lugar del propio.</summary>
+        public void SetTarget(SpriteRenderer target)
+        {
+            spriteRenderer = target;
         }
 
         private void Update()

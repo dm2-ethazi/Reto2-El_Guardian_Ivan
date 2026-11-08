@@ -15,20 +15,21 @@ MonoBehaviour:
   minEnemies: 1
   maxEnemies: 1
   spawnInterval: 3.5
-  enemySpeed: 0.2
-  damagePerHit: 20
-  secondsBetweenHits: 2
-  durationSeconds: 100
+  secondsBetweenHits: 7
+  durationSeconds: 180
   caesarShift: 13
-  enemyPrefabs: []
-  bossPrefab: {fileID: 3529589520448922330, guid: aeab1b308f343034c8628275312f7ab1, type: 3}
+  enemies: []
+  boss:
+    prefab: {fileID: 3529589520448922330, guid: aeab1b308f343034c8628275312f7ab1, type: 3}
+    speed: 0.05
+    damagePerHit: 15
   hintKey: hint.level5
   messages:
-  - EL ENEMIGO EN EL PUENTE
-  - DEFIENDE EL CASTILLO
-  - LA TORRE PIDE AYUDA
-  - EL GUARDIAN RESISTE
-  - LOS MAGOS EN LA MURALLA
-  - NADIE CRUZA EL FOSO
-  - EL ULTIMO ESCUDO
-  - LA VICTORIA ESTA CERCA
+  - NIGROMANTE
+  - HECHICERO
+  - MALDICION
+  - PERGAMINO
+  - ENCANTAMIENTO
+  - GRIMORIO DE CUATRO HOJAS
+  - TINIEBLAS
+  - RELIQUIA DE DIOS

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Linq;
 using NUnit.Framework;
+using PuertaCastillo.Gameplay;
 using PuertaCastillo.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -17,9 +18,61 @@ namespace PuertaCastillo.Tests
         [UnitySetUp]
         public IEnumerator LoadMenu()
         {
+            SaveGame.Clear();
             yield return SceneManager.LoadSceneAsync(MainMenu.SceneName);
             yield return null;
             menu = Object.FindAnyObjectByType<MainMenu>();
+        }
+
+        [TearDown]
+        public void ClearSavedGame()
+        {
+            SaveGame.Clear();
+        }
+
+        [Test]
+        public void WithoutSavedGameThereIsNoContinueButton()
+        {
+            Assert.IsNull(menu.ContinueButton);
+        }
+
+        [UnityTest]
+        public IEnumerator SavedGameShowsContinueAboveStartAndLoadsThatLevel()
+        {
+            SaveGame.Save(2);
+            yield return SceneManager.LoadSceneAsync(MainMenu.SceneName);
+            yield return null;
+            menu = Object.FindAnyObjectByType<MainMenu>();
+
+            Button continueButton = menu.ContinueButton;
+            Assert.IsNotNull(continueButton);
+            Assert.AreEqual(Localization.Format("menu.continue", 3), continueButton.GetComponentInChildren<TMPro.TMP_Text>(true).text);
+            var start = (RectTransform)LanguageButton("BotonIniciar").transform;
+            Assert.Greater(((RectTransform)continueButton.transform).anchoredPosition.y, start.anchoredPosition.y);
+
+            continueButton.onClick.Invoke();
+            yield return null;
+            yield return null;
+            yield return null;
+
+            Assert.AreEqual(3, Object.FindAnyObjectByType<LevelManager>().LevelNumber);
+        }
+
+        [UnityTest]
+        public IEnumerator StartButtonAlwaysStartsOnLevelOne()
+        {
+            SaveGame.Save(3);
+            yield return SceneManager.LoadSceneAsync(MainMenu.SceneName);
+            yield return null;
+            menu = Object.FindAnyObjectByType<MainMenu>();
+
+            Press("BotonIniciar");
+            yield return null;
+            yield return null;
+            yield return null;
+
+            Assert.AreEqual(1, Object.FindAnyObjectByType<LevelManager>().LevelNumber);
+            Assert.AreEqual(0, SaveGame.SavedLevelIndex);
         }
 
         [Test]

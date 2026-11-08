@@ -10,16 +10,18 @@ namespace PuertaCastillo.UI
 {
     /// <summary>
     /// Regla de ayuda: una casilla por letra, con la original arriba y su cifrada justo debajo.
-    /// Las casillas van en dos bloques (A-N y Ñ-Z) para que las letras se lean bien en un móvil,
-    /// se crean al empezar copiando los textos de la escena y las coloca <see cref="GameLayout"/>.
+    /// Las casillas van en dos bloques (A-N y, centrado debajo, Ñ-Z) para que las letras se lean bien
+    /// en un móvil. Cada casilla es una tecla independiente con una línea fina entre las dos letras.
+    /// Se crean al empezar copiando los textos de la escena y las coloca <see cref="GameLayout"/>.
     /// El desplazamiento se cambia con los botones + y - o con las flechas arriba y abajo.
     /// </summary>
     public class CaesarRuler : MonoBehaviour
     {
         private const int BlockColumns = 14;
-        private const float CellGap = 3f;
-        private const float BlockGap = 8f;
-        private const float FontToCell = 0.48f;
+        private const float CellGap = 6f;
+        private const float BlockGap = 12f;
+        private const float FontToCell = 0.36f;
+        private const float BorderScale = 1.6f;
         private const float ShiftFontSize = 48f;
 
         [SerializeField] private TMP_Text cipherRow;
@@ -29,8 +31,9 @@ namespace PuertaCastillo.UI
         [SerializeField] private Button decreaseButton;
 
         [Header("Casillas")]
-        [SerializeField] private Color cellColor = new Color32(0xF2, 0xE8, 0xCF, 0xFF);
-        [SerializeField] private Color alternateCellColor = new Color32(0xDD, 0xCF, 0xAB, 0xFF);
+        [Tooltip("Sprite de cada casilla, en Sliced (el de las teclas).")]
+        [SerializeField] private Sprite cellSprite;
+        [SerializeField] private Color dividerColor = new Color32(0x4A, 0x4E, 0x69, 0x80);
         [SerializeField] private Color plainColor = new Color32(0x22, 0x22, 0x3B, 0xFF);
         [SerializeField] private Color cipherColor = new Color32(0xC0, 0x39, 0x2B, 0xFF);
 
@@ -120,12 +123,17 @@ namespace PuertaCastillo.UI
         public void Arrange(float x, float y, float width, float cellHeight)
         {
             float cellWidth = (width - (BlockColumns - 1) * CellGap) / BlockColumns;
-            float fontSize = cellHeight * FontToCell;
+            float fontSize = Mathf.Min(cellHeight * FontToCell, cellWidth * 0.62f);
 
             for (int i = 0; i < cells.Count; i++)
             {
-                float cellX = x + i % BlockColumns * (cellWidth + CellGap);
-                float cellY = y + i / BlockColumns * (cellHeight + BlockGap);
+                int row = i / BlockColumns;
+                int column = i % BlockColumns;
+                // El segundo bloque tiene una casilla menos: se centra bajo el primero.
+                int rowCount = Mathf.Min(BlockColumns, cells.Count - row * BlockColumns);
+                float rowOffset = (BlockColumns - rowCount) * (cellWidth + CellGap) / 2f;
+                float cellX = x + rowOffset + column * (cellWidth + CellGap);
+                float cellY = y + row * (cellHeight + BlockGap);
                 GameLayout.Place(cells[i], cellX, cellY, cellWidth, cellHeight);
                 plainLabels[i].fontSize = fontSize;
                 cipherLabels[i].fontSize = fontSize;
@@ -151,8 +159,21 @@ namespace PuertaCastillo.UI
             rect.SetParent(transform, false);
 
             Image background = cell.GetComponent<Image>();
-            background.color = index % 2 == 0 ? cellColor : alternateCellColor;
+            background.sprite = cellSprite;
+            background.type = Image.Type.Sliced;
+            background.pixelsPerUnitMultiplier = BorderScale;
             background.raycastTarget = false;
+
+            // Línea fina entre la letra original y la cifrada, sin llegar al borde de la casilla.
+            var divider = new GameObject("Separador", typeof(RectTransform), typeof(Image));
+            var dividerRect = (RectTransform)divider.transform;
+            dividerRect.SetParent(rect, false);
+            dividerRect.anchorMin = new Vector2(0.2f, 0.5f);
+            dividerRect.anchorMax = new Vector2(0.8f, 0.5f);
+            dividerRect.sizeDelta = new Vector2(0f, 2f);
+            Image dividerImage = divider.GetComponent<Image>();
+            dividerImage.color = dividerColor;
+            dividerImage.raycastTarget = false;
 
             cells.Add(rect);
             plainLabels.Add(CreateLabel(plainRow, rect, letter.ToString(), plainColor, 0.5f, 1f));
@@ -174,6 +195,10 @@ namespace PuertaCastillo.UI
             rect.anchorMin = new Vector2(0f, bottom);
             rect.anchorMax = new Vector2(1f, top);
             rect.offsetMin = rect.offsetMax = Vector2.zero;
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            label.margin = Vector4.zero;
+            label.verticalAlignment = VerticalAlignmentOptions.Middle;
+            label.horizontalAlignment = HorizontalAlignmentOptions.Center;
             return label;
         }
     }

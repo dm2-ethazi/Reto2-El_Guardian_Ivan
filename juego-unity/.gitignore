@@ -28,3 +28,21 @@
 *.unitypackage
 crashlytics-build.properties
 sysinfo.txt
+
+# Compilación nativa de Android (CMake/Gradle) que genera Unity
+.utmp/
+
+# Más ficheros de IDE y herramientas
+*.userprefs
+*.booproj
+*.svd
+*.opendb
+*.VC.db
+crashlytics-buildinfo*
+
+# Capturas de verificación (no forman parte del juego)
+docs/capturas-teclado/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db

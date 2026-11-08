@@ -190,6 +190,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2175460650783987466, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
+      propertyPath: m_Size.x
+      value: 1.98
+      objectReference: {fileID: 0}
+    - target: {fileID: 2175460650783987466, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
+      propertyPath: m_Size.y
+      value: 1.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 5837229311208278386, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.155
+      objectReference: {fileID: 0}
     - target: {fileID: 1164328379347254311, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -288,15 +300,7 @@ PrefabInstance:
       objectReference: {fileID: 8801253886324128656}
     - target: {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
       propertyPath: decryptsToKill
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
-      propertyPath: speedMultiplier
-      value: 0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
-      propertyPath: damageMultiplier
-      value: 1
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

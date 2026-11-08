@@ -19,8 +19,6 @@ namespace PuertaCastillo.Gameplay
         [SerializeField] private Color targetLabelColor = new Color32(0xD4, 0xA0, 0x17, 0xFF);
 
         [Header("Tipo de enemigo")]
-        [SerializeField, Min(0.1f)] private float speedMultiplier = 1f;
-        [SerializeField, Min(0.1f)] private float damageMultiplier = 1f;
         [SerializeField, Min(1)] private int decryptsToKill = 1;
         [Tooltip("Relleno de la barra de vida. Solo lo usa el jefe.")]
         [SerializeField] private Transform healthFill;
@@ -34,11 +32,29 @@ namespace PuertaCastillo.Gameplay
         private float hitTimer;
         private float healthFillWidth;
 
+        // Animación de golpe: solo se mueve el hijo visual, nunca el collider ni el Rigidbody2D.
+        private Transform visual;
+        private SpriteRenderer visualRenderer;
+        private Color visualColor = Color.white;
+        private float strikeTimer = -1f;
+        private Vector2 strikeDirection = Vector2.down;
+
+        private static readonly Color StrikeFlashColor = new Color(1f, 0.35f, 0.3f, 1f);
+
+        // El jefe es el único con barra de vida: su golpe es más largo y contundente.
+        private bool IsBoss => healthFill != null;
+        private float StrikeOut => IsBoss ? 0.08f : 0.06f;
+        private float StrikeBack => IsBoss ? 0.26f : 0.18f;
+        private float StrikeDistance => IsBoss ? 0.6f : 0.35f;
+        private float StrikeSquash => IsBoss ? 0.4f : 0.28f;
+
+        /// <summary>Transform del dibujo, el único que se mueve al golpear.</summary>
+        public Transform Visual => visual;
+
         public bool IsAttacking { get; private set; }
         public bool IsTargeted { get; private set; }
         public string Message { get; private set; }
         public string EncryptedMessage => messageLabel.text;
-        public float SpeedMultiplier => speedMultiplier;
         public int RemainingDecrypts { get; private set; }
 
         /// <summary>Fila del mensaje, para que no se solape con el de otros enemigos.</summary>
@@ -49,6 +65,17 @@ namespace PuertaCastillo.Gameplay
             body = GetComponent<Rigidbody2D>();
             RemainingDecrypts = decryptsToKill;
 
+            visualRenderer = SpriteVisual.MoveToChild(gameObject);
+            if (visualRenderer != null)
+            {
+                visual = visualRenderer.transform;
+                visualColor = visualRenderer.color;
+                if (TryGetComponent(out SpriteAnimator animator))
+                {
+                    animator.SetTarget(visualRenderer);
+                }
+            }
+
             if (healthFill != null)
             {
                 healthFillWidth = healthFill.localScale.x;
@@ -56,17 +83,16 @@ namespace PuertaCastillo.Gameplay
         }
 
         /// <summary>
-        /// Prepara al enemigo recién creado con los valores del nivel, ajustados por los
-        /// multiplicadores de su tipo. Guarda el mensaje original para comprobar la respuesta
-        /// y muestra en pantalla solo el cifrado.
+        /// Prepara al enemigo recién creado con la velocidad y el daño que su tipo tiene en el nivel.
+        /// Guarda el mensaje original para comprobar la respuesta y muestra en pantalla solo el cifrado.
         /// </summary>
-        public void Init(Vector2 doorPosition, LevelConfig config, string message, int row)
+        public void Init(Vector2 doorPosition, EnemyStats stats, LevelConfig config, string message, int row)
         {
             LabelRow = row;
             PlaceLabel(row);
             destination = doorPosition;
-            speed = config.enemySpeed * speedMultiplier;
-            damagePerHit = Mathf.RoundToInt(config.damagePerHit * damageMultiplier);
+            speed = stats.speed;
+            damagePerHit = stats.damagePerHit;
             secondsBetweenHits = config.secondsBetweenHits;
             caesarShift = config.caesarShift;
             SetMessage(message);
@@ -146,7 +172,72 @@ namespace PuertaCastillo.Gameplay
             {
                 hitTimer -= secondsBetweenHits;
                 door.TakeDamage(damagePerHit);
+
+                // La animación sale del mismo punto que el daño, así el golpe visual coincide con él.
+                StartStrike(door.transform.position);
+                door.PlayHitFeedback(IsBoss ? 2f : 1f);
             }
+        }
+
+        private void StartStrike(Vector2 doorPosition)
+        {
+            Vector2 toDoor = doorPosition - body.position;
+            // La puerta es ancha: el enemigo embiste sobre todo hacia abajo, hacia ella.
+            strikeDirection = new Vector2(toDoor.x * 0.25f, toDoor.y).normalized;
+            if (strikeDirection == Vector2.zero)
+            {
+                strikeDirection = Vector2.down;
+            }
+            strikeTimer = 0f;
+        }
+
+        // Embestida: ida rápida hacia la puerta estirándose, aplastado contra ella en el impacto y
+        // vuelta más lenta, con un destello rojo que se apaga. Fuera del golpe, el visual se queda
+        // en su sitio y el SpriteAnimator sigue con su animación de andar o flotar.
+        private void LateUpdate()
+        {
+            if (visual == null || strikeTimer < 0f)
+            {
+                return;
+            }
+
+            strikeTimer += Time.deltaTime;
+            float reach;
+            Vector3 scale;
+            float flash;
+
+            if (strikeTimer < StrikeOut)
+            {
+                // Ida: se lanza y se estira en la dirección del golpe.
+                float t = strikeTimer / StrikeOut;
+                reach = t * t;
+                scale = new Vector3(1f - StrikeSquash * 0.4f * t, 1f + StrikeSquash * 0.6f * t, 1f);
+                flash = t;
+            }
+            else if (strikeTimer < StrikeOut + StrikeBack)
+            {
+                // Vuelta: parte aplastado contra la puerta y recupera su forma.
+                float t = (strikeTimer - StrikeOut) / StrikeBack;
+                float ease = 1f - Mathf.SmoothStep(0f, 1f, t);
+                reach = ease;
+                float squash = (1f - t) * (1f - t);
+                scale = new Vector3(1f + StrikeSquash * squash, 1f - StrikeSquash * 0.7f * squash, 1f);
+                flash = 1f - t;
+            }
+            else
+            {
+                strikeTimer = -1f;
+                visual.localPosition = Vector3.zero;
+                visual.localScale = Vector3.one;
+                visualRenderer.color = visualColor;
+                return;
+            }
+
+            // La raíz tiene escala, así que el desplazamiento en mundo se pasa a espacio local.
+            Vector3 worldOffset = (Vector3)(strikeDirection * (StrikeDistance * reach));
+            visual.localPosition = transform.InverseTransformVector(worldOffset);
+            visual.localScale = scale;
+            visualRenderer.color = Color.Lerp(visualColor, StrikeFlashColor, flash);
         }
 
         // Si dejara de tocar la puerta, vuelve a avanzar.

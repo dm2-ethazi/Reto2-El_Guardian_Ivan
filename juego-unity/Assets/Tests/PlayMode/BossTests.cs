@@ -10,7 +10,7 @@ namespace PuertaCastillo.Tests
 {
     public class BossTests
     {
-        private const int BossDecrypts = 5;
+        private const int BossDecrypts = 4;
 
         private EnemySpawner spawner;
         private EnemyTargeting targeting;

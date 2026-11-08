@@ -21,6 +21,7 @@ namespace PuertaCastillo.Tests
         [UnitySetUp]
         public IEnumerator LoadGame()
         {
+            SaveGame.Clear();
             yield return SceneManager.LoadSceneAsync("PuertaDelCastillo");
             yield return null;
             yield return null;
@@ -31,6 +32,47 @@ namespace PuertaCastillo.Tests
         public void RestoreTime()
         {
             Time.timeScale = 1f;
+            SaveGame.Clear();
+        }
+
+        [UnityTest]
+        public IEnumerator EachLevelIsSavedWhenItStarts()
+        {
+            Assert.IsTrue(SaveGame.HasSavedLevel);
+            Assert.AreEqual(0, SaveGame.SavedLevelIndex);
+
+            yield return FinishLevel();
+            Time.timeScale = 1f;
+            Press("BotonSiguiente");
+            yield return null;
+
+            Assert.AreEqual(1, SaveGame.SavedLevelIndex);
+        }
+
+        [UnityTest]
+        public IEnumerator RequestedLevelIsWhereTheGameStarts()
+        {
+            SaveGame.RequestStartLevel(2);
+            yield return SceneManager.LoadSceneAsync("PuertaDelCastillo");
+            yield return null;
+            yield return null;
+            FindObjects();
+
+            Assert.AreEqual(3, manager.LevelNumber);
+            Assert.AreEqual(2, SaveGame.SavedLevelIndex);
+        }
+
+        [UnityTest]
+        public IEnumerator WinningTheGameClearsTheSavedLevel()
+        {
+            yield return GoToLevelFive();
+            for (int i = 0; i < 4; i++)
+            {
+                spawner.ResolveDecrypt(spawner.Boss);
+            }
+            yield return null;
+
+            Assert.IsFalse(SaveGame.HasSavedLevel);
         }
 
         [Test]
@@ -72,7 +114,7 @@ namespace PuertaCastillo.Tests
         }
 
         [UnityTest]
-        public IEnumerator FallenDoorShowsDefeatAndRestartGoesBackToLevelOne()
+        public IEnumerator FallenDoorShowsDefeatAndRestartRepeatsTheLevel()
         {
             door.TakeDamage(100);
             yield return null;
@@ -98,7 +140,7 @@ namespace PuertaCastillo.Tests
             yield return GoToLevelFive();
             Assert.That(manager.TimeRemaining, Is.GreaterThan(90f));
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 4; i++)
             {
                 spawner.ResolveDecrypt(spawner.Boss);
             }
@@ -134,7 +176,7 @@ namespace PuertaCastillo.Tests
         }
 
         [UnityTest]
-        public IEnumerator InGameRestartButtonGoesBackToLevelOne()
+        public IEnumerator InGameRestartButtonRepeatsLevelOne()
         {
             door.TakeDamage(50);
 
@@ -146,6 +188,26 @@ namespace PuertaCastillo.Tests
 
             Assert.AreEqual(1, manager.LevelNumber);
             Assert.AreEqual(100, door.CurrentHealth);
+        }
+
+        [UnityTest]
+        public IEnumerator InGameRestartButtonRepeatsTheCurrentLevel()
+        {
+            yield return FinishLevel();
+            Time.timeScale = 1f;
+            Press("BotonSiguiente");
+            yield return null;
+            door.TakeDamage(50);
+
+            Press("BotonPartidaReiniciar");
+            yield return null;
+            yield return null;
+            yield return null;
+            FindObjects();
+
+            Assert.AreEqual(2, manager.LevelNumber);
+            Assert.AreEqual(100, door.CurrentHealth);
+            Assert.That(manager.TimeRemaining, Is.GreaterThan(69f));
         }
 
         [UnityTest]

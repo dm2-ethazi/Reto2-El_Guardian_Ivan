@@ -15,15 +15,20 @@ MonoBehaviour:
   minEnemies: 2
   maxEnemies: 4
   spawnInterval: 30
-  enemySpeed: 0.6
-  damagePerHit: 2
-  secondsBetweenHits: 2
+  secondsBetweenHits: 4
   durationSeconds: 90
   caesarShift: 11
-  enemyPrefabs:
-  - {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
-  - {fileID: 2571283707677237309, guid: f1225b080ad82bf41ac4e072156d5a72, type: 3}
-  bossPrefab: {fileID: 0}
+  enemies:
+  - prefab: {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
+    speed: 0.3
+    damagePerHit: 2
+  - prefab: {fileID: 2571283707677237309, guid: f1225b080ad82bf41ac4e072156d5a72, type: 3}
+    speed: 0.6
+    damagePerHit: 1
+  boss:
+    prefab: {fileID: 0}
+    speed: 0.4
+    damagePerHit: 2
   hintKey: hint.level4
   messages:
   - ABRE

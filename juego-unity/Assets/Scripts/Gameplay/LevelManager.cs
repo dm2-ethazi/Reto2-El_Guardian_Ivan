@@ -11,7 +11,7 @@ namespace PuertaCastillo.Gameplay
         [SerializeField] private LevelConfig[] levels;
         [SerializeField] private EnemySpawner spawner;
         [SerializeField] private Door door;
-        [Tooltip("Nivel con el que empieza la partida. 0 es el nivel 1.")]
+        [Tooltip("Nivel con el que empieza la partida si el menú no pide otro (Continuar). 0 es el nivel 1.")]
         [SerializeField, Min(0)] private int startLevelIndex;
 
         private int levelIndex;
@@ -46,7 +46,7 @@ namespace PuertaCastillo.Gameplay
 
         private void Start()
         {
-            StartLevel(startLevelIndex);
+            StartLevel(Mathf.Clamp(SaveGame.TakeStartLevel(startLevelIndex), 0, levels.Length - 1));
         }
 
         // Cuenta atrás del nivel: si la puerta sigue en pie al llegar a 0, el nivel está superado.
@@ -78,6 +78,8 @@ namespace PuertaCastillo.Gameplay
             playing = true;
             door.ResetHealth();
             spawner.StartLevel(levels[index]);
+            // Se guarda al empezar: si se cierra el juego a mitad, Continuar retoma este nivel desde el principio.
+            SaveGame.Save(index);
             LevelStarted?.Invoke();
         }
 
@@ -99,6 +101,8 @@ namespace PuertaCastillo.Gameplay
         {
             playing = false;
             spawner.StopLevel();
+            // Partida terminada: ya no hay nada que continuar.
+            SaveGame.Clear();
             Won?.Invoke();
         }
 

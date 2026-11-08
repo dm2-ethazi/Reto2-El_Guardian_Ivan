@@ -37,9 +37,9 @@ namespace PuertaCastillo.Gameplay
             timer = 0f;
             stopped = false;
 
-            if (config.bossPrefab != null)
+            if (config.HasBoss)
             {
-                boss = Spawn(config.bossPrefab, spawnPoints[spawnPoints.Length / 2]);
+                boss = Spawn(config.boss, spawnPoints[spawnPoints.Length / 2]);
             }
         }
 
@@ -65,10 +65,10 @@ namespace PuertaCastillo.Gameplay
             bool belowMinimum = activeEnemies.Count < config.minEnemies;
             bool intervalDone = timer >= config.spawnInterval && activeEnemies.Count < config.maxEnemies;
 
-            if (belowMinimum || intervalDone)
+            if ((belowMinimum || intervalDone) && config.enemies.Length > 0)
             {
-                Enemy prefab = config.enemyPrefabs[Random.Range(0, config.enemyPrefabs.Length)];
-                Spawn(prefab, NextSpawnPoint());
+                EnemyStats stats = config.enemies[Random.Range(0, config.enemies.Length)];
+                Spawn(stats, NextSpawnPoint());
             }
         }
 
@@ -92,10 +92,10 @@ namespace PuertaCastillo.Gameplay
         }
 
         // Crea el enemigo a partir del prefab y le da los valores del nivel y un mensaje libre.
-        private Enemy Spawn(Enemy prefab, Transform point)
+        private Enemy Spawn(EnemyStats stats, Transform point)
         {
-            Enemy enemy = Instantiate(prefab, point.position, Quaternion.identity);
-            enemy.Init(door.transform.position, config, PickMessage(), FreeLabelRow());
+            Enemy enemy = Instantiate(stats.prefab, point.position, Quaternion.identity);
+            enemy.Init(door.transform.position, stats, config, PickMessage(), FreeLabelRow());
             activeEnemies.Add(enemy);
             timer = 0f;
             return enemy;

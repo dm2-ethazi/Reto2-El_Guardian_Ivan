@@ -15,19 +15,22 @@ MonoBehaviour:
   minEnemies: 1
   maxEnemies: 3
   spawnInterval: 20
-  enemySpeed: 0.4
-  damagePerHit: 2
-  secondsBetweenHits: 2
+  secondsBetweenHits: 3
   durationSeconds: 70
   caesarShift: 5
-  enemyPrefabs:
-  - {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
-  bossPrefab: {fileID: 0}
+  enemies:
+  - prefab: {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
+    speed: 0.3
+    damagePerHit: 2
+  boss:
+    prefab: {fileID: 0}
+    speed: 0.4
+    damagePerHit: 2
   hintKey: hint.level2
   messages:
-  - ALZA EL ESCUDO
-  - CIERRA EL PORTON
-  - LA TORRE CAE
-  - CUIDA EL FOSO
-  - ABRE LA PUERTA
-  - LA MAGIA VUELVE
+  - LANZA
+  - HACHA
+  - DRAGON
+  - POCION
+  - ARCOS
+  - CORONA

@@ -194,8 +194,6 @@ MonoBehaviour:
   targetFrame: {fileID: 8015234683438496337}
   labelColor: {r: 0.9490196, g: 0.9098039, b: 0.8117647, a: 1}
   targetLabelColor: {r: 0.83137256, g: 0.627451, b: 0.09019608, a: 1}
-  speedMultiplier: 1
-  damageMultiplier: 1
   decryptsToKill: 1
   healthFill: {fileID: 0}
 --- !u!1 &6092453772658638036
@@ -406,7 +404,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.7, y: 1.7, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5987257489040560023}
@@ -464,8 +462,8 @@ SpriteRenderer:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_DrawMode: 1
+  m_Size: {x: 0.97, y: 1.65}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

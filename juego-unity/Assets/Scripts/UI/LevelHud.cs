@@ -8,7 +8,8 @@ namespace PuertaCastillo.UI
 {
     /// <summary>
     /// Muestra el nivel y el tiempo restante, y los paneles de nivel completado, victoria y derrota.
-    /// También crea los botones de reiniciar y volver al menú que se ven durante la partida.
+    /// También crea los botones de reiniciar y volver al menú que se ven durante la partida, y los
+    /// gestos del móvil que hacen lo mismo (deslizar a la derecha reinicia y a la izquierda va al menú).
     /// </summary>
     public class LevelHud : MonoBehaviour
     {
@@ -33,6 +34,14 @@ namespace PuertaCastillo.UI
         {
             inGameRestartButton = CreateInGameButton(restartButton, "BotonPartidaReiniciar");
             inGameMenuButton = CreateInGameButton(menuButton, "BotonPartidaMenu");
+
+            SwipeNavigation swipe = gameObject.AddComponent<SwipeNavigation>();
+            // En la partida se desliza a la derecha para volver al menú; a la izquierda no hace nada.
+            swipe.Direction = Swipe.Right;
+            swipe.Swiped = GoToMenu;
+            swipe.DestinationLabel = () => Localization.Get("swipe.menu");
+            swipe.LabelFont = statusLabel.font;
+            swipe.IsAllowed = () => !panel.activeSelf;
         }
 
         // Conecta los eventos de la partida con los paneles y los botones con sus acciones.
@@ -140,9 +149,10 @@ namespace PuertaCastillo.UI
             return button;
         }
 
-        // Recargar la escena deja la puerta a 100 y la partida en el nivel 1.
+        // Reinicia solo el nivel actual: recarga la escena empezando en este nivel, con la puerta a 100.
         private void Restart()
         {
+            SaveGame.RequestStartLevel(levelManager.LevelNumber - 1);
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
