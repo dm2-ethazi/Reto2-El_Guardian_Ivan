@@ -10,6 +10,7 @@ using UnityEngine.UI;
 
 namespace PuertaCastillo.Tests
 {
+    /// <summary>Pruebas de la regla de ayuda: casillas, letras cifradas y cambio de desplazamiento.</summary>
     public class CaesarRulerTests
     {
         private CaesarRuler ruler;

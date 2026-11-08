@@ -97,6 +97,7 @@ namespace PuertaCastillo.UI
             cancelExitButton.onClick.RemoveListener(CancelExit);
         }
 
+        // Botones de idioma: cada uno elige el suyo.
         private void ChooseSpanish()
         {
             ChooseLanguage(Language.Spanish);
@@ -112,6 +113,7 @@ namespace PuertaCastillo.UI
             ChooseLanguage(Language.Basque);
         }
 
+        // Cambia el idioma de todo el juego y marca el botón elegido.
         private void ChooseLanguage(Language language)
         {
             Localization.SetLanguage(language);
@@ -126,6 +128,7 @@ namespace PuertaCastillo.UI
             basqueButton.interactable = Localization.Current != Language.Basque;
         }
 
+        // Rótulo "Continuar (nivel N)" en el idioma actual.
         private void ShowContinueLabel()
         {
             continueButton.GetComponentInChildren<TMP_Text>(true).text = Localization.Format("menu.continue", SaveGame.SavedLevelIndex + 1);
@@ -138,23 +141,27 @@ namespace PuertaCastillo.UI
             SceneManager.LoadScene(GameSceneName);
         }
 
+        // Continuar: carga el juego en el nivel guardado.
         private void ContinueGame()
         {
             SaveGame.RequestStartLevel(SaveGame.SavedLevelIndex);
             SceneManager.LoadScene(GameSceneName);
         }
 
+        // Gesto de deslizar a la izquierda: entra en el nivel guardado o en el 1.
         private void EnterGameBySwipe()
         {
             SaveGame.RequestStartLevel(SwipeStartLevel);
             SceneManager.LoadScene(GameSceneName);
         }
 
+        // Salir pide confirmación antes de cerrar el juego.
         private void AskToExit()
         {
             confirmPanel.SetActive(true);
         }
 
+        // "No": cierra la confirmación y sigue en el menú.
         private void CancelExit()
         {
             confirmPanel.SetActive(false);

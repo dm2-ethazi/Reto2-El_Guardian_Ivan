@@ -9,6 +9,7 @@ namespace PuertaCastillo.UI
     [RequireComponent(typeof(TMP_Text))]
     public class LocalizedText : MonoBehaviour
     {
+        [Tooltip("Clave del texto en Localization.cs, por ejemplo menu.start.")]
         [SerializeField] private string key;
 
         private void OnEnable()
@@ -22,6 +23,7 @@ namespace PuertaCastillo.UI
             Localization.LanguageChanged -= Refresh;
         }
 
+        // Pone el texto de la clave en el idioma actual.
         private void Refresh()
         {
             GetComponent<TMP_Text>().text = Localization.Get(key);

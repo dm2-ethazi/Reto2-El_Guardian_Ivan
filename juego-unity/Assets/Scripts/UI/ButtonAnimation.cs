@@ -17,11 +17,13 @@ namespace PuertaCastillo.UI
         private float hoverTarget = 1f;
         private float hover = 1f;
 
+        /// <summary>El ratón entra en el botón: crece un poco.</summary>
         public void OnPointerEnter(PointerEventData eventData)
         {
             hoverTarget = HoverScale;
         }
 
+        /// <summary>El ratón sale del botón: vuelve a su tamaño.</summary>
         public void OnPointerExit(PointerEventData eventData)
         {
             hoverTarget = 1f;
@@ -33,6 +35,7 @@ namespace PuertaCastillo.UI
             transform.localScale = Vector3.one;
         }
 
+        // Suaviza el cambio de tamaño y le suma un "respirar" lento con un seno.
         private void Update()
         {
             hover = Mathf.Lerp(hover, hoverTarget, Smoothing * Time.unscaledDeltaTime);

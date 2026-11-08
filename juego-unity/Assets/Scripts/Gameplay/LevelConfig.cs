@@ -11,12 +11,17 @@ namespace PuertaCastillo.Gameplay
     [CreateAssetMenu(fileName = "Level", menuName = "Puerta del Castillo/Nivel")]
     public class LevelConfig : ScriptableObject
     {
+        [Tooltip("Enemigos que siempre tiene que haber a la vez: si hay menos, aparece uno al momento.")]
         [Min(0)] public int minEnemies = 1;
+        [Tooltip("Máximo de enemigos a la vez. También es el número de filas de mensajes.")]
         [Min(1)] public int maxEnemies = 2;
+        [Tooltip("Segundos entre la aparición de un enemigo y la del siguiente, mientras no se llegue al máximo.")]
         [Min(0.1f)] public float spawnInterval = 6f;
         [Tooltip("Segundos entre golpe y golpe de cualquier enemigo que esté en la puerta.")]
         [Min(0.1f)] public float secondsBetweenHits = 2f;
+        [Tooltip("Segundos que hay que resistir para superar el nivel.")]
         [Min(1f)] public float durationSeconds = 60f;
+        [Tooltip("Desplazamiento del cifrado César de los mensajes de este nivel.")]
         [Range(1, 26)] public int caesarShift = 3;
 
         [Tooltip("Tipos de enemigo que pueden aparecer en este nivel, cada uno con su velocidad y su daño.")]

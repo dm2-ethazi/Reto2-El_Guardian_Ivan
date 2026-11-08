@@ -8,6 +8,7 @@ namespace PuertaCastillo.Gameplay
     /// </summary>
     public class LevelManager : MonoBehaviour
     {
+        [Tooltip("Los niveles en orden (Assets/Levels/Level1..5). El último es el del jefe.")]
         [SerializeField] private LevelConfig[] levels;
         [SerializeField] private EnemySpawner spawner;
         [SerializeField] private Door door;
@@ -29,7 +30,9 @@ namespace PuertaCastillo.Gameplay
         /// <summary>Se lanza cuando cae la puerta.</summary>
         public event Action Lost;
 
+        /// <summary>Número del nivel actual tal como lo ve el jugador (empieza en 1).</summary>
         public int LevelNumber => levelIndex + 1;
+        /// <summary>Segundos que quedan para superar el nivel.</summary>
         public float TimeRemaining { get; private set; }
 
         private void OnEnable()
@@ -65,6 +68,7 @@ namespace PuertaCastillo.Gameplay
             }
         }
 
+        /// <summary>Empieza el nivel siguiente. Lo llama el botón "Siguiente nivel".</summary>
         public void NextLevel()
         {
             StartLevel(levelIndex + 1);
@@ -97,6 +101,7 @@ namespace PuertaCastillo.Gameplay
             LevelCompleted?.Invoke();
         }
 
+        // Victoria final: se para todo y se borra la partida guardada.
         private void Win()
         {
             playing = false;
@@ -106,6 +111,7 @@ namespace PuertaCastillo.Gameplay
             Won?.Invoke();
         }
 
+        // Derrota: la puerta ha caído. La partida guardada se mantiene para reintentar el nivel.
         private void Lose()
         {
             playing = false;

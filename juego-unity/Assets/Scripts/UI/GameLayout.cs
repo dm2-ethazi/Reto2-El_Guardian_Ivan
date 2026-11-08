@@ -83,6 +83,7 @@ namespace PuertaCastillo.UI
 
         public Vector2 LogicalSize { get; private set; }
 
+        // Solo recoloca cuando cambia el tamaño de la pantalla o el área segura (al girar el móvil).
         private void Update()
         {
             Vector2 screen = ScreenFit.CurrentSize;
@@ -206,6 +207,7 @@ namespace PuertaCastillo.UI
             Place(hud.InGameMenuButton, right - 2f * InGameButtonWidth - Gap, y, InGameButtonWidth, TouchSize);
         }
 
+        // Placa de la pista con su icono. Devuelve dónde empieza lo siguiente.
         private float PlaceHint(float left, float y, float width)
         {
             Place(hintPlate, left, y, width, HintHeight);

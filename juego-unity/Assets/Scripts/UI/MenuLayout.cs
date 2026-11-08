@@ -19,6 +19,7 @@ namespace PuertaCastillo.UI
         private Vector2 lastSize;
         private Rect lastSafeArea;
 
+        // Solo recoloca cuando cambia el tamaño de la pantalla o el área segura.
         private void Update()
         {
             Vector2 size = ScreenFit.CurrentSize;
@@ -31,11 +32,13 @@ namespace PuertaCastillo.UI
             }
         }
 
+        /// <summary>Recoloca el menú para una pantalla sin muescas (toda ella es área segura).</summary>
         public void Apply(float width, float height)
         {
             Apply(width, height, new Rect(0f, 0f, width, height));
         }
 
+        /// <summary>Ajusta la escala del Canvas, cubre la pantalla con el fondo sin deformarlo y centra la columna de botones en el área segura.</summary>
         public void Apply(float width, float height, Rect safeArea)
         {
             if (width <= 0f || height <= 0f) return;
@@ -80,6 +83,7 @@ namespace PuertaCastillo.UI
             return true;
         }
 
+        // Cambia solo la altura y la posición vertical de un elemento de la columna.
         private static void Place(Transform child, float y, float height)
         {
             if (child is RectTransform rect)

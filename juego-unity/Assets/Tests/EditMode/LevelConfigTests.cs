@@ -5,6 +5,7 @@ using UnityEditor;
 
 namespace PuertaCastillo.Tests
 {
+    /// <summary>Pruebas de los cinco niveles: valores coherentes y acordes con la propuesta técnica.</summary>
     public class LevelConfigTests
     {
         private static LevelConfig Level(int number)

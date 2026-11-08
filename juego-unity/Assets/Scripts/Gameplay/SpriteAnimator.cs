@@ -27,6 +27,7 @@ namespace PuertaCastillo.Gameplay
             spriteRenderer = target;
         }
 
+        // Elige el fotograma según el tiempo de juego, así todos los enemigos del mismo tipo van sincronizados.
         private void Update()
         {
             spriteRenderer.sprite = frames[(int)(Time.time * framesPerSecond) % frames.Length];

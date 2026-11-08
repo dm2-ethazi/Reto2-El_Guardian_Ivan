@@ -13,6 +13,7 @@ namespace PuertaCastillo.Gameplay
     {
         [SerializeField] private LevelConfig config;
         [SerializeField] private Door door;
+        [Tooltip("Puntos de la parte de arriba donde aparecen los enemigos. GameLayout los reparte según el ancho de pantalla.")]
         [SerializeField] private Transform[] spawnPoints;
 
         private readonly List<Enemy> activeEnemies = new List<Enemy>();
@@ -101,6 +102,7 @@ namespace PuertaCastillo.Gameplay
             return enemy;
         }
 
+        // Borra de la escena todos los enemigos que quedan y vacía la lista.
         private void DestroyActiveEnemies()
         {
             foreach (Enemy enemy in activeEnemies.Where(enemy => enemy != null))

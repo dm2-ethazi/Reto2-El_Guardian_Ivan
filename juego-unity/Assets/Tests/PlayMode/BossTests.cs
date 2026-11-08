@@ -8,6 +8,7 @@ using UnityEngine.TestTools;
 
 namespace PuertaCastillo.Tests
 {
+    /// <summary>Pruebas del jefe del nivel 5: es el objetivo, pierde vida con cada acierto y muere a los 4.</summary>
     public class BossTests
     {
         private const int BossDecrypts = 4;

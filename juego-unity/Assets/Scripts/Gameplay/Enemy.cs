@@ -19,6 +19,7 @@ namespace PuertaCastillo.Gameplay
         [SerializeField] private Color targetLabelColor = new Color32(0xD4, 0xA0, 0x17, 0xFF);
 
         [Header("Tipo de enemigo")]
+        [Tooltip("Mensajes que hay que descifrar para derrotarlo. 1 en los enemigos normales; el jefe usa más.")]
         [SerializeField, Min(1)] private int decryptsToKill = 1;
         [Tooltip("Relleno de la barra de vida. Solo lo usa el jefe.")]
         [SerializeField] private Transform healthFill;
@@ -107,6 +108,7 @@ namespace PuertaCastillo.Gameplay
             messageLabel.rectTransform.anchoredPosition = position;
         }
 
+        /// <summary>Cambia el mensaje: guarda el original para comprobar la respuesta y muestra el cifrado.</summary>
         public void SetMessage(string message)
         {
             Message = message;
@@ -129,6 +131,7 @@ namespace PuertaCastillo.Gameplay
             return RemainingDecrypts <= 0;
         }
 
+        /// <summary>Marca o desmarca al enemigo como objetivo: enseña el marco y pinta su mensaje en dorado.</summary>
         public void SetTargeted(bool targeted)
         {
             IsTargeted = targeted;
@@ -179,6 +182,7 @@ namespace PuertaCastillo.Gameplay
             }
         }
 
+        // Prepara la embestida hacia la puerta; LateUpdate la anima en los fotogramas siguientes.
         private void StartStrike(Vector2 doorPosition)
         {
             Vector2 toDoor = doorPosition - body.position;

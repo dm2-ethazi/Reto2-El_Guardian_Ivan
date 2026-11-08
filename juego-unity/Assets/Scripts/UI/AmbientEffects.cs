@@ -31,6 +31,7 @@ namespace PuertaCastillo.UI
         private readonly List<SpriteSetter> flames = new List<SpriteSetter>();
         private int nextSibling = 1;
 
+        // Cambia el sprite de una llama, tanto si es una Image (menú) como un SpriteRenderer (partida).
         private delegate void SpriteSetter(Sprite sprite);
 
         private void Start()
@@ -54,6 +55,7 @@ namespace PuertaCastillo.UI
             }
         }
 
+        // Las velas suben y bajan, la niebla se desliza a la derecha y vuelve a entrar, y las llamas cambian de fotograma.
         private void Update()
         {
             for (int i = 0; i < candles.Count; i++)
@@ -79,6 +81,7 @@ namespace PuertaCastillo.UI
             }
         }
 
+        // Punto al azar dentro del área configurada.
         private Vector3 RandomPoint()
         {
             return areaCenter + new Vector2(Random.Range(-0.5f, 0.5f) * areaSize.x, Random.Range(-0.5f, 0.5f) * areaSize.y);

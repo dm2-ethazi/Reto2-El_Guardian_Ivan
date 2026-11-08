@@ -8,21 +8,25 @@ namespace PuertaCastillo.Gameplay
     /// </summary>
     public static class SaveGame
     {
+        /// <summary>Clave de PlayerPrefs donde se guarda el nivel. Borrarla equivale a no tener partida.</summary>
         public const string SavedLevelKey = "savedLevel";
 
         private static int requestedLevel = -1;
 
+        /// <summary>True si hay una partida guardada que se pueda continuar.</summary>
         public static bool HasSavedLevel => PlayerPrefs.HasKey(SavedLevelKey);
 
         /// <summary>Nivel guardado, empezando en 0 para el nivel 1.</summary>
         public static int SavedLevelIndex => Mathf.Max(0, PlayerPrefs.GetInt(SavedLevelKey, 0));
 
+        /// <summary>Guarda el nivel actual (0 es el nivel 1) y lo escribe ya en disco.</summary>
         public static void Save(int levelIndex)
         {
             PlayerPrefs.SetInt(SavedLevelKey, levelIndex);
             PlayerPrefs.Save();
         }
 
+        /// <summary>Borra la partida guardada, por ejemplo al ganar el juego.</summary>
         public static void Clear()
         {
             PlayerPrefs.DeleteKey(SavedLevelKey);

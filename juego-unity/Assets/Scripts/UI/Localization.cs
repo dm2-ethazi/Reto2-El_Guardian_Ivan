@@ -64,6 +64,7 @@ namespace PuertaCastillo.UI
         /// <summary>Se lanza al cambiar de idioma, para que los textos visibles se actualicen.</summary>
         public static event Action LanguageChanged;
 
+        /// <summary>Todas las claves de texto que existen (lo usan los tests).</summary>
         public static IEnumerable<string> Keys => Texts.Keys;
 
         /// <summary>Idioma guardado. Sin preferencia o con un valor no válido, español.</summary>
@@ -76,6 +77,7 @@ namespace PuertaCastillo.UI
             }
         }
 
+        /// <summary>Cambia el idioma, lo guarda y avisa a los textos visibles para que se traduzcan.</summary>
         public static void SetLanguage(Language language)
         {
             PlayerPrefs.SetInt(LanguagePref, (int)language);
@@ -83,11 +85,13 @@ namespace PuertaCastillo.UI
             LanguageChanged?.Invoke();
         }
 
+        /// <summary>Texto de una clave en el idioma actual. La clave debe existir en la tabla.</summary>
         public static string Get(string key)
         {
             return Texts[key][(int)Current];
         }
 
+        /// <summary>Como <see cref="Get"/>, pero sustituye {0}, {1}... por los valores dados.</summary>
         public static string Format(string key, params object[] args)
         {
             return string.Format(Get(key), args);

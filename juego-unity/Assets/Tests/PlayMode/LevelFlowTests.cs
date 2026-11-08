@@ -11,6 +11,7 @@ using UnityEngine.UI;
 
 namespace PuertaCastillo.Tests
 {
+    /// <summary>Pruebas del flujo de la partida: pasar de nivel, victoria, derrota, reiniciar y partida guardada.</summary>
     public class LevelFlowTests
     {
         private LevelManager manager;

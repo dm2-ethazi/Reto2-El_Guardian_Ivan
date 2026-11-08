@@ -30,6 +30,7 @@ namespace PuertaCastillo.UI
             Show(door.CurrentHealth, door.MaxHealth);
         }
 
+        // Pone la barra y el texto "vida / máxima".
         private void Show(int current, int max)
         {
             slider.maxValue = max;

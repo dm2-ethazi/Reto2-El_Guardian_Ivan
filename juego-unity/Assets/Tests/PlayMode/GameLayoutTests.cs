@@ -10,6 +10,7 @@ using UnityEngine.UI;
 
 namespace PuertaCastillo.Tests
 {
+    /// <summary>Pruebas de la colocación de la interfaz: botones y teclas grandes sin solaparse, cámara y área segura.</summary>
     public class GameLayoutTests
     {
         private const float MinimumTouchSize = 110f;

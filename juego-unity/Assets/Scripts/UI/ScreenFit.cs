@@ -27,11 +27,13 @@ namespace PuertaCastillo.UI
             }
         }
 
+        /// <summary>True si la pantalla es más alta que ancha (móvil en vertical).</summary>
         public static bool IsPortrait(float width, float height)
         {
             return height > width;
         }
 
+        /// <summary>Resolución de referencia de la interfaz: 1080x1920 en vertical y 1920x1080 en horizontal.</summary>
         public static Vector2 Reference(float width, float height)
         {
             return IsPortrait(width, height) ? PortraitReference : LandscapeReference;
@@ -45,6 +47,7 @@ namespace PuertaCastillo.UI
             return new Vector2(width, height) / scale;
         }
 
+        /// <summary>Configura el CanvasScaler para que la resolución de referencia siempre quepa entera (modo Expand).</summary>
         public static void Configure(CanvasScaler scaler, float width, float height)
         {
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;

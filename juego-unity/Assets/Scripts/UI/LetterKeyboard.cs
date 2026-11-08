@@ -89,6 +89,7 @@ namespace PuertaCastillo.UI
             Localization.LanguageChanged -= RefreshLabels;
         }
 
+        /// <summary>Activa o bloquea todas las teclas (se bloquean mientras se ve un panel de nivel).</summary>
         public void SetInteractable(bool interactable)
         {
             foreach (Button key in letterKeys)
@@ -139,11 +140,13 @@ namespace PuertaCastillo.UI
             return (Rows - 1) * keyHeight + LastRowHeight + (Rows - 1) * Gap;
         }
 
+        // Alto de cada fila de letras: lo que queda tras la última fila y los huecos, entre tres.
         private static float LetterRowHeight(float height)
         {
             return (height - LastRowHeight - (Rows - 1) * Gap) / (Rows - 1);
         }
 
+        // Coloca una tecla en su columna y fila; span es cuántas columnas ocupa (borrar y espacio, varias).
         private void PlaceKey(Button key, float x, float y, int column, int row, int span, float keyWidth, float keyHeight, float fontSize)
         {
             float width = span * keyWidth + (span - 1) * Gap;
@@ -161,6 +164,7 @@ namespace PuertaCastillo.UI
             rect.sizeDelta = new Vector2(width, height);
         }
 
+        // Crea una tecla copiando el botón modelo, con su sprite y color de texto.
         private Button CreateKey(Button template, Sprite keySprite, Color textColor, string text, out TMP_Text label)
         {
             Button key = Instantiate(template, transform, false);
@@ -195,6 +199,7 @@ namespace PuertaCastillo.UI
             return key;
         }
 
+        // Traduce los rótulos de espacio y borrar al cambiar de idioma.
         private void RefreshLabels()
         {
             if (spaceLabel != null)
