@@ -157,6 +157,9 @@
                                                 <exclude>META-INF/*.DSA</exclude>
                                                 <exclude>META-INF/*.RSA</exclude>
                                                 <exclude>META-INF/MANIFEST.MF</exclude>
+                                                <!-- Configuración de GraalVM/Gluon que repiten varios jar de JavaFX:
+                                                     no se usa aquí y provocaba avisos de "overlapping resources" -->
+                                                <exclude>META-INF/substrate/**</exclude>
                                             </excludes>
                                         </filter>
                                     </filters>
@@ -231,7 +234,22 @@
                                         <addModule>java.xml</addModule>
                                         <addModule>jdk.unsupported</addModule>
                                         <addModule>jdk.jsobject</addModule>
+                                        <!-- Datos de idiomas: sin él, Java solo conoce el inglés y el selector
+                                             de idioma, los decimales, etc. salen en inglés en el .exe -->
+                                        <addModule>jdk.localedata</addModule>
                                     </addModules>
+                                    <!--
+                                        De jdk.localedata solo hacen falta los idiomas de la aplicación. Al poner
+                                        opciones de jlink se pierden las que jpackage usa por defecto, así que se
+                                        repiten las cuatro últimas para que el ejecutable no pese más.
+                                    -->
+                                    <jLinkOptions>
+                                        <jLinkOption>--include-locales=es,en,eu</jLinkOption>
+                                        <jLinkOption>--strip-native-commands</jLinkOption>
+                                        <jLinkOption>--strip-debug</jLinkOption>
+                                        <jLinkOption>--no-man-pages</jLinkOption>
+                                        <jLinkOption>--no-header-files</jLinkOption>
+                                    </jLinkOptions>
                                 </configuration>
                             </execution>
                         </executions>

@@ -6,6 +6,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
@@ -25,6 +26,15 @@ public final class I18n {
     public static final Locale BASQUE = Locale.forLanguageTag("eu");
     /** Todos los idiomas que ofrece la aplicación. */
     public static final List<Locale> SUPPORTED = List.of(SPANISH, ENGLISH, BASQUE);
+
+    /**
+     * Nombre de cada idioma escrito en ese mismo idioma. Va fijo en el código para no depender de los
+     * datos de idiomas de Java: si faltan (como en un Java reducido), Java devuelve "Spanish" o "Basque".
+     */
+    private static final Map<String, String> NATIVE_NAMES = Map.of(
+            "es", "Español",
+            "en", "English",
+            "eu", "Euskara");
 
     /** Nombre base de los ficheros de textos (messages.properties, messages_en.properties...). */
     private static final String BUNDLE = "el_guardian_ivan.desktop.i18n.messages";
@@ -118,7 +128,11 @@ public final class I18n {
      * @return su nombre con la primera letra en mayúscula
      */
     public static String displayName(Locale language) {
-        String name = language.getDisplayLanguage(language);
+        String name = NATIVE_NAMES.get(language.getLanguage());
+        if (name != null) {
+            return name;
+        }
+        name = language.getDisplayLanguage(language);
         return name.substring(0, 1).toUpperCase(language) + name.substring(1);
     }
 }
