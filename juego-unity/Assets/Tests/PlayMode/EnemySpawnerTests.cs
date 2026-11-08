@@ -10,6 +10,7 @@ using UnityEngine.TestTools;
 
 namespace PuertaCastillo.Tests
 {
+    /// <summary>Pruebas del generador: mínimo y máximo de enemigos, velocidad, física y mensajes sin repetir.</summary>
     public class EnemySpawnerTests
     {
         private EnemySpawner spawner;

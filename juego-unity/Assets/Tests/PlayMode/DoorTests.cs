@@ -10,6 +10,7 @@ using UnityEngine.UI;
 
 namespace PuertaCastillo.Tests
 {
+    /// <summary>Pruebas de la puerta: vida, daño y aviso al caer.</summary>
     public class DoorTests
     {
         private Door door;

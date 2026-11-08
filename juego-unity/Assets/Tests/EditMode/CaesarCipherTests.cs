@@ -3,6 +3,7 @@ using PuertaCastillo.Crypto;
 
 namespace PuertaCastillo.Tests
 {
+    /// <summary>Pruebas del cifrado César con el abecedario español.</summary>
     public class CaesarCipherTests
     {
         [Test]

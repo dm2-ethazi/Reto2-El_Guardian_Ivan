@@ -11,6 +11,7 @@ using UnityEngine.UI;
 
 namespace PuertaCastillo.Tests
 {
+    /// <summary>Pruebas del menú principal: botones, idiomas, continuar y salir.</summary>
     public class MainMenuTests
     {
         private MainMenu menu;

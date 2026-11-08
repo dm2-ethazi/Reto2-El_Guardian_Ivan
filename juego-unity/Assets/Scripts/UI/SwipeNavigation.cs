@@ -86,6 +86,7 @@ namespace PuertaCastillo.UI
         private Image[] arrowBars;
         private TMP_Text label;
 
+        // Elemento de la interfaz que se desplaza con el dedo y su posición original para devolverlo.
         private struct MovedRect
         {
             public RectTransform Rect;
@@ -148,6 +149,7 @@ namespace PuertaCastillo.UI
             return along / (screenWidth * MinWidthFraction);
         }
 
+        // Lee el dedo o el ratón: al pulsar decide si puede empezar un gesto, al arrastrar mueve la pantalla y al soltar decide.
         private void Update()
         {
             if (animating)
@@ -217,6 +219,7 @@ namespace PuertaCastillo.UI
 
         private float Sign => Direction == Swipe.Right ? 1f : -1f;
 
+        // Termina de pasar la página (la pantalla sale entera) y luego avisa para cambiar de escena.
         private IEnumerator Complete()
         {
             animating = true;
@@ -243,6 +246,7 @@ namespace PuertaCastillo.UI
             }
         }
 
+        // No llegó al umbral: la pantalla vuelve a su sitio con una animación corta.
         private IEnumerator Cancel()
         {
             animating = true;
@@ -258,6 +262,7 @@ namespace PuertaCastillo.UI
             animating = false;
         }
 
+        // Aplica un desplazamiento: mueve la interfaz y la cámara y ajusta el panel. Con 0 deja todo como estaba.
         private void SetOffset(float pixels, float progress)
         {
             CurrentOffset = pixels;
@@ -329,6 +334,7 @@ namespace PuertaCastillo.UI
             contentCaptured = true;
         }
 
+        // Devuelve la interfaz y la cámara a su posición original.
         private void RestoreContent()
         {
             if (!contentCaptured)
@@ -384,6 +390,7 @@ namespace PuertaCastillo.UI
             label.text = DestinationLabel != null ? DestinationLabel() : string.Empty;
         }
 
+        // Crea por código el panel del destino (fondo, flecha de dos trazos y texto); no hace falta nada en la escena.
         private void BuildOverlay()
         {
             // En la raíz de la escena: dentro de otro Canvas se movería con el contenido.

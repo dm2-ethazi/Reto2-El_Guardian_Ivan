@@ -48,6 +48,7 @@ namespace PuertaCastillo.Gameplay
             OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
         }
 
+        // Al cargar una escena elige su pista; crea el reproductor la primera vez y lo mantiene entre escenas.
         private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             if (mode != LoadSceneMode.Single)
@@ -126,6 +127,7 @@ namespace PuertaCastillo.Gameplay
             ownListener.enabled = !sceneHasListener;
         }
 
+        // Carga la pista de Resources y la pone en bucle. Si ya suena esa misma, no la corta.
         private void Play(string track)
         {
             AudioClip clip = Resources.Load<AudioClip>(track);

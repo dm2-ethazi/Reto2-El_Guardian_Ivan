@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace PuertaCastillo.Tests
 {
+    /// <summary>Pruebas de los gestos de deslizar: qué cuenta como gesto y en qué nivel entra el menú.</summary>
     public class SwipeNavigationTests
     {
         private const float Width = 1080f;

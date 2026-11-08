@@ -90,6 +90,7 @@ namespace PuertaCastillo.UI
             }
         }
 
+        // Actualiza el mensaje del objetivo y la pista, borra el aviso de acierto/fallo al pasar su tiempo y lee el teclado físico.
         private void Update()
         {
             targetLabel.text = Localization.Format("game.target", targeting.Target != null ? targeting.Target.EncryptedMessage : "-");
@@ -149,6 +150,7 @@ namespace PuertaCastillo.UI
             answerField.text = answerField.text.Substring(0, answerField.text.Length - 1);
         }
 
+        // Envía lo escrito. Lo usan el botón de descifrar y la tecla Intro.
         private void SubmitField()
         {
             ReleaseFocus();
@@ -180,6 +182,7 @@ namespace PuertaCastillo.UI
             }
         }
 
+        // Borrar e Intro del teclado físico (las letras llegan por OnPhysicalText).
         private void ReadPhysicalKeys()
         {
             PhysicalKeyboard keyboard = PhysicalKeyboard.current;
@@ -199,6 +202,7 @@ namespace PuertaCastillo.UI
             }
         }
 
+        // Enseña "¡Correcto!" o "Incorrecto" durante feedbackSeconds.
         private void ShowFeedback(bool solved)
         {
             feedbackLabel.text = Localization.Get(solved ? "answer.correct" : "answer.wrong");
@@ -206,6 +210,7 @@ namespace PuertaCastillo.UI
             feedbackTimer = feedbackSeconds;
         }
 
+        // Quita el aviso de acierto o fallo.
         private void HideFeedback()
         {
             feedbackLabel.text = string.Empty;

@@ -41,6 +41,7 @@ namespace PuertaCastillo.UI
         private readonly List<TMP_Text> plainLabels = new List<TMP_Text>();
         private readonly List<TMP_Text> cipherLabels = new List<TMP_Text>();
 
+        /// <summary>Desplazamiento que muestra la regla ahora (0 a 26). Es solo una ayuda: no cambia el nivel.</summary>
         public int Shift { get; private set; }
         public IReadOnlyList<RectTransform> Cells => cells;
         public string PlainLetters => string.Concat(plainLabels.Select(label => label.text));
@@ -84,6 +85,7 @@ namespace PuertaCastillo.UI
             Show();
         }
 
+        // Flechas arriba y abajo del teclado físico cambian el desplazamiento.
         private void Update()
         {
             Keyboard keyboard = Keyboard.current;
@@ -112,6 +114,7 @@ namespace PuertaCastillo.UI
             ChangeShift(-1);
         }
 
+        // Suma o resta uno y da la vuelta al pasar de 26 a 0 o de 0 a 26.
         private void ChangeShift(int delta)
         {
             int size = CaesarCipher.Alphabet.Length;
@@ -140,6 +143,7 @@ namespace PuertaCastillo.UI
             }
         }
 
+        // Escribe debajo de cada letra su cifrada con el desplazamiento actual.
         private void Show()
         {
             string cipher = CaesarCipher.Encrypt(CaesarCipher.Alphabet, Shift);
@@ -180,6 +184,7 @@ namespace PuertaCastillo.UI
             cipherLabels.Add(CreateLabel(cipherRow, rect, string.Empty, cipherColor, 0f, 0.5f));
         }
 
+        // Copia el texto modelo de la escena y lo encaja en la mitad de arriba o de abajo de la casilla.
         private static TMP_Text CreateLabel(TMP_Text template, Transform parent, string text, Color color, float bottom, float top)
         {
             TMP_Text label = Instantiate(template, parent, false);

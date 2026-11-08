@@ -71,12 +71,14 @@ namespace PuertaCastillo.UI
             inGameMenuButton.onClick.RemoveListener(GoToMenu);
         }
 
+        // Texto de estado: número de nivel y tiempo restante en mm:ss.
         private void Update()
         {
             int seconds = Mathf.CeilToInt(levelManager.TimeRemaining);
             statusLabel.text = Localization.Format("game.status", levelManager.LevelNumber, $"{seconds / 60:00}:{seconds % 60:00}");
         }
 
+        // Al empezar un nivel: oculta el panel y deja jugar.
         private void HidePanel()
         {
             panel.SetActive(false);
@@ -84,18 +86,21 @@ namespace PuertaCastillo.UI
             answerPanel.SetInteractable(true);
         }
 
+        // Nivel superado: panel verde con "Siguiente nivel".
         private void ShowLevelCompleted()
         {
             panelTitle.color = victoryColor;
             ShowPanel(Localization.Format("level.completed", levelManager.LevelNumber), true);
         }
 
+        // Victoria final: panel verde con reiniciar y menú.
         private void ShowVictory()
         {
             panelTitle.color = victoryColor;
             ShowPanel(Localization.Get("level.victory"), false);
         }
 
+        // Derrota: panel rojo con reiniciar y menú.
         private void ShowDefeat()
         {
             panelTitle.color = defeatColor;
@@ -114,6 +119,7 @@ namespace PuertaCastillo.UI
             answerPanel.SetInteractable(false);
         }
 
+        // Los botones de reiniciar y menú de la partida se ocultan mientras hay un panel.
         private void SetInGameButtonsVisible(bool visible)
         {
             inGameRestartButton.gameObject.SetActive(visible);
@@ -156,6 +162,7 @@ namespace PuertaCastillo.UI
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
+        // Vuelve al menú principal. Lo usan el botón de menú y el gesto de deslizar a la derecha.
         private void GoToMenu()
         {
             SceneManager.LoadScene(MainMenu.SceneName);

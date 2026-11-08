@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace PuertaCastillo.Tests
 {
+    /// <summary>Pruebas de las traducciones: todas las claves existen en los tres idiomas.</summary>
     public class LocalizationTests
     {
         private Language previous;

@@ -7,6 +7,7 @@ using UnityEngine.TestTools;
 
 namespace PuertaCastillo.Tests
 {
+    /// <summary>Pruebas del ataque: los enemigos llegan a la puerta y la golpean cada cierto tiempo.</summary>
     public class EnemyAttackTests
     {
         private Door door;

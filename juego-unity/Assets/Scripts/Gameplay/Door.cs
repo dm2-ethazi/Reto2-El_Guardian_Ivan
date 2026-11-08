@@ -12,6 +12,7 @@ namespace PuertaCastillo.Gameplay
     [RequireComponent(typeof(BoxCollider2D))]
     public class Door : MonoBehaviour
     {
+        [Tooltip("Vida de la puerta al empezar cada nivel.")]
         [SerializeField, Min(1)] private int maxHealth = 100;
 
         /// <summary>Se lanza con la vida actual y la vida máxima.</summary>
@@ -84,6 +85,7 @@ namespace PuertaCastillo.Gameplay
             shakeTimer = 0f;
         }
 
+        // Temblor que se apaga poco a poco y destello rojo que vuelve al color original.
         private void LateUpdate()
         {
             if (visual == null || shakeTimer < 0f)

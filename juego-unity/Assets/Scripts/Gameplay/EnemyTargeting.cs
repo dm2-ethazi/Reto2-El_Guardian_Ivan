@@ -48,6 +48,7 @@ namespace PuertaCastillo.Gameplay
             return true;
         }
 
+        // Recorre los enemigos activos y se queda con el más cercano a la puerta (el más peligroso).
         private Enemy FindClosestToDoor()
         {
             Enemy closest = null;

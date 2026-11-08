@@ -12,6 +12,7 @@ using UnityEngine.UI;
 
 namespace PuertaCastillo.Tests
 {
+    /// <summary>Pruebas de la respuesta: escribir con el abecedario en pantalla, acertar, fallar y los avisos.</summary>
     public class AnswerTests
     {
         private EnemySpawner spawner;
