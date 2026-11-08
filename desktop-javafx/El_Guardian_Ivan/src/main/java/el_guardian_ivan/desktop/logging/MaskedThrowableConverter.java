@@ -14,6 +14,12 @@ public class MaskedThrowableConverter extends ThrowableProxyConverter {
     public MaskedThrowableConverter() {
     }
 
+    /**
+     * Traza completa de la excepción (con sus causas) ya enmascarada.
+     *
+     * @param proxy la excepción tal como la guarda Logback
+     * @return la traza sin datos sensibles
+     */
     @Override
     protected String throwableProxyToString(IThrowableProxy proxy) {
         return SensitiveDataMasker.maskText(super.throwableProxyToString(proxy));

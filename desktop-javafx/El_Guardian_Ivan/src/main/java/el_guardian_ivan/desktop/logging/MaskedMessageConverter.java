@@ -13,6 +13,12 @@ public class MaskedMessageConverter extends MessageConverter {
     public MaskedMessageConverter() {
     }
 
+    /**
+     * Mensaje del evento ya formateado (con los {} sustituidos) y enmascarado.
+     *
+     * @param event evento de log que se está escribiendo
+     * @return el mensaje sin datos sensibles
+     */
     @Override
     public String convert(ILoggingEvent event) {
         return SensitiveDataMasker.maskText(super.convert(event));

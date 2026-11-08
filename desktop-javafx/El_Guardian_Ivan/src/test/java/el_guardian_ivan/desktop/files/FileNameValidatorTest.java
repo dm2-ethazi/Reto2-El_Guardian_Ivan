@@ -13,6 +13,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  */
 class FileNameValidatorTest {
 
+    /**
+     * Los nombres normales se aceptan.
+     *
+     * @param name nombre del fichero
+     */
     @ParameterizedTest
     @ValueSource(strings = {
             "hogwarts.hgw", "con espacios.txt", "acentos ñandú.png", "varios.puntos.tar.gz",
@@ -22,6 +27,11 @@ class FileNameValidatorTest {
         assertNull(FileNameValidator.validate(name));
     }
 
+    /**
+     * Los nombres reservados de Windows (CON, NUL, COM1...) se rechazan.
+     *
+     * @param name nombre del fichero
+     */
     @ParameterizedTest
     @ValueSource(strings = {
             "CON", "con.txt", "Nul.hgw", "PRN.png", "aux", "COM1.bin", "lpt9.txt", "CON .txt"
@@ -30,6 +40,11 @@ class FileNameValidatorTest {
         assertNotNull(FileNameValidator.validate(name));
     }
 
+    /**
+     * Los nombres vacíos, ".", "..", con caracteres prohibidos o terminados en punto o espacio se rechazan.
+     *
+     * @param name nombre del fichero
+     */
     @ParameterizedTest
     @ValueSource(strings = {
             "a<b.txt", "a>b.txt", "a:b.txt", "a\"b.txt", "a/b.txt", "a\\b.txt", "a|b.txt", "a?b.txt", "a*b.txt",
@@ -39,12 +54,14 @@ class FileNameValidatorTest {
         assertNotNull(FileNameValidator.validate(name));
     }
 
+    /** Los nombres de más de 255 caracteres se rechazan. */
     @Test
     void rejectsTooLongNames() {
         assertNotNull(FileNameValidator.validate("a".repeat(256)));
         assertNull(FileNameValidator.validate("a".repeat(255)));
     }
 
+    /** Un nombre nulo se rechaza. */
     @Test
     void rejectsNull() {
         assertNotNull(FileNameValidator.validate(null));

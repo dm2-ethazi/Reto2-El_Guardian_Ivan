@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /** Comprueba que el patrón de logback.xml enmascara el mensaje y la traza de la excepción. */
 class MaskedConvertersTest {
 
+    /** Con el patrón de logback.xml no salen ni la contraseña ni la carpeta del usuario, pero sí la traza del error. */
     @Test
     void maskedPatternHidesMessageAndExceptionData() {
         String home = System.getProperty("user.home");

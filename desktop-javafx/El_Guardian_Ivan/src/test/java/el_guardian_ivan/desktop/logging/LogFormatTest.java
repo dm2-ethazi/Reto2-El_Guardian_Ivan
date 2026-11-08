@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 /** Comprueba que los ficheros se describen sin nombre ni ruta. */
 class LogFormatTest {
 
+    /** Un fichero se describe solo por su extensión y tamaño, sin su nombre. */
     @Test
     void describesOnlyTypeAndSize() {
         String text = LogFormat.describe(Path.of("secretos", "nominas_2025.PDF"), 1536);
@@ -17,6 +18,7 @@ class LogFormatTest {
         assertFalse(text.contains("nominas"));
     }
 
+    /** Ficheros sin extensión, con "extensiones" raras o sin tamaño conocido. */
     @Test
     void describesFilesWithoutExtensionOrSize() {
         assertEquals("fichero sin extensión", LogFormat.describe(Path.of("LEEME"), -1));
@@ -24,6 +26,7 @@ class LogFormatTest {
         assertEquals("fichero sin extensión", LogFormat.describe(null, -1));
     }
 
+    /** Los tamaños llevan siempre punto decimal, sea cual sea el idioma. */
     @Test
     void formatsSizesWithDotInAnyLanguage() {
         assertEquals("512 B", LogFormat.bytes(512));

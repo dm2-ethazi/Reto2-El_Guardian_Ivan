@@ -25,19 +25,29 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class AesFileCipherTest {
 
+    /** Contraseña de las pruebas. */
     private static final char[] PASSWORD = "alohomora".toCharArray();
+    /** Bytes de la etiqueta GCM de cada trozo. */
     private static final int TAG = AesFileCipher.TAG_LENGTH;
 
     /** Carpeta temporal que JUnit crea y borra en cada prueba. */
     @TempDir
     Path dir;
 
+    /** Cifrador con trozos de 1 MB, como el de la aplicación. */
     private final AesFileCipher cipher = new AesFileCipher();
     // Trozos de 1 KiB para probar varios trozos con ficheros pequeños
+    /** Cifrador con trozos de 1 KiB. */
     private final AesFileCipher smallChunks = new AesFileCipher(1024);
 
     // --- Recuperación exacta (propuesta 6.5: 0 B, 1 B, 1 MiB y 20 MiB, comparando con SHA-256) ---
 
+    /**
+     * Ficheros de 0 B, 1 B, 1 MiB y 20 MiB se recuperan byte a byte.
+     *
+     * @param size tamaño en bytes
+     * @throws Exception si falla algo inesperado al leer, escribir o cifrar
+     */
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 1024 * 1024, 20 * 1024 * 1024})
     void decryptRecoversExactBytes(int size) throws Exception {
@@ -54,6 +64,12 @@ class AesFileCipherTest {
         assertArrayEquals(original, Files.readAllBytes(input)); // Original intacto
     }
 
+    /**
+     * Con varios trozos (también justo en los bordes) se recupera el fichero exacto.
+     *
+     * @param size tamaño en bytes
+     * @throws Exception si falla algo inesperado al leer, escribir o cifrar
+     */
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 1018, 1019, 1020, 1021, 5 * 1024, 300_000})
     void severalChunksRecoverExactBytes(int size) throws Exception {
@@ -74,6 +90,11 @@ class AesFileCipherTest {
 
     // --- Formato ---
 
+    /**
+     * El .hgw empieza con la cabecera documentada: marca, versión, sal, nonce y tamaño de trozo.
+     *
+     * @throws Exception si falla algo inesperado al leer, escribir o cifrar
+     */
     @Test
     void encryptWritesHeader() throws Exception {
         Path input = Files.writeString(dir.resolve("mensaje.txt"), "Travesura realizada");
@@ -88,6 +109,11 @@ class AesFileCipherTest {
         assertEquals(AesFileCipher.HEADER_LENGTH + 4 + 19 + TAG, encrypted.length);
     }
 
+    /**
+     * Cada cifrado usa una sal y un nonce nuevos.
+     *
+     * @throws Exception si falla algo inesperado al leer, escribir o cifrar
+     */
     @Test
     void eachEncryptionUsesNewSaltAndNonce() throws Exception {
         Path input = Files.writeString(dir.resolve("a.txt"), "hola");
@@ -100,6 +126,11 @@ class AesFileCipherTest {
         assertFalse(Arrays.equals(Arrays.copyOfRange(first, 21, 33), Arrays.copyOfRange(second, 21, 33)), "nonce");
     }
 
+    /**
+     * La contraseña no aparece en ningún sitio del .hgw.
+     *
+     * @throws Exception si falla algo inesperado al leer, escribir o cifrar
+     */
     @Test
     void passwordIsNotStoredInContainer() throws Exception {
         Path input = Files.writeString(dir.resolve("a.txt"), "hola");
@@ -110,6 +141,11 @@ class AesFileCipherTest {
         assertFalse(raw.contains("alohomora"));
     }
 
+    /**
+     * Se avisa del progreso hasta haber leído todo el fichero.
+     *
+     * @throws Exception si falla algo inesperado al leer, escribir o cifrar
+     */
     @Test
     void reportsProgressUntilTheWholeFile() throws Exception {
         Path input = Files.write(dir.resolve("a.bin"), randomBytes(5000));
@@ -133,6 +169,11 @@ class AesFileCipherTest {
 
     // --- Extensión original guardada cifrada ---
 
+    /**
+     * Al descifrar se devuelve la extensión original.
+     *
+     * @throws Exception si falla algo inesperado al leer, escribir o cifrar
+     */
     @Test
     void decryptReturnsOriginalExtension() throws Exception {
         Path input = Files.write(dir.resolve("maquina.ova"), new byte[]{1, 2, 3});
@@ -143,6 +184,11 @@ class AesFileCipherTest {
         assertArrayEquals(new byte[]{1, 2, 3}, Files.readAllBytes(dir.resolve("salida")));
     }
 
+    /**
+     * Un fichero sin extensión devuelve una extensión vacía.
+     *
+     * @throws Exception si falla algo inesperado al leer, escribir o cifrar
+     */
     @Test
     void fileWithoutExtensionReturnsEmpty() throws Exception {
         Path input = Files.writeString(dir.resolve("LEEME"), "hola");
@@ -153,6 +199,11 @@ class AesFileCipherTest {
         assertEquals("hola", Files.readString(dir.resolve("salida")));
     }
 
+    /**
+     * La extensión original no se ve desde fuera en el .hgw.
+     *
+     * @throws Exception si falla algo inesperado al leer, escribir o cifrar
+     */
     @Test
     void extensionIsNotVisibleInContainer() throws Exception {
         Path input = Files.writeString(dir.resolve("secreto.extensionvisible"), "x");
@@ -165,6 +216,11 @@ class AesFileCipherTest {
 
     // --- Errores: no se publica nada y el original no se toca ---
 
+    /**
+     * Con una contraseña incorrecta falla y no se crea ningún fichero.
+     *
+     * @throws Exception si falla algo inesperado al leer, escribir o cifrar
+     */
     @Test
     void wrongPasswordFailsAndWritesNothing() throws Exception {
         Path input = Files.write(dir.resolve("a.bin"), randomBytes(3000));
@@ -178,6 +234,11 @@ class AesFileCipherTest {
         assertEquals(2, countFiles()); // Ni salida ni temporales
     }
 
+    /**
+     * Si se modifica un byte de los datos, el descifrado falla.
+     *
+     * @throws Exception si falla algo inesperado al leer, escribir o cifrar
+     */
     @Test
     void tamperedFileFails() throws Exception {
         Path input = Files.writeString(dir.resolve("a.txt"), "hola");
@@ -192,6 +253,11 @@ class AesFileCipherTest {
         assertFalse(Files.exists(dir.resolve("b.txt")));
     }
 
+    /**
+     * Si se modifica la cabecera, el descifrado falla.
+     *
+     * @throws Exception si falla algo inesperado al leer, escribir o cifrar
+     */
     @Test
     void tamperedHeaderFails() throws Exception {
         Path input = Files.writeString(dir.resolve("a.txt"), "hola");
@@ -205,6 +271,11 @@ class AesFileCipherTest {
                 () -> cipher.decrypt(encrypted, dir.resolve("b.txt"), PASSWORD.clone()));
     }
 
+    /**
+     * Si el .hgw está cortado, el descifrado falla.
+     *
+     * @throws Exception si falla algo inesperado al leer, escribir o cifrar
+     */
     @Test
     void truncatedFileFails() throws Exception {
         Path input = Files.write(dir.resolve("a.bin"), randomBytes(3000));
@@ -220,6 +291,11 @@ class AesFileCipherTest {
         assertFalse(Files.exists(dir.resolve("b.bin")));
     }
 
+    /**
+     * Si se intercambian dos trozos, el descifrado falla.
+     *
+     * @throws Exception si falla algo inesperado al leer, escribir o cifrar
+     */
     @Test
     void swappedChunksFail() throws Exception {
         Path input = Files.write(dir.resolve("a.bin"), randomBytes(3000));
@@ -237,6 +313,11 @@ class AesFileCipherTest {
                 () -> cipher.decrypt(encrypted, dir.resolve("b.bin"), PASSWORD.clone()));
     }
 
+    /**
+     * Un fichero que no es un .hgw se rechaza.
+     *
+     * @throws Exception si falla algo inesperado al leer, escribir o cifrar
+     */
     @Test
     void fileWithoutHeaderIsRejected() throws Exception {
         Path notHgw = Files.writeString(dir.resolve("normal.txt"), "esto no es un hgw");
@@ -246,6 +327,11 @@ class AesFileCipherTest {
         assertFalse(Files.exists(dir.resolve("b.txt")));
     }
 
+    /**
+     * No se permite que la entrada y la salida sean el mismo fichero.
+     *
+     * @throws Exception si falla algo inesperado al leer, escribir o cifrar
+     */
     @Test
     void sameInputAndOutputIsRejected() throws Exception {
         Path input = Files.writeString(dir.resolve("a.txt"), "hola");
@@ -254,6 +340,11 @@ class AesFileCipherTest {
         assertEquals("hola", Files.readString(input));
     }
 
+    /**
+     * No se permite una contraseña vacía.
+     *
+     * @throws Exception si falla algo inesperado al leer, escribir o cifrar
+     */
     @Test
     void emptyPasswordIsRejected() throws Exception {
         Path input = Files.writeString(dir.resolve("a.txt"), "hola");
@@ -262,12 +353,25 @@ class AesFileCipherTest {
                 () -> cipher.encrypt(input, dir.resolve("a.hgw"), new char[0]));
     }
 
+    /**
+     * Bytes pseudoaleatorios; la semilla es el tamaño, así cada prueba es repetible.
+     *
+     * @param size tamaño en bytes
+     * @return los bytes
+     */
     private static byte[] randomBytes(int size) {
         byte[] bytes = new byte[size];
         new Random(size).nextBytes(bytes);
         return bytes;
     }
 
+    /**
+     * Huella SHA-256 del fichero, en hexadecimal.
+     *
+     * @param file fichero
+     * @return la huella en hexadecimal
+     * @throws Exception si falla algo inesperado al leer, escribir o cifrar
+     */
     private static String sha256(Path file) throws Exception {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         try (var in = new DigestInputStream(Files.newInputStream(file), digest)) {
@@ -276,6 +380,12 @@ class AesFileCipherTest {
         return HexFormat.of().formatHex(digest.digest());
     }
 
+    /**
+     * Cuántos ficheros hay en la carpeta temporal (para comprobar que no quedan restos).
+     *
+     * @return el número de ficheros
+     * @throws IOException si falla la lectura o la escritura
+     */
     private long countFiles() throws IOException {
         try (var files = Files.list(dir)) {
             return files.count();

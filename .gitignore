@@ -34,3 +34,6 @@ Thumbs.db
 
 # Logs generados por Vigenère
 crypto-python/logs/
+
+# IntelliJ: configuracion personal de la carpeta desktop-javafx (fuera del proyecto Maven)
+desktop-javafx/.idea/
