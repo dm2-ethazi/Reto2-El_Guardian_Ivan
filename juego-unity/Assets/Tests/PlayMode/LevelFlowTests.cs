@@ -23,6 +23,7 @@ namespace PuertaCastillo.Tests
         public IEnumerator LoadGame()
         {
             SaveGame.Clear();
+            LevelProgress.Reset();
             yield return SceneManager.LoadSceneAsync("PuertaDelCastillo");
             yield return null;
             yield return null;
@@ -34,6 +35,7 @@ namespace PuertaCastillo.Tests
         {
             Time.timeScale = 1f;
             SaveGame.Clear();
+            LevelProgress.Reset();
         }
 
         [UnityTest]
@@ -161,6 +163,8 @@ namespace PuertaCastillo.Tests
             Assert.IsTrue(Panel().activeSelf);
             Assert.AreEqual(Localization.Get("level.victory"), Text("TituloPanel"));
             Assert.IsFalse(hud.GetComponentsInChildren<Button>(true).First(b => b.name == "BotonSiguiente").gameObject.activeSelf);
+            Assert.IsTrue(hud.MapButton.gameObject.activeInHierarchy);
+            Assert.AreEqual(LevelState.Completed, LevelProgress.StateOf(4));
         }
 
         [UnityTest]
@@ -174,6 +178,65 @@ namespace PuertaCastillo.Tests
             yield return null;
 
             Assert.AreEqual(MainMenu.SceneName, SceneManager.GetActiveScene().name);
+        }
+
+        [UnityTest]
+        public IEnumerator CompletingALevelUnlocksTheNextOnTheMap()
+        {
+            Assert.AreEqual(LevelState.Locked, LevelProgress.StateOf(1));
+
+            yield return FinishLevel();
+
+            Assert.AreEqual(LevelState.Completed, LevelProgress.StateOf(0));
+            Assert.AreEqual(LevelState.Available, LevelProgress.StateOf(1));
+        }
+
+        [UnityTest]
+        public IEnumerator ReplayingAnEarlierLevelKeepsTheProgress()
+        {
+            LevelProgress.MarkCompleted(0);
+            LevelProgress.MarkCompleted(1);
+            LevelProgress.MarkCompleted(2);
+            SaveGame.RequestStartLevel(0);
+            yield return SceneManager.LoadSceneAsync("PuertaDelCastillo");
+            yield return null;
+            yield return null;
+            FindObjects();
+
+            yield return FinishLevel();
+
+            Assert.AreEqual(3, LevelProgress.CompletedCount);
+            Assert.AreEqual(LevelState.Available, LevelProgress.StateOf(3));
+        }
+
+        [UnityTest]
+        public IEnumerator EveryEndPanelHasTheMapButton()
+        {
+            yield return FinishLevel();
+            Assert.IsTrue(hud.MapButton.gameObject.activeInHierarchy);
+            Assert.AreEqual(Localization.Get("game.map"), hud.MapButton.GetComponentInChildren<TMP_Text>(true).text);
+            Time.timeScale = 1f;
+
+            Press("BotonSiguiente");
+            yield return null;
+            door.TakeDamage(100);
+            yield return null;
+
+            Assert.AreEqual(Localization.Get("level.defeat"), Text("TituloPanel"));
+            Assert.IsTrue(hud.MapButton.gameObject.activeInHierarchy);
+        }
+
+        [UnityTest]
+        public IEnumerator MapButtonOpensTheMap()
+        {
+            door.TakeDamage(100);
+            yield return null;
+
+            Press("BotonMapa");
+            yield return null;
+            yield return null;
+
+            Assert.AreEqual(LevelMap.SceneName, SceneManager.GetActiveScene().name);
         }
 
         [UnityTest]

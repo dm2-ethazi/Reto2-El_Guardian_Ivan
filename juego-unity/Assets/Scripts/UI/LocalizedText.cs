@@ -12,6 +12,13 @@ namespace PuertaCastillo.UI
         [Tooltip("Clave del texto en Localization.cs, por ejemplo menu.start.")]
         [SerializeField] private string key;
 
+        /// <summary>Cambia la clave del texto y lo traduce ya. Sirve para botones copiados de otro.</summary>
+        public void SetKey(string newKey)
+        {
+            key = newKey;
+            Refresh();
+        }
+
         private void OnEnable()
         {
             Localization.LanguageChanged += Refresh;

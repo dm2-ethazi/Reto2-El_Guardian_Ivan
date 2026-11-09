@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace PuertaCastillo.UI
 {
     /// <summary>
-    /// Menú inicial: empieza la partida o continúa la guardada, elige el idioma o sale del juego tras pedir confirmación.
+    /// Menú inicial: abre el mapa de niveles (Iniciar partida) o continúa la partida guardada, elige el idioma o sale del juego tras pedir confirmación.
     /// </summary>
     public class MainMenu : MonoBehaviour
     {
@@ -134,11 +134,10 @@ namespace PuertaCastillo.UI
             continueButton.GetComponentInChildren<TMP_Text>(true).text = Localization.Format("menu.continue", SaveGame.SavedLevelIndex + 1);
         }
 
-        // Iniciar partida siempre empieza en el nivel 1; al empezar, el nivel 1 sustituye a la partida guardada.
+        // Iniciar partida abre el mapa, donde se elige el nivel: cualquiera ya desbloqueado.
         private void StartGame()
         {
-            SaveGame.RequestStartLevel(0);
-            SceneManager.LoadScene(GameSceneName);
+            SceneManager.LoadScene(LevelMap.SceneName);
         }
 
         // Continuar: carga el juego en el nivel guardado.

@@ -34,12 +34,15 @@ namespace PuertaCastillo.UI
             ["game.restart"] = new[] { "Reiniciar", "Restart", "Berrabiarazi" },
             ["game.menu"] = new[] { "Menú", "Menu", "Menua" },
             ["game.next"] = new[] { "Siguiente nivel", "Next level", "Hurrengo maila" },
+            ["game.map"] = new[] { "Volver al mapa", "Back to map", "Itzuli mapara" },
             ["game.placeholder"] = new[] { "Pulsa las letras del mensaje", "Tap the letters of the message", "Sakatu mezuaren letrak" },
             ["game.decrypt"] = new[] { "Descifrar", "Decrypt", "Deszifratu" },
             ["game.space"] = new[] { "Espacio", "Space", "Zuriunea" },
             ["game.delete"] = new[] { "Borrar", "Delete", "Ezabatu" },
             ["game.status"] = new[] { "Nivel {0}  {1}", "Level {0}  {1}", "{0}. maila  {1}" },
             ["game.target"] = new[] { "Objetivo: {0}", "Target: {0}", "Helburua: {0}" },
+
+            ["map.title"] = new[] { "Mapa del reino", "Kingdom map", "Erresumaren mapa" },
 
             ["swipe.menu"] = new[] { "Menú", "Menu", "Menua" },
             ["swipe.level"] = new[] { "Nivel {0}", "Level {0}", "{0}. maila" },

@@ -73,12 +73,13 @@ namespace PuertaCastillo.Gameplay
             instance.Play(track);
         }
 
-        /// <summary>Pista de cada escena: el menú y el juego. Otras escenas no cambian la música.</summary>
+        /// <summary>Pista de cada escena: el menú y el mapa comparten pista, y el juego tiene la suya. Otras escenas no cambian la música.</summary>
         public static string TrackFor(string sceneName)
         {
             switch (sceneName)
             {
                 case "MenuPrincipal": return MenuTrack;
+                case "MapaNiveles": return MenuTrack;
                 case "PuertaDelCastillo": return BattleTrack;
                 default: return null;
             }

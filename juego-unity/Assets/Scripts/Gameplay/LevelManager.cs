@@ -90,6 +90,9 @@ namespace PuertaCastillo.Gameplay
         // Resistir el último nivel es la victoria final; en los demás se espera al botón de siguiente nivel.
         private void CompleteLevel()
         {
+            // Superar el nivel desbloquea el siguiente en el mapa; repetir uno anterior no quita progreso.
+            LevelProgress.MarkCompleted(levelIndex);
+
             if (levelIndex == levels.Length - 1)
             {
                 Win();
@@ -106,6 +109,7 @@ namespace PuertaCastillo.Gameplay
         {
             playing = false;
             spawner.StopLevel();
+            LevelProgress.MarkCompleted(levelIndex);
             // Partida terminada: ya no hay nada que continuar.
             SaveGame.Clear();
             Won?.Invoke();

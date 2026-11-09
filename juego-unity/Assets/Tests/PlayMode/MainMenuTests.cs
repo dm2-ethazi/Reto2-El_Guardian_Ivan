@@ -29,6 +29,7 @@ namespace PuertaCastillo.Tests
         public void ClearSavedGame()
         {
             SaveGame.Clear();
+            LevelProgress.Reset();
         }
 
         [Test]
@@ -60,7 +61,7 @@ namespace PuertaCastillo.Tests
         }
 
         [UnityTest]
-        public IEnumerator StartButtonAlwaysStartsOnLevelOne()
+        public IEnumerator StartButtonOpensTheMapWithoutTouchingTheSavedGame()
         {
             SaveGame.Save(3);
             yield return SceneManager.LoadSceneAsync(MainMenu.SceneName);
@@ -72,8 +73,9 @@ namespace PuertaCastillo.Tests
             yield return null;
             yield return null;
 
-            Assert.AreEqual(1, Object.FindAnyObjectByType<LevelManager>().LevelNumber);
-            Assert.AreEqual(0, SaveGame.SavedLevelIndex);
+            Assert.AreEqual(LevelMap.SceneName, SceneManager.GetActiveScene().name);
+            Assert.AreEqual(3, SaveGame.SavedLevelIndex);
+            Assert.IsTrue(Object.FindAnyObjectByType<LevelMap>().Nodes[3].interactable);
         }
 
         [Test]
@@ -90,13 +92,13 @@ namespace PuertaCastillo.Tests
         }
 
         [UnityTest]
-        public IEnumerator StartButtonLoadsTheGame()
+        public IEnumerator StartButtonLoadsTheMap()
         {
             Press("BotonIniciar");
             yield return null;
             yield return null;
 
-            Assert.AreEqual("PuertaDelCastillo", SceneManager.GetActiveScene().name);
+            Assert.AreEqual(LevelMap.SceneName, SceneManager.GetActiveScene().name);
         }
 
         [Test]
