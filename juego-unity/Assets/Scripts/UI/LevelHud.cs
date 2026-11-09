@@ -10,6 +10,7 @@ namespace PuertaCastillo.UI
     /// Muestra el nivel y el tiempo restante, y los paneles de nivel completado, victoria y derrota.
     /// También crea los botones de reiniciar y volver al menú que se ven durante la partida, y los
     /// gestos del móvil que hacen lo mismo (deslizar a la derecha reinicia y a la izquierda va al menú).
+    /// Los paneles de fin de nivel tienen además el botón "Volver al mapa" para elegir otro nivel.
     /// </summary>
     public class LevelHud : MonoBehaviour
     {
@@ -24,8 +25,16 @@ namespace PuertaCastillo.UI
         [SerializeField] private Color victoryColor = new Color32(0x3C, 0x8D, 0x5A, 0xFF);
         [SerializeField] private Color defeatColor = new Color32(0xC0, 0x39, 0x2B, 0xFF);
 
+        // Debajo de los otros botones del panel, que están a y = -100 con 130 de alto.
+        private static readonly Vector2 MapButtonPosition = new Vector2(0f, -260f);
+        private static readonly Vector2 MapButtonSize = new Vector2(560f, 130f);
+
         private Button inGameRestartButton;
         private Button inGameMenuButton;
+        private Button mapButton;
+
+        /// <summary>Botón "Volver al mapa" de los paneles de nivel completado, victoria y derrota.</summary>
+        public Button MapButton => mapButton;
 
         public RectTransform InGameRestartButton => (RectTransform)inGameRestartButton.transform;
         public RectTransform InGameMenuButton => (RectTransform)inGameMenuButton.transform;
@@ -34,6 +43,7 @@ namespace PuertaCastillo.UI
         {
             inGameRestartButton = CreateInGameButton(restartButton, "BotonPartidaReiniciar");
             inGameMenuButton = CreateInGameButton(menuButton, "BotonPartidaMenu");
+            mapButton = CreateMapButton();
 
             SwipeNavigation swipe = gameObject.AddComponent<SwipeNavigation>();
             // En la partida se desliza a la derecha para volver al menú; a la izquierda no hace nada.
@@ -56,6 +66,7 @@ namespace PuertaCastillo.UI
             menuButton.onClick.AddListener(GoToMenu);
             inGameRestartButton.onClick.AddListener(Restart);
             inGameMenuButton.onClick.AddListener(GoToMenu);
+            mapButton.onClick.AddListener(GoToMap);
         }
 
         private void OnDisable()
@@ -69,6 +80,7 @@ namespace PuertaCastillo.UI
             menuButton.onClick.RemoveListener(GoToMenu);
             inGameRestartButton.onClick.RemoveListener(Restart);
             inGameMenuButton.onClick.RemoveListener(GoToMenu);
+            mapButton.onClick.RemoveListener(GoToMap);
         }
 
         // Texto de estado: número de nivel y tiempo restante en mm:ss.
@@ -126,6 +138,29 @@ namespace PuertaCastillo.UI
             inGameMenuButton.gameObject.SetActive(visible);
         }
 
+        // "Volver al mapa": copia del botón de menú del panel, centrada debajo de los demás botones.
+        // Se ve en los tres paneles porque es hijo del panel y no se oculta nunca.
+        private Button CreateMapButton()
+        {
+            Button button = Instantiate(menuButton, menuButton.transform.parent, false);
+            button.name = "BotonMapa";
+            button.gameObject.SetActive(true);
+            var rect = (RectTransform)button.transform;
+            rect.anchoredPosition = MapButtonPosition;
+            rect.sizeDelta = MapButtonSize;
+
+            LocalizedText localized = button.GetComponentInChildren<LocalizedText>(true);
+            if (localized != null)
+            {
+                localized.SetKey("game.map");
+            }
+            else
+            {
+                button.GetComponentInChildren<TMP_Text>(true).text = Localization.Get("game.map");
+            }
+            return button;
+        }
+
         // Copia un botón del panel, sin animaciones, y lo deja por debajo del panel. Lo coloca GameLayout.
         private Button CreateInGameButton(Button template, string buttonName)
         {
@@ -160,6 +195,12 @@ namespace PuertaCastillo.UI
         {
             SaveGame.RequestStartLevel(levelManager.LevelNumber - 1);
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
+        // Vuelve al mapa de niveles, donde se puede repetir cualquier nivel ya desbloqueado.
+        private void GoToMap()
+        {
+            SceneManager.LoadScene(LevelMap.SceneName);
         }
 
         // Vuelve al menú principal. Lo usan el botón de menú y el gesto de deslizar a la derecha.
