@@ -1,17 +1,47 @@
+### Compilación de Maven ###
+# Clases compiladas, jars, informes de tests y Javadoc: se regeneran con "mvnw package"
 target/
+# Excepción: el jar del wrapper de Maven sí se sube (lo usan mvnw y mvnw.cmd)
 !.mvn/wrapper/maven-wrapper.jar
+# Carpetas llamadas "target" o "build" dentro del código no son de compilación
 !**/src/main/**/target/
 !**/src/test/**/target/
-.kotlin
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### Ejecutable generado con -Pfatjar ###
+# El .exe pesa unos 90 MB y se genera en cada equipo
+dist/
+
+### Registros (logs) ###
+# La aplicación los escribe en %LOCALAPPDATA%, pero por si alguno se crea aquí al probar
+*.log
+logs/
+
+### Errores de la máquina virtual de Java ###
+hs_err_pid*.log
+replay_pid*.log
 
 ### IntelliJ IDEA ###
+# Se suben encodings.xml, misc.xml y vcs.xml (configuración común del proyecto);
+# lo personal de cada equipo se queda fuera
+.idea/workspace.xml
+.idea/shelf/
+.idea/usage.statistics.xml
+.idea/dictionaries/
 .idea/modules.xml
 .idea/jarRepositories.xml
 .idea/compiler.xml
 .idea/libraries/
+.idea/httpRequests/
+.idea/dataSources/
+.idea/dataSources.local.xml
 *.iws
 *.iml
 *.ipr
+out/
+.kotlin
 
 ### Eclipse ###
 .apt_generated
@@ -21,21 +51,18 @@ target/
 .settings
 .springBeans
 .sts4-cache
+bin/
 
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
-/dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
 ### VS Code ###
 .vscode/
 
-### Mac OS ###
+### Sistema operativo ###
 .DS_Store
-### Ejecutable generado con -Pfatjar ###
-dist/
+Thumbs.db
+desktop.ini

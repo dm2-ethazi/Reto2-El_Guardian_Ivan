@@ -24,7 +24,7 @@
             </padding>
             <!-- Escudo de la aplicación sobre el nombre (el mismo dibujo que el icono de la ventana) -->
             <StackPane styleClass="app-logo">
-                <ImageView fitWidth="96.0" fitHeight="96.0" preserveRatio="true" smooth="true">
+                <ImageView fitWidth="112.0" fitHeight="112.0" preserveRatio="true" smooth="true">
                     <image><Image url="@../images/logo.png"/></image>
                 </ImageView>
             </StackPane>

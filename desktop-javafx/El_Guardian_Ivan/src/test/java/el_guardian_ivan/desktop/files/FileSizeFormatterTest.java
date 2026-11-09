@@ -10,6 +10,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /** Pruebas de FileSizeFormatter: unidad correcta en cada salto de 1024 y rechazo de negativos. */
 class FileSizeFormatterTest {
 
+    /**
+     * Cada tamaño sale con la unidad correcta y coma decimal.
+     *
+     * @param bytes tamaño en bytes
+     * @param expected texto esperado
+     */
     @ParameterizedTest
     @CsvSource(delimiter = ';', value = {
             "0; 0 B",
@@ -26,6 +32,7 @@ class FileSizeFormatterTest {
         assertEquals(expected, FileSizeFormatter.format(bytes));
     }
 
+    /** Un tamaño negativo da error. */
     @Test
     void rejectsNegativeSizes() {
         assertThrows(IllegalArgumentException.class, () -> FileSizeFormatter.format(-1));

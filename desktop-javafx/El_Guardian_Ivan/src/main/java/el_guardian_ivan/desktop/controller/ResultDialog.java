@@ -29,6 +29,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -40,6 +42,9 @@ import java.nio.file.Path;
  * estándar de JavaFX. Cada tipo lleva su icono y su color, así el resultado no depende solo del color.
  */
 public class ResultDialog {
+
+    /** Registro de esta clase (ver logback.xml). */
+    private static final Logger log = LoggerFactory.getLogger(ResultDialog.class);
 
     /** FXMLLoader crea el controlador al cargar result-dialog.fxml; desde fuera se usan los métodos estáticos. */
     public ResultDialog() {
@@ -378,6 +383,7 @@ public class ResultDialog {
             FileLocationOpener.reveal(file);
             stage.close();
         } catch (IOException e) {
+            log.warn("No se ha podido abrir la ubicación del resultado", e);
             messageLabel.setText(I18n.get("dialog.openLocationFailed", e.getMessage()));
         }
     }

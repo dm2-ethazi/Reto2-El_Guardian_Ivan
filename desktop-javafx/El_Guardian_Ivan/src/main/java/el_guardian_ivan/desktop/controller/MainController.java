@@ -18,6 +18,8 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.StackPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -30,6 +32,9 @@ import java.util.Map;
  * haya escrito al cambiar de sección.
  */
 public class MainController implements Navigator {
+
+    /** Registro de esta clase (ver logback.xml). */
+    private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
     /** FXMLLoader crea el controlador al cargar main-view.fxml. */
     public MainController() {
@@ -144,6 +149,7 @@ public class MainController implements Navigator {
      * @param view pantalla que se muestra
      */
     private void show(View view) {
+        log.debug("Pantalla: {}", view);
         contentArea.getChildren().setAll(loadedViews.computeIfAbsent(view, this::load));
     }
 

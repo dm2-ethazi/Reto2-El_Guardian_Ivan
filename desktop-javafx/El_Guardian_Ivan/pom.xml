@@ -12,6 +12,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.12.1</junit.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <logback.version>1.5.18</logback.version>
     </properties>
 
     <dependencies>
@@ -24,6 +26,21 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>21.0.6</version>
+        </dependency>
+
+        <!--
+            Registros (logs): el código usa SLF4J y Logback los escribe en consola y en fichero.
+            La configuración está en src/main/resources/logback.xml.
+        -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
         </dependency>
 
         <dependency>
@@ -157,6 +174,9 @@
                                                 <exclude>META-INF/*.DSA</exclude>
                                                 <exclude>META-INF/*.RSA</exclude>
                                                 <exclude>META-INF/MANIFEST.MF</exclude>
+                                                <!-- Configuración de GraalVM/Gluon que repiten varios jar de JavaFX:
+                                                     no se usa aquí y provocaba avisos de "overlapping resources" -->
+                                                <exclude>META-INF/substrate/**</exclude>
                                             </excludes>
                                         </filter>
                                     </filters>
@@ -226,12 +246,29 @@
                                         <addModule>java.base</addModule>
                                         <addModule>java.desktop</addModule>
                                         <addModule>java.logging</addModule>
+                                        <!-- Logback lo necesita al leer logback.xml (aunque no se use JNDI) -->
+                                        <addModule>java.naming</addModule>
                                         <addModule>java.prefs</addModule>
                                         <addModule>java.scripting</addModule>
                                         <addModule>java.xml</addModule>
                                         <addModule>jdk.unsupported</addModule>
                                         <addModule>jdk.jsobject</addModule>
+                                        <!-- Datos de idiomas: sin él, Java solo conoce el inglés y el selector
+                                             de idioma, los decimales, etc. salen en inglés en el .exe -->
+                                        <addModule>jdk.localedata</addModule>
                                     </addModules>
+                                    <!--
+                                        De jdk.localedata solo hacen falta los idiomas de la aplicación. Al poner
+                                        opciones de jlink se pierden las que jpackage usa por defecto, así que se
+                                        repiten las cuatro últimas para que el ejecutable no pese más.
+                                    -->
+                                    <jLinkOptions>
+                                        <jLinkOption>--include-locales=es,en,eu</jLinkOption>
+                                        <jLinkOption>--strip-native-commands</jLinkOption>
+                                        <jLinkOption>--strip-debug</jLinkOption>
+                                        <jLinkOption>--no-man-pages</jLinkOption>
+                                        <jLinkOption>--no-header-files</jLinkOption>
+                                    </jLinkOptions>
                                 </configuration>
                             </execution>
                         </executions>

@@ -12,15 +12,15 @@
 <?import javafx.scene.layout.VBox?>
 
 <!-- Pantalla Cifrar: cabecera y tres pasos numerados, como en el boceto de la propuesta -->
-<VBox styleClass="content" maxWidth="900.0" spacing="18.0" xmlns:fx="http://javafx.com/fxml"
+<VBox styleClass="content" maxWidth="900.0" minWidth="0.0" spacing="18.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="el_guardian_ivan.desktop.controller.EncryptController">
 
     <!-- Cabecera -->
     <HBox styleClass="page-header" spacing="18.0" alignment="CENTER_LEFT">
         <Region styleClass="icon,header-icon,icon-lock"/>
         <VBox spacing="4.0" minWidth="0.0" HBox.hgrow="ALWAYS">
-            <Label text="%encrypt.title" styleClass="title"/>
-            <Label text="%encrypt.subtitle" wrapText="true" minHeight="-Infinity" styleClass="subtitle"/>
+            <Label text="%encrypt.title" styleClass="title" wrapText="true" maxWidth="Infinity" minWidth="0.0"/>
+            <Label text="%encrypt.subtitle" wrapText="true" minHeight="-Infinity" styleClass="subtitle" maxWidth="Infinity" minWidth="0.0"/>
         </VBox>
     </HBox>
 
@@ -31,21 +31,21 @@
                 <StackPane styleClass="step-number"><Label text="1"/></StackPane>
                 <Region styleClass="step-line" VBox.vgrow="ALWAYS"/>
             </VBox>
-            <VBox styleClass="step-body" spacing="8.0" HBox.hgrow="ALWAYS">
-                <Label text="%encrypt.step1" styleClass="step-label"/>
-                <HBox spacing="12.0" alignment="CENTER_LEFT">
-                    <HBox styleClass="file-box" spacing="10.0" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+            <VBox styleClass="step-body" spacing="8.0" minWidth="0.0" HBox.hgrow="ALWAYS">
+                <Label text="%encrypt.step1" styleClass="step-label" wrapText="true" maxWidth="Infinity" minWidth="0.0"/>
+                <HBox spacing="12.0" minWidth="0.0" alignment="CENTER_LEFT">
+                    <HBox styleClass="file-box" spacing="10.0" alignment="CENTER_LEFT" minWidth="0.0" HBox.hgrow="ALWAYS">
                         <Region styleClass="icon,icon-file"/>
                         <Label fx:id="inputFileLabel" text="%form.noFile" styleClass="file-name"
-                               maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                               maxWidth="Infinity" minWidth="0.0" HBox.hgrow="ALWAYS"/>
                         <Label fx:id="inputSizeLabel" styleClass="file-size"/>
                     </HBox>
                     <Button fx:id="selectButton" text="%form.browse" styleClass="secondary" accessibleHelp="%encrypt.hint1"
                             onAction="#onSelectInputFile"/>
                 </HBox>
                 <!-- Ruta completa del fichero elegido (se oculta mientras no hay ninguno) -->
-                <Label fx:id="inputPathLabel" styleClass="path-label" maxWidth="Infinity"/>
-                <Label text="%encrypt.hint1" wrapText="true" styleClass="hint"/>
+                <Label fx:id="inputPathLabel" styleClass="path-label" maxWidth="Infinity" minWidth="0.0"/>
+                <Label text="%encrypt.hint1" wrapText="true" styleClass="hint" maxWidth="Infinity" minWidth="0.0"/>
             </VBox>
         </HBox>
 
@@ -55,8 +55,8 @@
                 <StackPane styleClass="step-number"><Label text="2"/></StackPane>
                 <Region styleClass="step-line" VBox.vgrow="ALWAYS"/>
             </VBox>
-            <VBox styleClass="step-body" spacing="8.0" HBox.hgrow="ALWAYS">
-                <Label text="%form.step2" styleClass="step-label"/>
+            <VBox styleClass="step-body" spacing="8.0" minWidth="0.0" HBox.hgrow="ALWAYS">
+                <Label text="%form.step2" styleClass="step-label" wrapText="true" maxWidth="Infinity" minWidth="0.0"/>
                 <StackPane styleClass="password-box" alignment="CENTER_RIGHT">
                     <PasswordField fx:id="passwordField" accessibleText="%form.password" accessibleHelp="%encrypt.hint2" maxWidth="Infinity"/>
                     <TextField fx:id="visiblePasswordField" accessibleText="%form.password" accessibleHelp="%encrypt.hint2" maxWidth="Infinity"/>
@@ -64,7 +64,7 @@
                         <graphic><Region styleClass="icon,icon-eye"/></graphic>
                     </ToggleButton>
                 </StackPane>
-                <Label text="%encrypt.hint2" wrapText="true" styleClass="hint"/>
+                <Label text="%encrypt.hint2" wrapText="true" styleClass="hint" maxWidth="Infinity" minWidth="0.0"/>
             </VBox>
         </HBox>
 
@@ -73,26 +73,26 @@
             <VBox styleClass="step-marker" alignment="TOP_CENTER">
                 <StackPane styleClass="step-number"><Label text="3"/></StackPane>
             </VBox>
-            <VBox styleClass="step-body" spacing="8.0" HBox.hgrow="ALWAYS">
-                <Label text="%form.step3" styleClass="step-label"/>
-                <HBox spacing="12.0" alignment="CENTER_LEFT">
+            <VBox styleClass="step-body" spacing="8.0" minWidth="0.0" HBox.hgrow="ALWAYS">
+                <Label text="%form.step3" styleClass="step-label" wrapText="true" maxWidth="Infinity" minWidth="0.0"/>
+                <HBox spacing="12.0" minWidth="0.0" alignment="CENTER_LEFT">
                     <TextField fx:id="outputNameField" accessibleText="%form.outputName" accessibleHelp="%encrypt.hint3"
-                               maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                               maxWidth="Infinity" minWidth="0.0" HBox.hgrow="ALWAYS"/>
                     <Button fx:id="outputFolderButton" text="%form.changeFolder" styleClass="secondary,folder-button" onAction="#onChooseOutput" minWidth="-Infinity">
                         <graphic><Region styleClass="icon,icon-folder"/></graphic>
                     </Button>
                 </HBox>
                 <!-- Ruta completa donde se guardará el resultado -->
-                <Label fx:id="outputPathLabel" styleClass="path-label" maxWidth="Infinity"/>
-                <Label text="%encrypt.hint3" wrapText="true" styleClass="hint"/>
+                <Label fx:id="outputPathLabel" styleClass="path-label" maxWidth="Infinity" minWidth="0.0"/>
+                <Label text="%encrypt.hint3" wrapText="true" styleClass="hint" maxWidth="Infinity" minWidth="0.0"/>
             </VBox>
         </HBox>
 
         <!-- Progreso y botón principal -->
         <HBox styleClass="form-actions" spacing="16.0" alignment="CENTER_RIGHT">
-            <VBox spacing="6.0" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+            <VBox spacing="6.0" minWidth="0.0" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
                 <ProgressBar fx:id="progressBar" progress="0" maxWidth="Infinity" accessibleText="%form.progress"/>
-                <Label fx:id="statusLabel" styleClass="hint"/>
+                <Label fx:id="statusLabel" styleClass="hint" wrapText="true" maxWidth="Infinity" minWidth="0.0"/>
             </VBox>
             <Button fx:id="runButton" text="%encrypt.run" styleClass="primary" defaultButton="true" onAction="#onEncrypt">
                 <graphic><Region styleClass="icon,icon-lock"/></graphic>
