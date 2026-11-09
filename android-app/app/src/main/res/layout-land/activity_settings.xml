@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" android:id="@+id/main" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/midnight" android:orientation="vertical" tools:context=".ui.SettingsActivity">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="56dp" android:background="@drawable/bg_header" android:gravity="center_vertical" android:orientation="horizontal">
+        <TextView android:id="@+id/btn_back" android:layout_width="56dp" android:layout_height="match_parent" android:contentDescription="@string/back" android:gravity="center" android:text="‹" android:textColor="@color/gold" android:textSize="40sp"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:fontFamily="serif" android:gravity="center" android:text="@string/title_settings" android:textColor="@color/gold" android:textSize="26sp" android:textStyle="bold"/>
+        <Space android:layout_width="56dp" android:layout_height="match_parent"/>
+    </LinearLayout>
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_margin="7dp" android:layout_weight="1" android:background="@drawable/fondo_pergamino" android:clipChildren="true" android:clipToPadding="true">
+    <ScrollView android:layout_width="match_parent" android:id="@+id/scroll_settings" android:layout_height="match_parent" android:layout_marginStart="23dp" android:layout_marginEnd="23dp" android:layout_marginTop="33dp" android:layout_marginBottom="36dp" android:fillViewport="false" android:clipToPadding="true" android:overScrollMode="never">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="7dp" android:paddingEnd="7dp" android:paddingTop="10dp" android:paddingBottom="25dp">
+            <ImageView android:layout_width="78dp" android:layout_height="78dp" android:layout_gravity="center_horizontal" android:contentDescription="@null" android:src="@drawable/icon_ajustes_activo"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:fontFamily="serif" android:gravity="center" android:text="@string/settings_heading" android:textColor="@color/ink" android:textSize="22sp" android:textStyle="bold"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="15dp" android:fontFamily="serif" android:text="@string/security_title" android:textColor="@color/ink" android:textSize="19sp" android:textStyle="bold"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="@string/security_description" android:textColor="@color/ink" android:textSize="14sp"/>
+            <androidx.appcompat.widget.SwitchCompat android:id="@+id/switch_confirm_share" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="60dp" android:layout_marginTop="15dp" android:checked="true" android:text="@string/confirm_sharing" android:textColor="@color/ink" android:textSize="15sp"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/confirm_sharing_description" android:textColor="#715039" android:textSize="13sp"/>
+
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="22dp" android:fontFamily="serif" android:text="@string/language_title" android:textColor="@color/ink" android:textSize="19sp" android:textStyle="bold"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="@string/language_description" android:textColor="@color/ink" android:textSize="14sp"/>
+            <androidx.appcompat.widget.AppCompatSpinner android:id="@+id/spinner_language" android:layout_width="match_parent" android:layout_height="52dp" android:layout_marginTop="9dp" android:background="@drawable/bg_spinner" android:contentDescription="@string/language_title" android:paddingStart="0dp" android:paddingEnd="42dp" android:popupBackground="@color/ivory"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:fontFamily="serif" android:text="@string/help_title" android:textColor="@color/ink" android:textSize="19sp" android:textStyle="bold"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="7dp" android:text="@string/help_description" android:textColor="@color/ink" android:textSize="14sp"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:fontFamily="serif" android:text="@string/about_title" android:textColor="@color/ink" android:textSize="19sp" android:textStyle="bold"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="7dp" android:text="@string/about_description" android:textColor="@color/ink" android:textSize="14sp"/>
+        </LinearLayout>
+    </ScrollView>
+    </FrameLayout>
+    <include layout="@layout/view_bottom_nav"/>
+</LinearLayout>
