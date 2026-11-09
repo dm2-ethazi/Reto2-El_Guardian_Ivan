@@ -33,6 +33,33 @@ namespace PuertaCastillo.Tests
             Assert.IsNotNull(bar.GetComponentInChildren<TMP_Text>().font);
         }
 
+        [UnityTest]
+        public IEnumerator EachHitPlaysAWoodenKnockButNotTooManyAtOnce()
+        {
+            door.PlayHitFeedback(1f);
+            Assert.AreEqual(1, door.HitSoundsPlayed);
+            StringAssert.StartsWith("GolpePuerta", door.LastHitSound.name);
+
+            // Dos enemigos que golpean en el mismo instante suenan como un solo golpe.
+            door.PlayHitFeedback(1f);
+            Assert.AreEqual(1, door.HitSoundsPlayed);
+
+            yield return new WaitForSeconds(0.2f);
+            door.PlayHitFeedback(2f);
+            Assert.AreEqual(2, door.HitSoundsPlayed);
+        }
+
+        [Test]
+        public void ThereAreSeveralKnockSounds()
+        {
+            AudioClip[] sounds = Resources.LoadAll<AudioClip>(Door.HitSoundsFolder);
+            Assert.GreaterOrEqual(sounds.Length, 3);
+            foreach (AudioClip sound in sounds)
+            {
+                Assert.That(sound.length, Is.InRange(0.2f, 0.6f), sound.name);
+            }
+        }
+
         [Test]
         public void HasSolidColliderWithoutRigidbody()
         {
