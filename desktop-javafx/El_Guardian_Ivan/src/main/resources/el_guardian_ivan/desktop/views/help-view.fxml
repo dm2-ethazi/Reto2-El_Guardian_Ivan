@@ -55,6 +55,7 @@
     <!-- Atajos de teclado: la aplicación se puede usar entera sin ratón -->
     <VBox styleClass="form-card" spacing="8.0">
         <Label text="%help.shortcuts" styleClass="step-label" maxWidth="Infinity"/>
+        <Label text="%help.shortcut.overlay" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
         <Label text="%help.shortcut.nav" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
         <Label text="%help.shortcut.help" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
         <Label text="%help.shortcut.open" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>

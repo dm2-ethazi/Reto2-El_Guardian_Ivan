@@ -581,28 +581,19 @@
 .combo-box {
     -fx-background-color: derive(-pergamino, 60%);
     -fx-background-radius: 6;
+    -fx-background-insets: 0;
     -fx-border-color: -borde-campo;
+    -fx-border-width: 1;
     -fx-border-radius: 6;
+    -fx-border-insets: 0;
     -fx-padding: 3 4 3 4;
 }
 
 .combo-box:focused {
-    -fx-border-color: -azul-noche;
-    -fx-border-width: 2;
-}
-
-.combo-box .arrow {
-    -fx-background-color: -azul-noche;
-}
-
-.combo-box-popup .list-view {
-    -fx-background-color: derive(-pergamino, 60%);
-    -fx-border-color: -oro-antiguo;
-}
-
-.combo-box-popup .list-cell:filled:selected, .combo-box-popup .list-cell:filled:hover {
-    -fx-background-color: -azul-noche;
-    -fx-text-fill: -pergamino;
+    -fx-border-color: -borde-campo;
+    -fx-border-width: 1;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
 }
 
 /* Fondo de pergamino */
@@ -668,4 +659,18 @@
 }
 .view-scroll .corner {
     -fx-background-color: transparent;
+}
+
+/* ---------- Indicadores de acceso rápido al pulsar Alt (estilo Excel) ---------- */
+.keytip-badge {
+    -fx-font-family: "Inter SemiBold";
+    -fx-font-size: 11px;
+    -fx-text-fill: -pergamino;
+    -fx-background-color: -azul-noche;
+    -fx-background-radius: 3;
+    -fx-border-color: -oro-antiguo;
+    -fx-border-width: 1;
+    -fx-border-radius: 3;
+    -fx-padding: 2 6 2 6;
+    -fx-effect: dropshadow(gaussian, rgba(37,37,37,0.28), 4, 0, 0, 1);
 }

@@ -284,3 +284,14 @@ Hay que generarlos **en cada sistema**: en Windows sale el `.exe` y en Linux sal
 - Fuentes **Cinzel** (Natanael Gama) e **Inter** (Rasmus Andersson), con licencia SIL Open Font License 1.1.
 - Iconos **Material Icons** de Google, con licencia Apache 2.0.
 - Registros con **SLF4J** y **Logback** (licencias MIT y EPL/LGPL).
+
+
+### Panel de atajos de teclado
+
+Pulsa y suelta **Alt** (sin combinarla con otra tecla) para ver todos los atajos
+que ya utiliza el cliente JavaFX. Se muestra una ventana superpuesta sin
+abandonar la sección actual. Para cerrarla, pulsa **Alt** de nuevo, **Esc** o
+el botón **Cerrar**. El panel sigue el idioma seleccionado en Ajustes
+(Español, English, Euskara). La detección de Alt por sí sola se realiza al
+soltar la tecla, de manera que las combinaciones **Alt+Tab** y **Alt+F4** no
+abren la ayuda de atajos.
