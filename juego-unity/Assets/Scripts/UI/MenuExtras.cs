@@ -176,7 +176,7 @@ namespace PuertaCastillo.UI
             RectTransform track = Box("Pista", root, 0, 0, 504, 14);
             track.gameObject.AddComponent<Image>().color = new Color(0.35f, 0.29f, 0.21f);
             RectTransform area = Box("Recorrido", root, 0, 0, 504, 56);
-            RectTransform handle = Box("Control", area, 0, 0, 26, 46);
+            RectTransform handle = Box("Control", area, 0, 0, 26, 15);
             Image handleImage = handle.gameObject.AddComponent<Image>();
             handleImage.color = Gold;
             Slider slider = root.gameObject.AddComponent<Slider>();
