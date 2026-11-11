@@ -24,6 +24,14 @@ namespace PuertaCastillo.Gameplay
         [Tooltip("Relleno de la barra de vida. Solo lo usa el jefe.")]
         [SerializeField] private Transform healthFill;
 
+        [Header("Perspectiva")]
+        [Tooltip("Altura del horizonte del fondo, en el mundo. Cuanto más cerca de ella, más pequeño se ve el enemigo.")]
+        [SerializeField] private float horizonY = 3.29f;
+        [Tooltip("Tamaño en el horizonte (1 = tamaño normal). Desde ahí crece poco a poco hasta 1 al llegar a la muralla.")]
+        [SerializeField, Range(0.05f, 1f)] private float minPerspectiveScale = 0.7f;
+        [Tooltip("Tamaño del dibujo respecto al sprite (1 = como el sprite). Solo visual: no cambia el collider.")]
+        [SerializeField, Min(0.1f)] private float visualScale = 1.15f;
+
         private Rigidbody2D body;
         private Vector2 destination;
         private float speed;
@@ -42,11 +50,19 @@ namespace PuertaCastillo.Gameplay
 
         private static readonly Color StrikeFlashColor = new Color(1f, 0.35f, 0.3f, 1f);
 
+        // Perspectiva: altura a la que el enemigo toca la muralla (allí se ve a tamaño normal), mitad
+        // del alto del dibujo para mantener los pies en el suelo al encoger, y la barra de vida del jefe,
+        // que acompaña a la cabeza. Sin muralla (wallY NaN) el enemigo se ve siempre a tamaño normal.
+        private float wallY = float.NaN;
+        private float visualHalfHeight;
+        private Transform[] healthBarParts = new Transform[0];
+        private float[] healthBarHeights = new float[0];
+
         // El jefe es el único con barra de vida: su golpe es más largo y contundente.
         private bool IsBoss => healthFill != null;
         private float StrikeOut => IsBoss ? 0.08f : 0.06f;
         private float StrikeBack => IsBoss ? 0.26f : 0.18f;
-        private float StrikeDistance => IsBoss ? 0.6f : 0.35f;
+        private float StrikeDistance => IsBoss ? 0.35f : 0.2f;
         private float StrikeSquash => IsBoss ? 0.4f : 0.28f;
 
         /// <summary>Transform del dibujo, el único que se mueve al golpear.</summary>
@@ -71,6 +87,7 @@ namespace PuertaCastillo.Gameplay
             {
                 visual = visualRenderer.transform;
                 visualColor = visualRenderer.color;
+                visualHalfHeight = visualRenderer.sprite != null ? visualRenderer.sprite.bounds.extents.y : 0f;
                 if (TryGetComponent(out SpriteAnimator animator))
                 {
                     animator.SetTarget(visualRenderer);
@@ -80,6 +97,14 @@ namespace PuertaCastillo.Gameplay
             if (healthFill != null)
             {
                 healthFillWidth = healthFill.localScale.x;
+                // La barra son dos hijos del enemigo: el fondo (BarraVida) y el relleno.
+                Transform background = transform.Find("BarraVida");
+                healthBarParts = background != null ? new[] { background, healthFill } : new[] { healthFill };
+                healthBarHeights = new float[healthBarParts.Length];
+                for (int i = 0; i < healthBarParts.Length; i++)
+                {
+                    healthBarHeights[i] = healthBarParts[i].localPosition.y;
+                }
             }
         }
 
@@ -97,6 +122,34 @@ namespace PuertaCastillo.Gameplay
             secondsBetweenHits = config.secondsBetweenHits;
             caesarShift = config.caesarShift;
             SetMessage(message);
+
+            // El enemigo se para cuando su círculo toca el borde superior del collider de la puerta:
+            // esa es la altura en la que debe verse a tamaño normal.
+            Door door = FindAnyObjectByType<Door>();
+            if (door != null && door.TryGetComponent(out Collider2D doorCollider))
+            {
+                float radius = GetComponent<CircleCollider2D>().radius * Mathf.Abs(transform.lossyScale.y);
+                wallY = doorCollider.bounds.max.y + radius;
+            }
+        }
+
+        /// <summary>
+        /// Tamaño con el que se ve el enemigo según lo lejos que está: 1 al llegar a la muralla y menos
+        /// cuanto más cerca del horizonte, donde vale <see cref="minPerspectiveScale"/>. Solo es visual.
+        /// </summary>
+        public float PerspectiveScale
+        {
+            get
+            {
+                if (float.IsNaN(wallY) || horizonY <= wallY)
+                {
+                    return 1f;
+                }
+
+                // 0 en el horizonte y 1 en la muralla; el tamaño crece en línea recta entre los dos extremos.
+                float t = Mathf.Clamp01((horizonY - transform.position.y) / (horizonY - wallY));
+                return Mathf.Lerp(minPerspectiveScale, 1f, t);
+            }
         }
 
         // Las filas pares van encima del enemigo y las impares debajo, para no llegar a la barra superior.
@@ -195,53 +248,68 @@ namespace PuertaCastillo.Gameplay
             strikeTimer = 0f;
         }
 
-        // Embestida: ida rápida hacia la puerta estirándose, aplastado contra ella en el impacto y
-        // vuelta más lenta, con un destello rojo que se apaga. Fuera del golpe, el visual se queda
-        // en su sitio y el SpriteAnimator sigue con su animación de andar o flotar.
+        // Cada fotograma: tamaño por perspectiva y, si está golpeando, la embestida (ida rápida hacia la
+        // puerta estirándose, aplastado contra ella en el impacto y vuelta más lenta, con un destello
+        // rojo que se apaga). Solo cambia el hijo visual; el SpriteAnimator sigue con sus fotogramas.
         private void LateUpdate()
         {
-            if (visual == null || strikeTimer < 0f)
+            if (visual == null)
             {
                 return;
             }
 
-            strikeTimer += Time.deltaTime;
-            float reach;
-            Vector3 scale;
-            float flash;
+            Vector3 strikeScale = Vector3.one;
+            float reach = 0f;
+            float flash = 0f;
 
-            if (strikeTimer < StrikeOut)
+            if (strikeTimer >= 0f)
             {
-                // Ida: se lanza y se estira en la dirección del golpe.
-                float t = strikeTimer / StrikeOut;
-                reach = t * t;
-                scale = new Vector3(1f - StrikeSquash * 0.4f * t, 1f + StrikeSquash * 0.6f * t, 1f);
-                flash = t;
-            }
-            else if (strikeTimer < StrikeOut + StrikeBack)
-            {
-                // Vuelta: parte aplastado contra la puerta y recupera su forma.
-                float t = (strikeTimer - StrikeOut) / StrikeBack;
-                float ease = 1f - Mathf.SmoothStep(0f, 1f, t);
-                reach = ease;
-                float squash = (1f - t) * (1f - t);
-                scale = new Vector3(1f + StrikeSquash * squash, 1f - StrikeSquash * 0.7f * squash, 1f);
-                flash = 1f - t;
-            }
-            else
-            {
-                strikeTimer = -1f;
-                visual.localPosition = Vector3.zero;
-                visual.localScale = Vector3.one;
-                visualRenderer.color = visualColor;
-                return;
+                strikeTimer += Time.deltaTime;
+                if (strikeTimer < StrikeOut)
+                {
+                    // Ida: se lanza y se estira en la dirección del golpe.
+                    float t = strikeTimer / StrikeOut;
+                    reach = t * t;
+                    strikeScale = new Vector3(1f - StrikeSquash * 0.4f * t, 1f + StrikeSquash * 0.6f * t, 1f);
+                    flash = t;
+                }
+                else if (strikeTimer < StrikeOut + StrikeBack)
+                {
+                    // Vuelta: parte aplastado contra la puerta y recupera su forma.
+                    float t = (strikeTimer - StrikeOut) / StrikeBack;
+                    reach = 1f - Mathf.SmoothStep(0f, 1f, t);
+                    float squash = (1f - t) * (1f - t);
+                    strikeScale = new Vector3(1f + StrikeSquash * squash, 1f - StrikeSquash * 0.7f * squash, 1f);
+                    flash = 1f - t;
+                }
+                else
+                {
+                    strikeTimer = -1f;
+                }
             }
 
-            // La raíz tiene escala, así que el desplazamiento en mundo se pasa a espacio local.
+            // Al cambiar de tamaño (distancia y visualScale) se mueve el dibujo para que los pies sigan en el suelo.
+            float perspective = PerspectiveScale * visualScale;
+            Vector3 feet = new Vector3(0f, -(1f - perspective) * visualHalfHeight, 0f);
+
+            // La raíz tiene escala, así que el desplazamiento de la embestida (en mundo) se pasa a local.
             Vector3 worldOffset = (Vector3)(strikeDirection * (StrikeDistance * reach));
-            visual.localPosition = transform.InverseTransformVector(worldOffset);
-            visual.localScale = scale;
+            visual.localPosition = feet + transform.InverseTransformVector(worldOffset);
+            // Al embestir se acerca un poco a la cámara, así que crece ligeramente.
+            visual.localScale = strikeScale * (perspective * (1f + 0.12f * reach));
             visualRenderer.color = Color.Lerp(visualColor, StrikeFlashColor, flash);
+
+            // El marco del objetivo rodea al dibujo y la barra del jefe sigue a su cabeza.
+            targetFrame.transform.localPosition = feet;
+            targetFrame.transform.localScale = Vector3.one * perspective;
+            // La barra solo sigue a la distancia (no a visualScale), para no montarse sobre el mensaje.
+            float distance = PerspectiveScale;
+            float barFeet = -(1f - distance) * visualHalfHeight;
+            for (int i = 0; i < healthBarParts.Length; i++)
+            {
+                Vector3 position = healthBarParts[i].localPosition;
+                healthBarParts[i].localPosition = new Vector3(position.x, barFeet + healthBarHeights[i] * distance, position.z);
+            }
         }
 
         // Si dejara de tocar la puerta, vuelve a avanzar.

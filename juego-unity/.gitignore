@@ -46,3 +46,6 @@ docs/capturas-teclado/
 # Archivos del sistema operativo
 .DS_Store
 Thumbs.db
+
+# Boceto y generador de la muralla (solo de trabajo, no van al repositorio)
+docs/boceto-perspectiva/

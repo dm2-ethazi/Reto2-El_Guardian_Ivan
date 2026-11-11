@@ -24,6 +24,8 @@ namespace PuertaCastillo.UI
         [Tooltip("Cuánto equivale una unidad de movimiento: 1 en el mundo, unos 60 en la interfaz.")]
         [SerializeField, Min(0.01f)] private float motionScale = 1f;
         [SerializeField, Min(0.1f)] private float flameFramesPerSecond = 9f;
+        [Tooltip("Orden de dibujo de las llamas. En la partida van por delante de la muralla, que usa del 10 al 12.")]
+        [SerializeField] private int flameOrder = 1;
 
         private readonly List<Transform> candles = new List<Transform>();
         private readonly List<Vector3> candleOrigins = new List<Vector3>();
@@ -50,7 +52,7 @@ namespace PuertaCastillo.UI
 
             foreach (Vector2 position in torchPositions)
             {
-                Create("Llama", flameFrames[0], position, Color.white, 1, out SpriteSetter setter);
+                Create("Llama", flameFrames[0], position, Color.white, flameOrder, out SpriteSetter setter);
                 flames.Add(setter);
             }
         }
