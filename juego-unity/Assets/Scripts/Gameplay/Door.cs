@@ -37,7 +37,6 @@ namespace PuertaCastillo.Gameplay
         [SerializeField, Min(0f)] private float minSecondsBetweenHitSounds = 0.12f;
 
         private AudioClip[] hitSounds;
-        private AudioSource hitAudio;
         private float lastHitSoundTime = float.NegativeInfinity;
 
         /// <summary>Golpes que han sonado (lo usan los tests: en modo batch no hay altavoz que escuchar).</summary>
@@ -118,10 +117,13 @@ namespace PuertaCastillo.Gameplay
 
             if (hitSounds == null)
             {
-                hitSounds = Resources.LoadAll<AudioClip>(HitSoundsFolder);
-                hitAudio = gameObject.AddComponent<AudioSource>();
-                hitAudio.playOnAwake = false;
-                hitAudio.spatialBlend = 0f;
+                var clips = new System.Collections.Generic.List<AudioClip>();
+                for (int i = 1; i <= 3; i++)
+                {
+                    AudioClip candidate = Resources.Load<AudioClip>($"{HitSoundsFolder}/GolpePuerta{i}");
+                    if (candidate != null) clips.Add(candidate);
+                }
+                hitSounds = clips.ToArray();
             }
 
             if (hitSounds.Length == 0)
@@ -131,8 +133,8 @@ namespace PuertaCastillo.Gameplay
 
             float power = Mathf.Max(strength, 0.1f);
             AudioClip clip = hitSounds[UnityEngine.Random.Range(0, hitSounds.Length)];
-            hitAudio.pitch = UnityEngine.Random.Range(0.9f, 1.1f) / Mathf.Sqrt(power);
-            hitAudio.PlayOneShot(clip, hitVolume * Mathf.Clamp01(0.8f + 0.2f * power));
+            float pitch = UnityEngine.Random.Range(0.9f, 1.1f) / Mathf.Sqrt(power);
+            MusicPlayer.Audio.PlayDoorImpact(clip, pitch, hitVolume * Mathf.Clamp01(0.8f + 0.2f * power));
             lastHitSoundTime = Time.time;
             LastHitSound = clip;
             HitSoundsPlayed++;

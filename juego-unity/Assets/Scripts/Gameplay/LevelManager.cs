@@ -101,6 +101,7 @@ namespace PuertaCastillo.Gameplay
 
             playing = false;
             spawner.StopLevel();
+            MusicPlayer.PlayEffect(SoundCue.Victory);
             LevelCompleted?.Invoke();
         }
 
@@ -112,6 +113,7 @@ namespace PuertaCastillo.Gameplay
             LevelProgress.MarkCompleted(levelIndex);
             // Partida terminada: ya no hay nada que continuar.
             SaveGame.Clear();
+            MusicPlayer.PlayEffect(SoundCue.Victory);
             Won?.Invoke();
         }
 
@@ -120,6 +122,7 @@ namespace PuertaCastillo.Gameplay
         {
             playing = false;
             spawner.StopLevel();
+            MusicPlayer.PlayEffect(SoundCue.Defeat);
             Lost?.Invoke();
         }
     }
