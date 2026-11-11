@@ -126,6 +126,7 @@ namespace PuertaCastillo.UI
             nextLevelButton.gameObject.SetActive(canContinue);
             restartButton.gameObject.SetActive(!canContinue);
             menuButton.gameObject.SetActive(!canContinue);
+            LayoutPanel(canContinue);
             panel.SetActive(true);
             SetInGameButtonsVisible(false);
             answerPanel.SetInteractable(false);
