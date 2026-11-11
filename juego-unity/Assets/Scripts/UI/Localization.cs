@@ -60,7 +60,7 @@ namespace PuertaCastillo.UI
             ["hint.level1"] = new[] { "Pista: suma 3 a cada letra. La A pasa a ser la D.", "Hint: add 3 to each letter. A becomes D.", "Pista: gehitu 3 letra bakoitzari. A letra D bihurtzen da." },
             ["hint.level2"] = new[] { "Pista: suma 5 a cada letra. La A pasa a ser la F.", "Hint: add 5 to each letter. A becomes F.", "Pista: gehitu 5 letra bakoitzari. A letra F bihurtzen da." },
             ["hint.level3"] = new[] { "Pista: la A se cifra como una H.", "Hint: A is encrypted as H.", "Pista: A letra H gisa zifratzen da." },
-            ["hint.level4"] = new[] { "Pista: la letra más repetida suele ser la E o la A.", "Hint: the most repeated letter is usually E or A.", "Pista: gehien errepikatzen den letra E edo A izan ohi da." },
+            ["hint.level4"] = new[] { "Pista: la A se cifra como una L.", "Hint: A is encrypted as L.", "Pista: A letra L gisa zifratzen da." },
             ["hint.level5"] = new[] { "Pista: la A se cifra como una N.", "Hint: A is encrypted as N.", "Pista: A letra N gisa zifratzen da." }
         };
 

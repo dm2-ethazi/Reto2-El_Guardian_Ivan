@@ -13,8 +13,14 @@ namespace PuertaCastillo.Gameplay
         public Enemy Target { get; private set; }
 
         // Recalcula el objetivo en cada frame y solo cambia el resaltado si es otro enemigo.
+        // Mientras el objetivo esté golpeando la puerta se mantiene, aunque otro quede más cerca.
         private void Update()
         {
+            if (Target != null && Target.IsAttacking)
+            {
+                return;
+            }
+
             Enemy closest = FindClosestToDoor();
             if (closest == Target)
             {

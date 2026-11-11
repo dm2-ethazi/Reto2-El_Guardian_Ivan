@@ -81,6 +81,9 @@ namespace PuertaCastillo.Gameplay
         {
             body = GetComponent<Rigidbody2D>();
             RemainingDecrypts = decryptsToKill;
+            // El mensaje cifrado solo se muestra en la barra superior, no encima del enemigo.
+            // El texto se sigue guardando en la etiqueta porque EncryptedMessage lo lee de ahí.
+            messageLabel.enabled = false;
 
             visualRenderer = SpriteVisual.MoveToChild(gameObject);
             if (visualRenderer != null)
