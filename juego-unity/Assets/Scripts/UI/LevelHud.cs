@@ -25,15 +25,9 @@ namespace PuertaCastillo.UI
         [SerializeField] private Color victoryColor = new Color32(0x3C, 0x8D, 0x5A, 0xFF);
         [SerializeField] private Color defeatColor = new Color32(0xC0, 0x39, 0x2B, 0xFF);
 
-        // Medidas del panel de fin de nivel, en unidades lógicas (ver LayoutPanel). La caja mide
-        // 980 x 564 y siempre cabe: la pantalla lógica mide al menos 1080 x 1080 (ScreenFit).
-        private const float PanelWidth = 980f;
-        private const float PanelPadding = 48f;
-        private const float PanelGap = 26f;
-        private const float PanelTitleHeight = 150f;
-        private const float PanelButtonHeight = 130f;
-        private const float PanelWideButton = 560f;
-        private const float PanelHalfButton = 430f;
+        // Debajo de los otros botones del panel, que están a y = -100 con 130 de alto.
+        private static readonly Vector2 MapButtonPosition = new Vector2(0f, -260f);
+        private static readonly Vector2 MapButtonSize = new Vector2(560f, 130f);
 
         private Button inGameRestartButton;
         private Button inGameMenuButton;
@@ -138,47 +132,6 @@ namespace PuertaCastillo.UI
             answerPanel.SetInteractable(false);
         }
 
-        // Coloca la caja, el título y los botones del panel de arriba abajo, con la caja del alto
-        // justo para que todo quede dentro con margen: título, una fila con "Siguiente nivel" (o
-        // "Reiniciar" y "Menú" lado a lado) y debajo "Volver al mapa". Todo va centrado en pantalla.
-        private void LayoutPanel(bool canContinue)
-        {
-            float height = 2f * PanelPadding + PanelTitleHeight + 2f * PanelGap + 2f * PanelButtonHeight;
-            Transform box = panel.transform.Find("Caja");
-            if (box != null)
-            {
-                PlaceInPanel(box, 0f, PanelWidth, height);
-            }
-
-            float y = height / 2f - PanelPadding - PanelTitleHeight / 2f;
-            PlaceInPanel(panelTitle.transform, y, PanelWidth - 2f * PanelPadding, PanelTitleHeight);
-
-            y -= PanelTitleHeight / 2f + PanelGap + PanelButtonHeight / 2f;
-            if (canContinue)
-            {
-                PlaceInPanel(nextLevelButton.transform, y, PanelWideButton, PanelButtonHeight);
-            }
-            else
-            {
-                float half = Mathf.Min(PanelHalfButton, (PanelWidth - 2f * PanelPadding - PanelGap) / 2f);
-                float offset = (half + PanelGap) / 2f;
-                PlaceInPanel(restartButton.transform, y, half, PanelButtonHeight, -offset);
-                PlaceInPanel(menuButton.transform, y, half, PanelButtonHeight, offset);
-            }
-
-            y -= PanelButtonHeight + PanelGap;
-            PlaceInPanel(mapButton.transform, y, PanelWideButton, PanelButtonHeight);
-        }
-
-        // Centra un elemento del panel en horizontal (o lo desplaza x) a la altura y, medida desde el centro.
-        private static void PlaceInPanel(Transform element, float y, float width, float height, float x = 0f)
-        {
-            var rect = (RectTransform)element;
-            rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.anchoredPosition = new Vector2(x, y);
-            rect.sizeDelta = new Vector2(width, height);
-        }
-
         // Los botones de reiniciar y menú de la partida se ocultan mientras hay un panel.
         private void SetInGameButtonsVisible(bool visible)
         {
@@ -194,7 +147,8 @@ namespace PuertaCastillo.UI
             button.name = "BotonMapa";
             button.gameObject.SetActive(true);
             var rect = (RectTransform)button.transform;
-            rect.sizeDelta = new Vector2(PanelWideButton, PanelButtonHeight);
+            rect.anchoredPosition = MapButtonPosition;
+            rect.sizeDelta = MapButtonSize;
 
             LocalizedText localized = button.GetComponentInChildren<LocalizedText>(true);
             if (localized != null)

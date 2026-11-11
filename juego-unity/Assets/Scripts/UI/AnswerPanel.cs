@@ -166,6 +166,7 @@ namespace PuertaCastillo.UI
             }
 
             bool solved = targeting.TrySolve(answer);
+            MusicPlayer.PlayEffect(solved ? SoundCue.Correct : SoundCue.Incorrect);
             // Vaciar sin avisar para que el color de error se mantenga hasta que vuelva a escribir.
             answerField.SetTextWithoutNotify(string.Empty);
             fieldBackground.color = solved ? normalColor : errorColor;

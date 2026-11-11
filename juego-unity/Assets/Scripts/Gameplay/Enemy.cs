@@ -207,6 +207,7 @@ namespace PuertaCastillo.Gameplay
         {
             if (collision.collider.TryGetComponent<Door>(out _))
             {
+                if (!IsAttacking) MusicPlayer.PlayEffect(SoundCue.EnemyAttack);
                 IsAttacking = true;
                 hitTimer = 0f;
                 body.linearVelocity = Vector2.zero;
