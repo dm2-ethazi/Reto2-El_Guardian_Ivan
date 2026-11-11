@@ -56,6 +56,12 @@
                     <release>21</release>
                 </configuration>
             </plugin>
+            <!-- La versión por defecto de Maven 3.8 no reconoce JUnit 5 y no ejecutaría ningún test -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.2</version>
+            </plugin>
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
