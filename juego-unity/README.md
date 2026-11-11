@@ -88,7 +88,6 @@ Todos los textos están en la tabla `Texts`, con una clave y tres traducciones e
 - **Sprite Animator**: **Frames** (fotogramas de andar o volar, en `Assets/Sprites/Meshy/<enemigo>/`) y **Frames Per Second**.
 - La velocidad y el daño no están en el prefab: se ponen en cada nivel.
 - La animación de golpe a la puerta se hace por código en `Enemy.cs` (`StrikeDistance`, `StrikeOut`, `StrikeBack`, `StrikeSquash`; el jefe usa valores más fuertes). El temblor de la puerta está en el componente **Door** (**Shake Amplitude**, **Shake Duration**, **Hit Flash Color**) y su vida en **Max Health**.
-- **Perspectiva** (componente Enemy): los enemigos se ven más pequeños cerca del horizonte y crecen al acercarse, hasta su tamaño normal al llegar a la muralla. **Horizon Y** es la altura del horizonte del fondo y **Min Perspective Scale** el tamaño mínimo (0.45). Solo cambia el dibujo: el collider, la velocidad y la dificultad no varían.
 
 ### Música (`Assets/Resources/Musica`)
 
@@ -104,8 +103,7 @@ Todos los textos están en la tabla `Texts`, con una clave y tres traducciones e
 
 - Fondos, muralla, puerta, botones, teclas, iconos y paneles: `Assets/Sprites/Juego`. Para cambiar uno, sustituye el PNG **con el mismo nombre** y conserva su `.meta`, así no se pierde ninguna referencia.
 - Colores: están en el Inspector de cada componente (por ejemplo **Label Color** y **Target Label Color** en Enemy; **Normal Color**, **Error Color** y **Key Text Color** en AnswerPanel; **Victory Color** y **Defeat Color** en LevelHud; los de las casillas en CaesarRuler). La paleta del juego es pergamino `#F2E8CF`, dorado `#D4A017`, azul noche `#1B1B3A`, tinta `#22223B` y rojo `#C0392B`.
-- **Muralla vista desde arriba** (escena `PuertaDelCastillo`), cuatro piezas en `Assets/Sprites/Juego`: `MurallaParapeto` (almenas y antorchas, objeto *Parapeto*, orden 10), `MurallaTorreones` (objeto *Torreones*, orden 11), `MurallaPorton` (borde del portón, rastrillo y torno; está en el objeto *Puerta*, que conserva el collider y el script Door, orden 11) y `MurallaAdarve` (suelo del adarve, objeto *Adarve*, orden 12). Los enemigos usan el orden 2, así que la muralla los tapa de cintura para abajo al llegar; sus textos (30), el marco del objetivo (25) y la barra del jefe (26-27) quedan siempre encima. Los objetos antiguos *Suelo*, *SueloIzquierda* y *SueloDerecha* están desactivados.
-- Efectos de fondo (velas, niebla, llamas): componente **Ambient Effects**. Las llamas de las antorchas se colocan en **Torch Positions** y se dibujan con **Flame Order** (14 en la partida, delante de la muralla).
+- Efectos de fondo (velas, niebla, llamas): componente **Ambient Effects**.
 
 ### Colocación de la interfaz (`Assets/Scripts/UI/GameLayout.cs`)
 

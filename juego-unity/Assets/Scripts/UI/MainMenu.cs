@@ -24,6 +24,7 @@ namespace PuertaCastillo.UI
         [SerializeField] private Button basqueButton;
 
         private Button continueButton;
+        private MenuExtras extras;
 
         /// <summary>Botón de continuar la partida guardada. Es null si no hay partida guardada.</summary>
         public Button ContinueButton => continueButton;
@@ -45,7 +46,8 @@ namespace PuertaCastillo.UI
             swipe.Swiped = EnterGameBySwipe;
             swipe.DestinationLabel = () => Localization.Format("swipe.level", SwipeStartLevel + 1);
             swipe.LabelFont = startButton.GetComponentInChildren<TMP_Text>(true).font;
-            swipe.IsAllowed = () => !confirmPanel.activeSelf;
+            extras = new MenuExtras(startButton);
+            swipe.IsAllowed = () => !confirmPanel.activeSelf && !extras.IsOpen;
 
             if (!SaveGame.HasSavedLevel)
             {
@@ -117,6 +119,7 @@ namespace PuertaCastillo.UI
         private void ChooseLanguage(Language language)
         {
             Localization.SetLanguage(language);
+            extras.RefreshLanguage();
             ShowCurrentLanguage();
         }
 

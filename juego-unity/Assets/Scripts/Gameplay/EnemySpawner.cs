@@ -41,6 +41,7 @@ namespace PuertaCastillo.Gameplay
             if (config.HasBoss)
             {
                 boss = Spawn(config.boss, spawnPoints[spawnPoints.Length / 2]);
+                MusicPlayer.PlayEffect(SoundCue.BossSpawn);
             }
         }
 
@@ -82,6 +83,7 @@ namespace PuertaCastillo.Gameplay
                 return;
             }
 
+            MusicPlayer.PlayEffect(SoundCue.EnemyDefeated);
             Destroy(enemy.gameObject);
 
             if (enemy == boss)

@@ -56,7 +56,8 @@ namespace PuertaCastillo.UI
 
             column.anchorMin = column.anchorMax = column.pivot = new Vector2(0.5f, 0.5f);
             column.anchoredPosition = (safeArea.center - new Vector2(width, height) / 2f) * unitsPerPixel;
-            float columnHeight = PlaceContinueButton() ? ColumnHeightWithContinue : ColumnHeight;
+            bool hasContinue = PlaceContinueButton();
+            float columnHeight = Application.isPlaying ? 960f : (hasContinue ? ColumnHeightWithContinue : ColumnHeight);
             // La columna completa mide 640 x 700 (760 con Continuar); mantiene un margen incluso en ventanas pequeñas.
             float fit = Mathf.Min(1f, Mathf.Min(
                 Mathf.Max(1f, safeArea.width * unitsPerPixel - 64f) / 640f,
