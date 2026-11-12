@@ -138,6 +138,11 @@
             <id>fatjar</id>
             <properties>
                 <app.icon>${project.basedir}/src/main/jpackage/El_Guardian_Ivan.ico</app.icon>
+                <!--
+                    Fase en la que jpackage crea el ejecutable. Con -Djpackage.phase=none no se crea
+                    (por ejemplo, al generar desde Windows el .jar para Linux, donde el .exe no sirve).
+                -->
+                <jpackage.phase>package</jpackage.phase>
             </properties>
             <build>
                 <plugins>
@@ -213,7 +218,7 @@
                     </plugin>
                     <!--
                         Aplicación con doble clic sin depender de que Windows sepa abrir .jar:
-                        crea target/dist/El Guardian Ivan/El Guardian Ivan.exe con su propio Java dentro.
+                        crea dist/El Guardian Ivan/El Guardian Ivan.exe con su propio Java dentro.
                     -->
                     <plugin>
                         <groupId>org.panteleyev</groupId>
@@ -221,7 +226,7 @@
                         <version>1.8.0</version>
                         <executions>
                             <execution>
-                                <phase>package</phase>
+                                <phase>${jpackage.phase}</phase>
                                 <goals>
                                     <goal>jpackage</goal>
                                 </goals>
