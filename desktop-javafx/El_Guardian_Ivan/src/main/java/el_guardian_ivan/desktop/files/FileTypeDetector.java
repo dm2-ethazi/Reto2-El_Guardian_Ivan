@@ -13,6 +13,9 @@ import java.util.Arrays;
 /**
  * Adivina la extensión de un fichero mirando sus primeros bytes ("magic numbers").
  * Se usa al descifrar cuando el .hgw no trae la extensión original (el fichero no tenía).
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
  */
 public final class FileTypeDetector {
 

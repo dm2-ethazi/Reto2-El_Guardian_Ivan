@@ -12,7 +12,12 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/** Comprueba que el patrón de logback.xml enmascara el mensaje y la traza de la excepción. */
+/**
+ * Comprueba que el patrón de logback.xml enmascara el mensaje y la traza de la excepción.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
+ */
 class MaskedConvertersTest {
 
     /** Con el patrón de logback.xml no salen ni la contraseña ni la carpeta del usuario, pero sí la traza del error. */

@@ -9,7 +9,12 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Locale;
 
-/** Pantalla Cifrar: fichero de entrada + contraseña -> contenedor .hgw. */
+/**
+ * Pantalla Cifrar: fichero de entrada + contraseña -> contenedor .hgw.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
+ */
 public class EncryptController extends FileOperationController {
 
     /** FXMLLoader crea el controlador al cargar encrypt-view.fxml. */

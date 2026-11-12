@@ -40,6 +40,9 @@ import java.nio.file.Path;
 /**
  * Diálogo con el estilo de la aplicación (boceto de la propuesta) para sustituir a las alertas
  * estándar de JavaFX. Cada tipo lleva su icono y su color, así el resultado no depende solo del color.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
  */
 public class ResultDialog {
 

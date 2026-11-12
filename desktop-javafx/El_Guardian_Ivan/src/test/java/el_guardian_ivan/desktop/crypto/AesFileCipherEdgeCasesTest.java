@@ -21,7 +21,12 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/** Casos límite: nombres raros, rutas imposibles, ficheros corruptos, progreso y recuperación exacta. */
+/**
+ * Casos límite: nombres raros, rutas imposibles, ficheros corruptos, progreso y recuperación exacta.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
+ */
 class AesFileCipherEdgeCasesTest {
 
     /** Contraseña de las pruebas. */

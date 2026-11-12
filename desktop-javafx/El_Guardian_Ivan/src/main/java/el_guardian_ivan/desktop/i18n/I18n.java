@@ -14,6 +14,9 @@ import java.util.prefs.Preferences;
  * Idioma de la aplicación: español (por defecto), inglés y euskera.
  * Los textos están en resources/el_guardian_ivan/desktop/i18n/messages*.properties y el idioma
  * elegido se guarda con Preferences para recordarlo la próxima vez que se abra la aplicación.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
  */
 public final class I18n {
 

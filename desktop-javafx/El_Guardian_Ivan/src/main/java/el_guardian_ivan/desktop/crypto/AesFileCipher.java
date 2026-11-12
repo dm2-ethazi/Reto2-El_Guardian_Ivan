@@ -45,6 +45,9 @@ import java.util.regex.Pattern;
  * para que viaje cifrada y no se vea desde fuera:
  * longitud de la extensión N (1 byte) | extensión en UTF-8 sin punto (N bytes) | bytes del fichero
  * N puede ser 0 si el fichero no tenía extensión.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
  */
 public final class AesFileCipher {
 

@@ -7,7 +7,12 @@ import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/** Pruebas de FileSizeFormatter: unidad correcta en cada salto de 1024 y rechazo de negativos. */
+/**
+ * Pruebas de FileSizeFormatter: unidad correcta en cada salto de 1024 y rechazo de negativos.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
+ */
 class FileSizeFormatterTest {
 
     /**

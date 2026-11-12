@@ -16,6 +16,9 @@ import java.util.regex.Pattern;
  *     pasa a ser {@code ****}.</li>
  *     <li>Las cadenas hexadecimales o Base64 largas (claves, sales, nonces) pasan a ser {@code [oculto]}.</li>
  * </ul>
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
  */
 public final class SensitiveDataMasker {
 

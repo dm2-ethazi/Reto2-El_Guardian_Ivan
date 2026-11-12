@@ -5,7 +5,12 @@ import el_guardian_ivan.desktop.navigation.Navigator;
 import el_guardian_ivan.desktop.navigation.View;
 import javafx.fxml.FXML;
 
-/** Pantalla de inicio: dos accesos directos a Cifrar y Descifrar. */
+/**
+ * Pantalla de inicio: dos accesos directos a Cifrar y Descifrar.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
+ */
 public class HomeController implements NavigationAware {
 
     /** FXMLLoader crea el controlador al cargar home-view.fxml. */

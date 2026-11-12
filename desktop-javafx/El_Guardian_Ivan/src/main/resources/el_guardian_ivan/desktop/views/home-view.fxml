@@ -16,7 +16,7 @@
            wrapText="true" maxWidth="500.0" minWidth="0.0" textAlignment="CENTER" alignment="CENTER" styleClass="hero-text"/>
 
     <HBox alignment="CENTER" spacing="24.0" styleClass="hero-cards">
-        <Button styleClass="card" onAction="#onOpenEncrypt" prefWidth="250.0" prefHeight="170.0"
+        <Button fx:id="homeEncryptButton" styleClass="card" onAction="#onOpenEncrypt" prefWidth="250.0" prefHeight="170.0"
                 accessibleText="%home.encrypt.accessible">
             <graphic>
                 <VBox alignment="CENTER" spacing="8.0" prefWidth="208.0" minWidth="0.0" maxWidth="Infinity">
@@ -26,7 +26,7 @@
                 </VBox>
             </graphic>
         </Button>
-        <Button styleClass="card" onAction="#onOpenDecrypt" prefWidth="250.0" prefHeight="170.0"
+        <Button fx:id="homeDecryptButton" styleClass="card" onAction="#onOpenDecrypt" prefWidth="250.0" prefHeight="170.0"
                 accessibleText="%home.decrypt.accessible">
             <graphic>
                 <VBox alignment="CENTER" spacing="8.0" prefWidth="208.0" minWidth="0.0" maxWidth="Infinity">

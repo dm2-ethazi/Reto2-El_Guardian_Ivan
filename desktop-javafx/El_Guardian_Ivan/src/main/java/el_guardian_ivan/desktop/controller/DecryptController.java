@@ -9,7 +9,12 @@ import javafx.stage.FileChooser;
 import java.nio.file.Path;
 import java.util.Arrays;
 
-/** Pantalla Descifrar: contenedor .hgw + contraseña -> fichero original. */
+/**
+ * Pantalla Descifrar: contenedor .hgw + contraseña -> fichero original.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
+ */
 public class DecryptController extends FileOperationController {
 
     /** FXMLLoader crea el controlador al cargar decrypt-view.fxml. */

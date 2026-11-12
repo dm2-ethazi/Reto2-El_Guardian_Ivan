@@ -1,6 +1,11 @@
 package el_guardian_ivan.desktop.navigation;
 
-/** Permite a una pantalla pedir que se muestre otra (por ejemplo, las tarjetas de Inicio). */
+/**
+ * Permite a una pantalla pedir que se muestre otra (por ejemplo, las tarjetas de Inicio).
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
+ */
 @FunctionalInterface
 public interface Navigator {
     /**

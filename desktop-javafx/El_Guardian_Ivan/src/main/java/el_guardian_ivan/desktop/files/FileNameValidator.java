@@ -9,6 +9,9 @@ import java.util.Set;
  * Comprueba que un nombre de fichero de salida sea válido en Windows y en Linux.
  * La aplicación es la misma para los dos sistemas, así que aplicamos las reglas de Windows,
  * que son las más estrictas: un fichero creado en Linux debe poder abrirse luego en Windows.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
  */
 public final class FileNameValidator {
 

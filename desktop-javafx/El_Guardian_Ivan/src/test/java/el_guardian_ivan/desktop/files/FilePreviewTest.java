@@ -15,6 +15,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Pruebas de FilePreview: qué ficheros tienen vista previa (imagen o texto) y cómo se lee el texto
  * (recorte sin partir caracteres, marca BOM, fichero vacío).
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
  */
 class FilePreviewTest {
     /** Carpeta temporal que JUnit crea y borra en cada prueba. */

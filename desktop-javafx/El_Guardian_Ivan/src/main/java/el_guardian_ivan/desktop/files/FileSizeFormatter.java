@@ -2,7 +2,12 @@ package el_guardian_ivan.desktop.files;
 
 import java.util.Locale;
 
-/** Convierte un tamaño en bytes a un texto legible: "512 B", "1,5 KB", "20,0 MB", "4,2 GB"... */
+/**
+ * Convierte un tamaño en bytes a un texto legible: "512 B", "1,5 KB", "20,0 MB", "4,2 GB"...
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
+ */
 public final class FileSizeFormatter {
 
     /** Unidades de menor a mayor; cada una es 1024 veces la anterior. */

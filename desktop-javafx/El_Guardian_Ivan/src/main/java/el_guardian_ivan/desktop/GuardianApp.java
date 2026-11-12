@@ -24,6 +24,9 @@ import java.util.Objects;
 /**
  * Aplicación JavaFX: crea la ventana principal, carga fuentes, estilos e iconos,
  * y la reconstruye cuando el usuario cambia de idioma.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
  */
 public class GuardianApp extends Application {
 

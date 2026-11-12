@@ -14,6 +14,9 @@ import java.util.Set;
 /**
  * Decide si un fichero descifrado se puede previsualizar (imagen o texto plano) y lee el texto.
  * No depende de JavaFX para poder probarlo con tests normales.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
  */
 public final class FilePreview {
     /** Tope de texto que se muestra: suficiente para ver el contenido sin cargar ficheros enormes. */

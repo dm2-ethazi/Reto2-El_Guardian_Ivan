@@ -6,6 +6,9 @@ import java.util.Locale;
 /**
  * Cómo se describen los ficheros en los registros: solo el tipo y el tamaño, nunca el nombre ni la
  * ruta, porque el nombre de un fichero ya puede revelar algo privado ("nominas_2025.pdf").
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
  */
 public final class LogFormat {
 

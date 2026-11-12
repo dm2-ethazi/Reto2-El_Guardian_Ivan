@@ -1,6 +1,9 @@
 /**
  * Módulo de la aplicación de escritorio El Guardián Iván.
  * Declara qué partes de Java y JavaFX usa y qué deja ver a otros módulos.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
  */
 module el_guardian_ivan.desktop {
     requires javafx.controls; // Botones, campos, ventanas...
