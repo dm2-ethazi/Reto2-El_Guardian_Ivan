@@ -42,6 +42,9 @@ import java.util.Map;
  * Ventana principal: menú lateral a la izquierda y la pantalla elegida en el centro.
  * Cada pantalla se carga de su FXML la primera vez y se guarda, así no pierde lo que el usuario
  * haya escrito al cambiar de sección.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
  */
 public class MainController implements Navigator {
 
@@ -51,6 +54,7 @@ public class MainController implements Navigator {
     /** FXMLLoader crea el controlador al cargar main-view.fxml. */
     public MainController() {
     }
+
     /** Zona central donde se coloca la pantalla elegida. */
     @FXML
     private StackPane contentArea;
@@ -63,17 +67,27 @@ public class MainController implements Navigator {
     @FXML
     private Pane keyTipsLayer;
 
-    /** Acciones activas mientras las pistas de Alt están a la vista. */
+    /** Acciones activas mientras las pistas de Alt están a la vista: tecla pulsada -> qué hace. */
     private final Map<KeyCode, Runnable> keyTipActions = new EnumMap<>(KeyCode.class);
+
+    /** Pistas que se están mostrando, para recolocarlas al desplazar o cambiar el tamaño de la ventana. */
     private final List<KeyTip> keyTips = new ArrayList<>();
 
+    /** {@code true} mientras Alt está pulsada y todavía no se ha soltado. */
     private boolean altPressed;
+
+    /** {@code true} si, con Alt pulsada, se ha pulsado otra tecla (Alt+Tab, Alt+F4...): al soltar Alt no se muestran las pistas. */
     private boolean altCombinedWithOtherKey;
 
+    /**
+     * Una pista de teclado: el control al que se refiere y la etiqueta que se pinta encima.
+     *
+     * @param target control que se activa con la tecla
+     * @param badge etiqueta con la letra o el número que se muestra sobre el control
+     */
     private record KeyTip(Node target, Label badge) { }
 
     /** Agrupa los botones del menú para que solo uno pueda estar marcado. */
-
     @FXML
     private ToggleGroup navigationGroup;
 
@@ -183,7 +197,10 @@ public class MainController implements Navigator {
 
     /**
      * Pulsar y soltar Alt activa/desactiva las pistas sin interceptar Alt+Tab,
-     * Alt+F4 ni los demás atajos nativos del sistema.
+     * Alt+F4 ni los demás atajos nativos del sistema. Con las pistas visibles, la tecla
+     * indicada activa su control; Esc o cualquier otra tecla las oculta.
+     *
+     * @param event tecla pulsada (se recibe en el filtro de {@code rootPane}, antes que los controles)
      */
     private void handleKeyPressed(KeyEvent event) {
         if (event.getCode() == KeyCode.ALT) {
@@ -222,6 +239,11 @@ public class MainController implements Navigator {
         }
     }
 
+    /**
+     * Al soltar Alt sin haberla combinado con otra tecla, muestra u oculta las pistas.
+     *
+     * @param event tecla soltada
+     */
     private void handleKeyReleased(KeyEvent event) {
         if (event.getCode() == KeyCode.ALT) {
             if (altPressed && !altCombinedWithOtherKey) {
@@ -237,7 +259,10 @@ public class MainController implements Navigator {
         }
     }
 
-    /** Crea solamente pistas para los controles presentes en la pantalla actual. */
+    /**
+     * Crea solamente pistas para los controles presentes en la pantalla actual:
+     * 1-4 y A para el menú lateral, C/D en Inicio, O/U/P/R en Cifrar y Descifrar y L en Ajustes.
+     */
     private void showKeyTips() {
         keyTipsLayer.getChildren().clear();
         keyTipActions.clear();
@@ -278,7 +303,15 @@ public class MainController implements Navigator {
         Platform.runLater(this::positionKeyTips);
     }
 
-    /** Registra una acción y coloca su etiqueta sobre el botón, sin capturar clics. */
+    /**
+     * Registra una acción y coloca su etiqueta sobre el control, sin capturar clics.
+     * Los controles ocultos o deshabilitados no reciben pista.
+     *
+     * @param key tecla que activa la acción
+     * @param caption texto de la etiqueta, por ejemplo "O"
+     * @param target control sobre el que se pinta la etiqueta
+     * @param action lo que se hace al pulsar la tecla
+     */
     private void addKeyTip(KeyCode key, String caption, Node target, Runnable action) {
         if (target == null || !target.isVisible() || target instanceof Control control && control.isDisabled()) {
             return;
@@ -291,6 +324,15 @@ public class MainController implements Navigator {
         keyTipsLayer.getChildren().add(badge);
     }
 
+    /**
+     * Añade una pista a un botón de la pantalla actual, buscándolo por su {@code fx:id}.
+     * Si la pantalla no tiene ese botón, no hace nada.
+     *
+     * @param current pantalla actual
+     * @param key tecla que pulsa el botón
+     * @param caption texto de la etiqueta
+     * @param selector selector CSS del botón, por ejemplo "#runButton"
+     */
     private void addButtonKeyTip(Node current, KeyCode key, String caption, String selector) {
         Node target = current.lookup(selector);
         if (target instanceof ButtonBase button) {
@@ -298,6 +340,7 @@ public class MainController implements Navigator {
         }
     }
 
+    /** Ajusta la capa de pistas al tamaño de la ventana y, si están visibles, las recoloca. */
     private void resizeKeyTipLayer() {
         keyTipsLayer.resize(rootPane.getWidth(), rootPane.getHeight());
         if (keyTipsLayer.isVisible()) {
@@ -305,7 +348,11 @@ public class MainController implements Navigator {
         }
     }
 
-    /** Las posiciones se calculan en coordenadas del root, no en píxeles de pantalla. */
+    /**
+     * Coloca cada etiqueta cerca de la esquina superior derecha de su control y oculta las de los
+     * controles que no se ven (fuera de la ventana o recortados por el panel con desplazamiento).
+     * Las posiciones se calculan en coordenadas del root, no en píxeles de pantalla.
+     */
     private void positionKeyTips() {
         if (!keyTipsLayer.isVisible() || rootPane.getScene() == null) {
             return;
@@ -354,6 +401,7 @@ public class MainController implements Navigator {
         }
     }
 
+    /** Oculta las pistas y olvida sus acciones, para que las teclas vuelvan a funcionar con normalidad. */
     private void hideKeyTips() {
         if (keyTipsLayer.isVisible()) {
             keyTipsLayer.setVisible(false);
@@ -363,6 +411,11 @@ public class MainController implements Navigator {
         }
     }
 
+    /**
+     * Marca el botón del menú de la pantalla indicada; el listener del grupo se encarga de mostrarla.
+     *
+     * @param view pantalla que se quiere ver
+     */
     @Override
     public void navigateTo(View view) {
         navigationGroup.getToggles().stream()

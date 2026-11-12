@@ -7,6 +7,9 @@ import java.util.Locale;
 /**
  * Abre el explorador de archivos del sistema en la carpeta de un fichero.
  * En Windows y macOS además deja el fichero seleccionado.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
  */
 public final class FileLocationOpener {
 

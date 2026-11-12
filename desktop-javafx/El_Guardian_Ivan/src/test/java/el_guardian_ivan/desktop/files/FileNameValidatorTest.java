@@ -10,6 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 /**
  * Pruebas de FileNameValidator: nombres válidos, reservados de Windows, caracteres prohibidos,
  * longitud y puntos o espacios al final.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
  */
 class FileNameValidatorTest {
 

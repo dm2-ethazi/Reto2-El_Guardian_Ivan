@@ -7,7 +7,12 @@ import javafx.util.StringConverter;
 
 import java.util.Locale;
 
-/** Pantalla Ajustes: de momento, el idioma de la aplicación. */
+/**
+ * Pantalla Ajustes: de momento, el idioma de la aplicación.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
+ */
 public class SettingsController {
 
     /** FXMLLoader crea el controlador al cargar settings-view.fxml. */

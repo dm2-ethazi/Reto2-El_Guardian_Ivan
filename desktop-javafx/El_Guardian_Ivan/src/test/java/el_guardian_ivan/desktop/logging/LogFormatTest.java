@@ -7,7 +7,12 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-/** Comprueba que los ficheros se describen sin nombre ni ruta. */
+/**
+ * Comprueba que los ficheros se describen sin nombre ni ruta.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
+ */
 class LogFormatTest {
 
     /** Un fichero se describe solo por su extensión y tamaño, sin su nombre. */

@@ -11,6 +11,9 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Pruebas de FileTypeDetector: reconoce los formatos por su contenido y añade la extensión
  * solo cuando el fichero no tiene, sin pisar ficheros existentes.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
  */
 class FileTypeDetectorTest {
 

@@ -22,6 +22,9 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Pruebas principales del cifrado: el fichero se recupera byte a byte, la contraseña incorrecta
  * y cualquier manipulación se detectan, y el formato .hgw es el documentado.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
  */
 class AesFileCipherTest {
 

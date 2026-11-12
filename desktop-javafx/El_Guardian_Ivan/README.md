@@ -5,7 +5,7 @@ Funciona con cualquier tipo de archivo (textos, imágenes, documentos, vídeos..
 AES-256-GCM. Todo se hace en el propio equipo: la aplicación no se conecta a ningún servidor y la
 contraseña no se guarda en ningún sitio.
 
-Autores: Iván Alonso e Iván Salazar.
+Autores: **Iván Salazar** e **Iván Alonso**.
 
 ## Índice
 
@@ -21,7 +21,8 @@ Autores: Iván Alonso e Iván Salazar.
 10. [Documentación del código (Javadoc)](#documentación-del-código-javadoc)
 11. [Ejecutable con doble clic (fat jar y .exe)](#ejecutable-con-doble-clic-fat-jar-y-exe)
 12. [Problemas frecuentes](#problemas-frecuentes)
-13. [Créditos](#créditos)
+13. [Autores](#autores)
+14. [Créditos](#créditos)
 
 ## Funcionalidades
 
@@ -31,7 +32,7 @@ Autores: Iván Alonso e Iván Salazar.
 - **Detección de errores**: si la contraseña es incorrecta o el `.hgw` está dañado o modificado, se avisa y no se genera ningún archivo.
 - **Archivos grandes**: se cifran por trozos de 1 MB, así que la memoria usada no depende del tamaño del archivo.
 - **Tres idiomas**: castellano, inglés y euskera. Se cambia en Ajustes y se recuerda para la próxima vez.
-- **Accesibilidad**: atajos de teclado, foco visible, textos para lectores de pantalla y una interfaz que se adapta al tamaño de la ventana.
+- **Accesibilidad**: atajos de teclado, pistas de teclado al pulsar Alt (como en Excel), foco visible, textos para lectores de pantalla y una interfaz que se adapta al tamaño de la ventana.
 - **Ayuda** integrada con preguntas frecuentes, atajos y "Acerca de".
 - **Registros (logs)** en consola y en fichero, sin datos sensibles.
 
@@ -76,6 +77,7 @@ En Windows se usa `.\mvnw.cmd` y en Linux o macOS `./mvnw`.
 | `mvnw javadoc:javadoc` | Genera la documentación del código |
 | `mvnw -Pfatjar clean package` | Pasa los tests y genera el `.jar` único y el ejecutable (`.exe` en Windows) |
 | `mvnw -Pfatjar clean package -DskipTests` | Lo mismo, sin pasar los tests (más rápido) |
+| `mvnw -Pfatjar clean package -Djavafx.platform=linux -Djpackage.phase=none` | Desde Windows, genera el `.jar` para Linux (ver [más abajo](#generar-desde-windows-el-jar-para-linux-ubuntu)) |
 
 ## Cómo se usa
 
@@ -102,6 +104,28 @@ Si se olvida la contraseña, el archivo no se puede recuperar.
 | Ctrl+O | Elegir el archivo en Cifrar o Descifrar |
 | Intro (en un campo de texto) | Cifrar o descifrar |
 | Esc | Cerrar la ventana de aviso |
+| Alt (pulsar y soltar) | Mostrar u ocultar las pistas de teclado (ver abajo) |
+
+### Pistas de teclado con Alt (estilo Excel)
+
+Al pulsar y soltar **Alt** sola, aparece una pequeña etiqueta con una letra o un número sobre cada
+control de la pantalla actual. Pulsando esa tecla se activa el control, sin necesidad de ratón.
+Se ocultan con **Alt** otra vez, con **Esc**, con un clic o con cualquier otra tecla.
+
+| Tecla | Control | Dónde |
+|---|---|---|
+| 1 / 2 / 3 / 4 | Inicio, Cifrar, Descifrar, Ajustes | Menú lateral |
+| A | Ayuda | Menú lateral |
+| C / D | Tarjetas "Cifrar archivo" y "Descifrar archivo" | Inicio |
+| O | Examinar... (elegir archivo) | Cifrar y Descifrar |
+| U | Cambiar la ubicación de salida | Cifrar y Descifrar |
+| P | Mostrar u ocultar la contraseña | Cifrar y Descifrar |
+| R | Cifrar archivo / Descifrar archivo | Cifrar y Descifrar |
+| L | Desplegable de idioma | Ajustes |
+
+Solo salen las pistas de los controles que se ven y están activos. Alt se detecta **al soltarla**:
+si se combina con otra tecla (Alt+Tab, Alt+F4...), no se muestran las pistas y esos atajos del
+sistema siguen funcionando igual.
 
 ## Cómo funciona por dentro
 
@@ -114,6 +138,8 @@ su **controlador** Java, y los estilos están en un único **CSS**.
 2. **Navegación**. `MainController` tiene el menú lateral y una zona central. Cada pantalla de `View`
    (Inicio, Cifrar, Descifrar, Ajustes, Ayuda) se carga de su FXML la primera vez y se guarda, así no se pierde
    lo escrito al cambiar de sección. Las pantallas que necesitan cambiar de sección reciben el `Navigator`.
+   `MainController` también registra los atajos (Ctrl+1..4, F1, Ctrl+O) y las pistas de Alt: una capa
+   transparente (`keyTipsLayer` en `main-view.fxml`) encima de la interfaz donde se pintan las etiquetas.
 3. **Escalado**. `ScalingPane` envuelve toda la interfaz y la amplía o reduce según el tamaño de la ventana.
 4. **Idiomas**. Los textos están en `i18n/messages*.properties` y los FXML los usan con `%clave`.
    `I18n` guarda el idioma elegido con `Preferences`. Al cambiarlo en Ajustes, `GuardianApp` vuelve a cargar
@@ -225,7 +251,7 @@ los `.log`, y la configuración personal de IntelliJ (`workspace.xml`, `*.iml`..
 .\mvnw.cmd test
 ```
 
-Hay 139 tests con JUnit 5. Comprueban el cifrado (ida y vuelta, contraseña incorrecta, archivos alterados,
+Hay unos 140 tests con JUnit 5 (contando cada caso de los tests parametrizados). Comprueban el cifrado (ida y vuelta, contraseña incorrecta, archivos alterados,
 truncados, vacíos y de tamaños límite), la validación de nombres, el formato de tamaños, la detección del tipo
 de archivo, la vista previa y que los registros no muestren datos sensibles.
 Los resultados quedan en `target/surefire-reports`.
@@ -237,7 +263,8 @@ Los resultados quedan en `target/surefire-reports`.
 ```
 
 Se genera en `target/reports/apidocs/index.html`. Incluye todos los paquetes, también los métodos privados.
-Todas las clases, métodos y campos (también los de los tests) tienen su comentario Javadoc.
+Todas las clases, métodos y campos (también los de los tests) tienen su comentario Javadoc en castellano,
+y cada clase indica sus autores con `@author Iván Salazar` y `@author Iván Alonso`.
 
 ## Ejecutable con doble clic (fat jar y .exe)
 
@@ -268,6 +295,34 @@ Hay que generarlos **en cada sistema**: en Windows sale el `.exe` y en Linux sal
 (en Linux el perfil `linux` se activa solo para usar el icono `.png`). En Linux hace falta el JDK 21
 (`sudo apt install openjdk-21-jdk`) y conviene compilar en una carpeta propia, no en una carpeta compartida.
 
+### Generar desde Windows el .jar para Linux (Ubuntu)
+
+Si se quiere compilar en Windows (por ejemplo desde IntelliJ) y probar la aplicación en un Ubuntu,
+lo más sencillo es generar el `.jar` único con el JavaFX de Linux dentro. El ejecutable con su propio
+Java (`dist/...`) no se puede generar así: `jpackage` solo crea ejecutables del sistema en el que se lanza.
+
+1. **En Windows**, en la pestaña **Terminal** de IntelliJ, dentro de `desktop-javafx\El_Guardian_Ivan`:
+
+   ```
+   .\mvnw.cmd -Pfatjar clean package "-Djavafx.platform=linux" "-Djpackage.phase=none" -DskipTests
+   ```
+
+   - `-Djavafx.platform=linux` mete en el `.jar` el JavaFX de Linux en lugar del de Windows.
+   - `-Djpackage.phase=none` evita que se cree el `.exe` en `dist`, que en Linux no sirve (y en Windows
+     tampoco funcionaría, porque llevaría el JavaFX de Linux).
+
+2. **Copiar** `target\fatjar\El_Guardian_Ivan.jar` al Ubuntu (USB, carpeta compartida...).
+
+3. **En Ubuntu**, instalar Java 21 y abrir la aplicación:
+
+   ```bash
+   sudo apt install openjdk-21-jre
+   java -jar El_Guardian_Ivan.jar
+   ```
+
+Ese `.jar` solo funciona en Linux. Para volver a generar la versión de Windows, se empaqueta de nuevo
+sin las dos opciones `-D`.
+
 ## Problemas frecuentes
 
 | Problema | Solución |
@@ -279,19 +334,18 @@ Hay que generarlos **en cada sistema**: en Windows sale el `.exe` y en Linux sal
 | En Linux fallan los tests de nombres con acentos o emojis | La terminal no está en UTF-8. Lánzalos con `LANG=C.UTF-8 ./mvnw test`. |
 | No encuentro los logs | `%LOCALAPPDATA%\ElGuardianIvan\logs` en Windows, `~/.local/share/ElGuardianIvan/logs` en Linux. |
 
+## Autores
+
+Aplicación desarrollada por:
+
+- **Iván Salazar**
+- **Iván Alonso**
+
+Ambos aparecen también en la pantalla **Ayuda > Acerca de** de la aplicación y como `@author`
+en el Javadoc de todas las clases.
+
 ## Créditos
 
 - Fuentes **Cinzel** (Natanael Gama) e **Inter** (Rasmus Andersson), con licencia SIL Open Font License 1.1.
 - Iconos **Material Icons** de Google, con licencia Apache 2.0.
 - Registros con **SLF4J** y **Logback** (licencias MIT y EPL/LGPL).
-
-
-### Panel de atajos de teclado
-
-Pulsa y suelta **Alt** (sin combinarla con otra tecla) para ver todos los atajos
-que ya utiliza el cliente JavaFX. Se muestra una ventana superpuesta sin
-abandonar la sección actual. Para cerrarla, pulsa **Alt** de nuevo, **Esc** o
-el botón **Cerrar**. El panel sigue el idioma seleccionado en Ajustes
-(Español, English, Euskara). La detección de Alt por sí sola se realiza al
-soltar la tecla, de manera que las combinaciones **Alt+Tab** y **Alt+F4** no
-abren la ayuda de atajos.

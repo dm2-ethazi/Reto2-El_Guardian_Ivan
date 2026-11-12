@@ -9,7 +9,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/** Comprueba que los datos sensibles no llegan a los registros. */
+/**
+ * Comprueba que los datos sensibles no llegan a los registros.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
+ */
 class SensitiveDataMaskerTest {
 
     /** Usuario de Windows de ejemplo. */

@@ -32,6 +32,9 @@ import java.security.GeneralSecurityException;
  * 1. elegir el fichero de entrada, 2. escribir la contraseña y 3. indicar el fichero de salida.
  * Después ejecuta la operación en segundo plano y muestra el resultado.
  * Los campos @FXML de esta clase los rellena el FXML de cada pantalla.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
  */
 public abstract class FileOperationController {
 

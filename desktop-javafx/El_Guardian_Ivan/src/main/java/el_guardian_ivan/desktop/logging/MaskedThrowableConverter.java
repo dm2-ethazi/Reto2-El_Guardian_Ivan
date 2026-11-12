@@ -7,6 +7,9 @@ import ch.qos.logback.classic.spi.IThrowableProxy;
  * Conversor de Logback para {@code %maskedEx} en logback.xml: escribe la traza de la excepción
  * como {@code %ex}, pero enmascarada. Hace falta porque los mensajes de las excepciones de ficheros
  * llevan la ruta completa (con el nombre del usuario).
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
  */
 public class MaskedThrowableConverter extends ThrowableProxyConverter {
 

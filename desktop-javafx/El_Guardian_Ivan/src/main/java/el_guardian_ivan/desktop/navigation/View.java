@@ -1,6 +1,11 @@
 package el_guardian_ivan.desktop.navigation;
 
-/** Pantallas de la aplicación y la ruta del FXML que carga cada una (en resources/.../views). */
+/**
+ * Pantallas de la aplicación y la ruta del FXML que carga cada una (en resources/.../views).
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
+ */
 public enum View {
     /** Inicio. */
     HOME("home-view.fxml"),

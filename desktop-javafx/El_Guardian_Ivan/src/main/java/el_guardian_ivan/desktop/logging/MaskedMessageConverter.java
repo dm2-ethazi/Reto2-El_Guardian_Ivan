@@ -6,6 +6,9 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 /**
  * Conversor de Logback para {@code %maskedMsg} en logback.xml: igual que {@code %msg},
  * pero pasando el mensaje por {@link SensitiveDataMasker} antes de escribirlo.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
  */
 public class MaskedMessageConverter extends MessageConverter {
 

@@ -11,6 +11,9 @@ import javafx.scene.transform.Scale;
  * tomando como referencia el tamaño de diseño. En pantallas pequeñas la reduce para que no se
  * corte el texto, sin bajar de MIN_SCALE para que siga siendo legible; si aun así no cabe,
  * cada pantalla tiene su barra de desplazamiento.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
  */
 public class ScalingPane extends Region {
 
