@@ -15,25 +15,42 @@ namespace PuertaCastillo.UI
     /// </summary>
     public class AnswerPanel : MonoBehaviour
     {
+        /// <summary>Comprueba las respuestas contra el enemigo objetivo.</summary>
         [SerializeField] private EnemyTargeting targeting;
+        /// <summary>Campo (de solo lectura) donde se ve la respuesta escrita.</summary>
         [SerializeField] private TMP_InputField answerField;
+        /// <summary>Botón «Descifrar», que envía la respuesta.</summary>
         [SerializeField] private Button decryptButton;
+        /// <summary>Barra superior con el mensaje cifrado del objetivo.</summary>
         [SerializeField] private TMP_Text targetLabel;
+        /// <summary>Generador, del que se lee la pista del nivel actual.</summary>
         [SerializeField] private EnemySpawner spawner;
+        /// <summary>Texto de la pista del nivel.</summary>
         [SerializeField] private TMP_Text hintLabel;
+        /// <summary>Fondo del campo de respuesta, que se pone rojo al fallar.</summary>
         [SerializeField] private Image fieldBackground;
+        /// <summary>Color normal del fondo del campo (pergamino).</summary>
         [SerializeField] private Color normalColor = new Color32(0xF2, 0xE8, 0xCF, 0xFF);
+        /// <summary>Color del fondo del campo tras un fallo (rojo).</summary>
         [SerializeField] private Color errorColor = new Color32(0xC0, 0x39, 0x2B, 0xFF);
+        /// <summary>Aviso de «¡Correcto!» o «Incorrecto».</summary>
         [SerializeField] private TMP_Text feedbackLabel;
+        /// <summary>Color del aviso de acierto (verde).</summary>
         [SerializeField] private Color correctTextColor = new Color32(0x3C, 0x8D, 0x5A, 0xFF);
+        /// <summary>Color del aviso de fallo (rojo).</summary>
         [SerializeField] private Color wrongTextColor = new Color32(0xC0, 0x39, 0x2B, 0xFF);
+        /// <summary>Segundos que se ve el aviso de acierto o fallo.</summary>
         [SerializeField, Min(0.1f)] private float feedbackSeconds = 2f;
 
+        /// <summary>Botón de la escena que se copia para crear cada tecla.</summary>
         [Header("Abecedario en pantalla")]
         [Tooltip("Botón que se copia para crear cada tecla.")]
         [SerializeField] private Button keyTemplate;
+        /// <summary>Sprite de las teclas.</summary>
         [SerializeField] private Sprite keySprite;
+        /// <summary>Color de las letras de las teclas.</summary>
         [SerializeField] private Color keyTextColor = new Color32(0x22, 0x22, 0x3B, 0xFF);
+        /// <summary>Longitud máxima de la respuesta.</summary>
         [SerializeField, Min(1)] private int maxLength = 40;
 
         private float feedbackTimer;
@@ -110,6 +127,7 @@ namespace PuertaCastillo.UI
         }
 
         /// <summary>Bloquea la respuesta mientras se muestra un panel de nivel.</summary>
+        /// <param name="interactable">False para bloquear el campo, el botón y el teclado.</param>
         public void SetInteractable(bool interactable)
         {
             answerField.interactable = interactable;
@@ -127,6 +145,7 @@ namespace PuertaCastillo.UI
         }
 
         /// <summary>Añade una letra o un espacio a la respuesta, como al pulsar su tecla.</summary>
+        /// <param name="character">Letra en mayúsculas o espacio.</param>
         public void Type(char character)
         {
             ReleaseFocus();

@@ -21,6 +21,7 @@ namespace PuertaCastillo.Tests
         private TMP_InputField field;
         private Door door;
 
+        /// <summary>Carga la escena de la partida antes de cada prueba.</summary>
         [UnitySetUp]
         public IEnumerator LoadScene()
         {
@@ -35,18 +36,21 @@ namespace PuertaCastillo.Tests
             door = Object.FindAnyObjectByType<Door>();
         }
 
+        /// <summary>Devuelve la escala de tiempo a 1.</summary>
         [TearDown]
         public void RestoreTime()
         {
             Time.timeScale = 1f;
         }
 
+        /// <summary>La escena tiene EventSystem para recibir pulsaciones.</summary>
         [Test]
         public void SceneCanReceiveUiInput()
         {
             Assert.IsNotNull(Object.FindAnyObjectByType<EventSystem>());
         }
 
+        /// <summary>El objetivo se resalta y su mensaje se ve en la barra superior.</summary>
         [Test]
         public void TargetIsHighlightedAndShownOnTheTopBar()
         {
@@ -56,6 +60,7 @@ namespace PuertaCastillo.Tests
             StringAssert.Contains(target.EncryptedMessage, TopBarText());
         }
 
+        /// <summary>El objetivo es siempre el enemigo más cercano a la puerta.</summary>
         [UnityTest]
         public IEnumerator TargetIsAlwaysTheClosestToTheDoor()
         {
@@ -71,6 +76,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(1, spawner.ActiveEnemies.Count(enemy => enemy.IsTargeted));
         }
 
+        /// <summary>Una respuesta correcta destruye al objetivo, sin importar mayúsculas ni espacios de los extremos.</summary>
         [UnityTest]
         public IEnumerator CorrectAnswerDestroysTheTargetIgnoringCaseAndSpaces()
         {
@@ -85,6 +91,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(Localization.Get("answer.correct"), FeedbackText());
         }
 
+        /// <summary>El botón Descifrar también envía la respuesta.</summary>
         [UnityTest]
         public IEnumerator DecryptButtonAlsoSubmitsTheAnswer()
         {
@@ -97,6 +104,7 @@ namespace PuertaCastillo.Tests
             Assert.IsTrue(target == null);
         }
 
+        /// <summary>Un fallo no destruye al enemigo y marca el campo en rojo.</summary>
         [UnityTest]
         public IEnumerator WrongAnswerKeepsTheEnemyAndMarksTheFieldInRed()
         {
@@ -118,6 +126,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(string.Empty, FeedbackText());
         }
 
+        /// <summary>El aviso de acierto o fallo desaparece a los pocos segundos.</summary>
         [UnityTest]
         public IEnumerator FeedbackDisappearsAfterAFewSeconds()
         {
@@ -131,6 +140,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(string.Empty, FeedbackText());
         }
 
+        /// <summary>La respuesta de un enemigo que no es el objetivo no cuenta.</summary>
         [UnityTest]
         public IEnumerator AnswerOfAnotherEnemyDoesNotCount()
         {
@@ -145,6 +155,7 @@ namespace PuertaCastillo.Tests
             Assert.IsTrue(other != null);
         }
 
+        /// <summary>Tras acertar, el siguiente más cercano pasa a ser el objetivo.</summary>
         [UnityTest]
         public IEnumerator NextClosestEnemyBecomesTheTargetAfterSolving()
         {
@@ -164,6 +175,7 @@ namespace PuertaCastillo.Tests
             Assert.IsTrue(second.IsTargeted);
         }
 
+        /// <summary>Descifrar a un enemigo que golpea la puerta detiene el daño.</summary>
         [UnityTest]
         public IEnumerator SolvingAnAttackerStopsTheDamage()
         {
@@ -182,6 +194,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(health, door.CurrentHealth);
         }
 
+        /// <summary>El teclado en pantalla sigue el orden QWERTY y tiene las 27 letras, con la Ñ.</summary>
         [Test]
         public void KeyboardFollowsQwertyWithEveryLetterIncludingEnye()
         {
@@ -191,6 +204,7 @@ namespace PuertaCastillo.Tests
             CollectionAssert.AreEquivalent(PuertaCastillo.Crypto.CaesarCipher.Alphabet, letters);
         }
 
+        /// <summary>El campo de respuesta no abre el teclado del sistema.</summary>
         [Test]
         public void AnswerFieldNeverOpensTheSystemKeyboard()
         {
@@ -198,6 +212,7 @@ namespace PuertaCastillo.Tests
             Assert.IsTrue(field.shouldHideSoftKeyboard);
         }
 
+        /// <summary>Pulsar las letras escribe la respuesta y resuelve al objetivo.</summary>
         [UnityTest]
         public IEnumerator TappingLettersWritesTheAnswerAndSolvesTheTarget()
         {
@@ -224,6 +239,7 @@ namespace PuertaCastillo.Tests
             Assert.IsTrue(target == null);
         }
 
+        /// <summary>La tecla Borrar quita la última letra.</summary>
         [Test]
         public void DeleteKeyRemovesTheLastLetter()
         {
@@ -237,6 +253,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual("A", field.text);
         }
 
+        /// <summary>Las teclas no hacen nada mientras se ve un panel de nivel.</summary>
         [Test]
         public void KeysDoNothingWhileALevelPanelIsShown()
         {

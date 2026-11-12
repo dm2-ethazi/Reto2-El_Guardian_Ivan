@@ -41,46 +41,73 @@ namespace PuertaCastillo.UI
         private const float WidestSpawn = 8f;
         private static readonly float[] SpawnPositions = { -1f, -0.5f, 0f, 0.5f, 1f };
 
+        /// <summary>Escalador del Canvas de la partida.</summary>
         [Header("Pantalla")]
         [SerializeField] private CanvasScaler scaler;
+        /// <summary>Cámara ortográfica del escenario, que se encuadra en el hueco libre.</summary>
         [SerializeField] private Camera worldCamera;
+        /// <summary>Puntos de aparición, que se reparten según el ancho visible.</summary>
         [SerializeField] private Transform[] spawnPoints;
 
+        /// <summary>Fondo del panel de datos de arriba.</summary>
         [Header("Fondos de los paneles")]
         [SerializeField] private RectTransform topPanel;
+        /// <summary>Fondo del panel de respuesta (abajo en vertical, columna derecha en horizontal).</summary>
         [SerializeField] private RectTransform bottomPanel;
 
+        /// <summary>Icono de la vida de la puerta.</summary>
         [Header("Datos")]
         [SerializeField] private RectTransform healthIcon;
+        /// <summary>Barra de vida de la puerta.</summary>
         [SerializeField] private RectTransform healthBar;
+        /// <summary>Placa del nivel y el tiempo.</summary>
         [SerializeField] private RectTransform statusPlate;
+        /// <summary>Icono del reloj.</summary>
         [SerializeField] private RectTransform timeIcon;
+        /// <summary>Texto «Nivel N mm:ss».</summary>
         [SerializeField] private RectTransform statusText;
+        /// <summary>Barra con el mensaje del objetivo.</summary>
         [SerializeField] private RectTransform targetBar;
+        /// <summary>Placa de la pista.</summary>
         [SerializeField] private RectTransform hintPlate;
+        /// <summary>Icono de la pista.</summary>
         [SerializeField] private RectTransform hintIcon;
+        /// <summary>Texto de la pista.</summary>
         [SerializeField] private RectTransform hintText;
 
+        /// <summary>Fondo de las casillas de la regla.</summary>
         [Header("Regla")]
         [SerializeField] private RectTransform rulerPlate;
+        /// <summary>Rótulo «Original».</summary>
         [SerializeField] private RectTransform plainCaption;
+        /// <summary>Rótulo «Cifrada».</summary>
         [SerializeField] private RectTransform cipherCaption;
+        /// <summary>Número del desplazamiento de la regla.</summary>
         [SerializeField] private RectTransform shiftText;
+        /// <summary>Fila modelo de letras originales (solo se ve en el editor).</summary>
         [SerializeField] private RectTransform plainRow;
+        /// <summary>Fila modelo de letras cifradas (solo se ve en el editor).</summary>
         [SerializeField] private RectTransform cipherRow;
+        /// <summary>Botón + de la regla.</summary>
         [SerializeField] private RectTransform increaseButton;
+        /// <summary>Botón - de la regla.</summary>
         [SerializeField] private RectTransform decreaseButton;
 
+        /// <summary>Aviso de acierto o fallo.</summary>
         [Header("Respuesta")]
         [SerializeField] private RectTransform feedbackText;
+        /// <summary>Campo de respuesta.</summary>
         [SerializeField] private RectTransform answerField;
+        /// <summary>Botón «Descifrar», que va en la última fila del teclado.</summary>
         [SerializeField] private RectTransform decryptButton;
+        /// <summary>Panel de respuesta, que crea el abecedario en pantalla al empezar a jugar.</summary>
         [Tooltip("Crea el abecedario en pantalla al empezar a jugar.")]
         [SerializeField] private AnswerPanel answerPanel;
 
         private Vector2 lastScreen;
         private Rect lastSafeArea;
 
+        /// <summary>Tamaño de la pantalla en unidades lógicas tras la última colocación.</summary>
         public Vector2 LogicalSize { get; private set; }
 
         // Solo recoloca cuando cambia el tamaño de la pantalla o el área segura (al girar el móvil).
@@ -98,6 +125,9 @@ namespace PuertaCastillo.UI
         }
 
         /// <summary>Recoloca todo para una pantalla de esos píxeles, respetando muescas y bordes.</summary>
+        /// <param name="width">Ancho de la pantalla en píxeles.</param>
+        /// <param name="height">Alto de la pantalla en píxeles.</param>
+        /// <param name="safeArea">Área segura en píxeles (sin muescas ni bordes redondeados).</param>
         public void Apply(float width, float height, Rect safeArea)
         {
             ScreenFit.Configure(scaler, width, height);
@@ -262,6 +292,11 @@ namespace PuertaCastillo.UI
         }
 
         /// <summary>Coloca un elemento midiendo desde la esquina superior izquierda, en unidades lógicas.</summary>
+        /// <param name="rect">Elemento que se coloca.</param>
+        /// <param name="x">Borde izquierdo.</param>
+        /// <param name="y">Borde superior, medido hacia abajo.</param>
+        /// <param name="width">Ancho.</param>
+        /// <param name="height">Alto.</param>
         public static void Place(RectTransform rect, float x, float y, float width, float height)
         {
             rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0f, 1f);

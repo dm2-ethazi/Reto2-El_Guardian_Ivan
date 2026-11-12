@@ -10,6 +10,7 @@ namespace PuertaCastillo.Gameplay
     {
         /// <summary>Crea un hijo "Visual" con una copia del SpriteRenderer del objeto y apaga el original.</summary>
         /// <returns>El SpriteRenderer del hijo, o null si el objeto no tenía ninguno.</returns>
+        /// <param name="owner">Objeto con el SpriteRenderer que se pasa al hijo.</param>
         public static SpriteRenderer MoveToChild(GameObject owner)
         {
             if (!owner.TryGetComponent(out SpriteRenderer source))

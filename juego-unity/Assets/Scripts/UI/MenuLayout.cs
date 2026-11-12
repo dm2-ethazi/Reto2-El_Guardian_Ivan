@@ -7,10 +7,15 @@ namespace PuertaCastillo.UI
     [ExecuteAlways]
     public class MenuLayout : MonoBehaviour
     {
+        /// <summary>Escalador del Canvas del menú.</summary>
         [SerializeField] private CanvasScaler scaler;
+        /// <summary>Columna con el título y los botones.</summary>
         [SerializeField] private RectTransform column;
+        /// <summary>Imagen de fondo.</summary>
         [SerializeField] private RectTransform image;
+        /// <summary>Fondo para pantallas en horizontal.</summary>
         [SerializeField] private Sprite landscapeBackground;
+        /// <summary>Fondo para pantallas en vertical.</summary>
         [SerializeField] private Sprite portraitBackground;
 
         private const float ColumnHeight = 700f;
@@ -33,12 +38,17 @@ namespace PuertaCastillo.UI
         }
 
         /// <summary>Recoloca el menú para una pantalla sin muescas (toda ella es área segura).</summary>
+        /// <param name="width">Ancho de la pantalla en píxeles.</param>
+        /// <param name="height">Alto de la pantalla en píxeles.</param>
         public void Apply(float width, float height)
         {
             Apply(width, height, new Rect(0f, 0f, width, height));
         }
 
         /// <summary>Ajusta la escala del Canvas, cubre la pantalla con el fondo sin deformarlo y centra la columna de botones en el área segura.</summary>
+        /// <param name="width">Ancho de la pantalla en píxeles.</param>
+        /// <param name="height">Alto de la pantalla en píxeles.</param>
+        /// <param name="safeArea">Área segura en píxeles.</param>
         public void Apply(float width, float height, Rect safeArea)
         {
             if (width <= 0f || height <= 0f) return;

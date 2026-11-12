@@ -16,6 +16,7 @@ namespace PuertaCastillo.Tests
     {
         private MainMenu menu;
 
+        /// <summary>Carga el menú principal antes de cada prueba.</summary>
         [UnitySetUp]
         public IEnumerator LoadMenu()
         {
@@ -25,6 +26,7 @@ namespace PuertaCastillo.Tests
             menu = Object.FindAnyObjectByType<MainMenu>();
         }
 
+        /// <summary>Borra la partida guardada después de cada prueba.</summary>
         [TearDown]
         public void ClearSavedGame()
         {
@@ -32,12 +34,14 @@ namespace PuertaCastillo.Tests
             LevelProgress.Reset();
         }
 
+        /// <summary>Sin partida guardada no hay botón Continuar.</summary>
         [Test]
         public void WithoutSavedGameThereIsNoContinueButton()
         {
             Assert.IsNull(menu.ContinueButton);
         }
 
+        /// <summary>Con partida guardada, Continuar sale encima de Iniciar y carga ese nivel.</summary>
         [UnityTest]
         public IEnumerator SavedGameShowsContinueAboveStartAndLoadsThatLevel()
         {
@@ -60,6 +64,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(3, Object.FindAnyObjectByType<LevelManager>().LevelNumber);
         }
 
+        /// <summary>Iniciar partida abre el mapa sin tocar la partida guardada.</summary>
         [UnityTest]
         public IEnumerator StartButtonOpensTheMapWithoutTouchingTheSavedGame()
         {
@@ -78,6 +83,7 @@ namespace PuertaCastillo.Tests
             Assert.IsTrue(Object.FindAnyObjectByType<LevelMap>().Nodes[3].interactable);
         }
 
+        /// <summary>El menú es la primera escena de la compilación.</summary>
         [Test]
         public void MenuIsTheFirstSceneOfTheBuild()
         {
@@ -85,12 +91,14 @@ namespace PuertaCastillo.Tests
             Assert.IsNotNull(Object.FindAnyObjectByType<EventSystem>());
         }
 
+        /// <summary>La confirmación de salir está oculta al empezar.</summary>
         [Test]
         public void ConfirmationIsHiddenAtTheStart()
         {
             Assert.IsFalse(ConfirmPanel().activeSelf);
         }
 
+        /// <summary>Iniciar partida carga el mapa de niveles.</summary>
         [UnityTest]
         public IEnumerator StartButtonLoadsTheMap()
         {
@@ -101,6 +109,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(LevelMap.SceneName, SceneManager.GetActiveScene().name);
         }
 
+        /// <summary>Salir pide confirmación y se puede cancelar.</summary>
         [Test]
         public void ExitAsksForConfirmationAndCanBeCancelled()
         {
@@ -111,6 +120,7 @@ namespace PuertaCastillo.Tests
             Assert.IsFalse(ConfirmPanel().activeSelf);
         }
 
+        /// <summary>Los botones de idioma traducen el menú y el idioma se mantiene al recargar.</summary>
         [UnityTest]
         public IEnumerator LanguageButtonTranslatesTheMenuAndIsKeptAfterReloading()
         {
@@ -133,6 +143,9 @@ namespace PuertaCastillo.Tests
             Localization.SetLanguage(previous);
         }
 
+        /// <summary>El menú queda centrado y sus botones no tienen animación.</summary>
+        /// <param name="width">Ancho de la pantalla en píxeles.</param>
+        /// <param name="height">Alto de la pantalla en píxeles.</param>
         [TestCase(1080, 1920)]
         [TestCase(1080, 2400)]
         [TestCase(1920, 1080)]

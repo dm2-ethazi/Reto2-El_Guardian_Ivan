@@ -16,6 +16,7 @@ namespace PuertaCastillo.Tests
     {
         private LevelMap map;
 
+        /// <summary>Borra el progreso y carga el mapa de niveles.</summary>
         [UnitySetUp]
         public IEnumerator LoadMap()
         {
@@ -24,6 +25,7 @@ namespace PuertaCastillo.Tests
             yield return LoadMapScene();
         }
 
+        /// <summary>Borra el progreso y la partida guardada después de cada prueba.</summary>
         [TearDown]
         public void ClearProgress()
         {
@@ -31,6 +33,7 @@ namespace PuertaCastillo.Tests
             SaveGame.Clear();
         }
 
+        /// <summary>El mapa está en la lista de escenas y tiene EventSystem.</summary>
         [Test]
         public void MapIsInTheBuildWithAnEventSystem()
         {
@@ -39,6 +42,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(5, map.Nodes.Count);
         }
 
+        /// <summary>Sin progreso solo se puede pulsar el nivel 1.</summary>
         [Test]
         public void WithoutProgressOnlyLevelOneCanBePressed()
         {
@@ -50,6 +54,7 @@ namespace PuertaCastillo.Tests
             }
         }
 
+        /// <summary>Los niveles superados llevan marca y el siguiente está disponible.</summary>
         [UnityTest]
         public IEnumerator CompletedLevelsShowAMarkAndTheNextIsAvailable()
         {
@@ -70,6 +75,7 @@ namespace PuertaCastillo.Tests
             Assert.IsFalse(map.Nodes[4].interactable);
         }
 
+        /// <summary>Un nivel bloqueado no se puede jugar.</summary>
         [UnityTest]
         public IEnumerator LockedLevelCannotBePlayed()
         {
@@ -80,6 +86,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(LevelMap.SceneName, SceneManager.GetActiveScene().name);
         }
 
+        /// <summary>Pulsar un nivel anterior lo juega sin perder progreso.</summary>
         [UnityTest]
         public IEnumerator PressingAnEarlierLevelPlaysItWithoutLosingProgress()
         {
@@ -100,6 +107,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(LevelState.Available, LevelProgress.StateOf(3));
         }
 
+        /// <summary>El botón Menú vuelve al menú principal.</summary>
         [UnityTest]
         public IEnumerator BackButtonGoesToTheMainMenu()
         {
@@ -110,6 +118,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(MainMenu.SceneName, SceneManager.GetActiveScene().name);
         }
 
+        /// <summary>Los textos del mapa siguen el idioma elegido.</summary>
         [UnityTest]
         public IEnumerator TextsFollowTheLanguage()
         {
@@ -124,6 +133,9 @@ namespace PuertaCastillo.Tests
             Localization.SetLanguage(previous);
         }
 
+        /// <summary>Los nodos caben en pantalla y no se solapan.</summary>
+        /// <param name="width">Ancho de la pantalla en píxeles.</param>
+        /// <param name="height">Alto de la pantalla en píxeles.</param>
         [TestCase(1080, 1920)]
         [TestCase(1080, 2400)]
         [TestCase(720, 1280)]
@@ -152,6 +164,7 @@ namespace PuertaCastillo.Tests
             }
         }
 
+        /// <summary>Se ve la ilustración y los niveles bloqueados se oscurecen.</summary>
         [Test]
         public void MapShowsTheIllustrationAndDarkensLockedLevels()
         {
@@ -161,6 +174,7 @@ namespace PuertaCastillo.Tests
             Assert.IsNotNull(Find(map.Nodes[0], "Chispa"));
         }
 
+        /// <summary>Los botones del mapa no tienen animación.</summary>
         [Test]
         public void MapButtonsDoNotAnimate()
         {

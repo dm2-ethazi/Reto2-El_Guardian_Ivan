@@ -8,21 +8,31 @@ namespace PuertaCastillo.UI
 {
     /// <summary>
     /// Muestra el nivel y el tiempo restante, y los paneles de nivel completado, victoria y derrota.
-    /// También crea los botones de reiniciar y volver al menú que se ven durante la partida, y los
-    /// gestos del móvil que hacen lo mismo (deslizar a la derecha reinicia y a la izquierda va al menú).
+    /// También crea los botones de reiniciar y volver al menú que se ven durante la partida, y el
+    /// gesto del móvil de deslizar a la derecha, que vuelve al menú (a la izquierda no hace nada).
     /// Los paneles de fin de nivel tienen además el botón "Volver al mapa" para elegir otro nivel.
     /// </summary>
     public class LevelHud : MonoBehaviour
     {
+        /// <summary>Partida de la que se leen el nivel, el tiempo y los eventos.</summary>
         [SerializeField] private LevelManager levelManager;
+        /// <summary>Respuesta, que se bloquea mientras se ve un panel.</summary>
         [SerializeField] private AnswerPanel answerPanel;
+        /// <summary>Texto «Nivel N mm:ss».</summary>
         [SerializeField] private TMP_Text statusLabel;
+        /// <summary>Panel de nivel completado, victoria o derrota.</summary>
         [SerializeField] private GameObject panel;
+        /// <summary>Título del panel.</summary>
         [SerializeField] private TMP_Text panelTitle;
+        /// <summary>Botón «Siguiente nivel» del panel.</summary>
         [SerializeField] private Button nextLevelButton;
+        /// <summary>Botón «Reiniciar» del panel; también sirve de modelo para el de la partida.</summary>
         [SerializeField] private Button restartButton;
+        /// <summary>Botón «Menú» del panel; también sirve de modelo para el de la partida y el de volver al mapa.</summary>
         [SerializeField] private Button menuButton;
+        /// <summary>Color del título al superar un nivel o ganar (verde).</summary>
         [SerializeField] private Color victoryColor = new Color32(0x3C, 0x8D, 0x5A, 0xFF);
+        /// <summary>Color del título al perder (rojo).</summary>
         [SerializeField] private Color defeatColor = new Color32(0xC0, 0x39, 0x2B, 0xFF);
 
         // Medidas del panel de fin de nivel, en unidades lógicas (ver LayoutPanel). La caja mide
@@ -42,7 +52,9 @@ namespace PuertaCastillo.UI
         /// <summary>Botón "Volver al mapa" de los paneles de nivel completado, victoria y derrota.</summary>
         public Button MapButton => mapButton;
 
+        /// <summary>Botón de reiniciar que se ve durante la partida. Lo coloca <see cref="GameLayout"/>.</summary>
         public RectTransform InGameRestartButton => (RectTransform)inGameRestartButton.transform;
+        /// <summary>Botón de volver al menú que se ve durante la partida. Lo coloca <see cref="GameLayout"/>.</summary>
         public RectTransform InGameMenuButton => (RectTransform)inGameMenuButton.transform;
 
         private void Awake()

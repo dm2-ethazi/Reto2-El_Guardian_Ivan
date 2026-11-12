@@ -14,7 +14,9 @@ namespace PuertaCastillo.UI
     /// </summary>
     public class LetterKeyboard : MonoBehaviour
     {
+        /// <summary>Teclas por fila.</summary>
         public const int Columns = 10;
+        /// <summary>Filas del teclado: tres de letras y una con espacio y enviar.</summary>
         public const int Rows = 4;
 
         /// <summary>Letras en el orden de las teclas, fila a fila, como en un teclado español.</summary>
@@ -39,20 +41,30 @@ namespace PuertaCastillo.UI
         /// <summary>Se lanza al pulsar borrar.</summary>
         public event Action DeletePressed;
 
+        /// <summary>Teclas de letra, en el orden de <see cref="QwertyLetters"/>.</summary>
         public IReadOnlyList<Button> LetterKeys => letterKeys;
 
         /// <summary>Tecla de esa letra.</summary>
+        /// <param name="letter">Letra en mayúsculas (incluida la Ñ).</param>
+        /// <returns>El botón de esa letra.</returns>
         public Button KeyFor(char letter)
         {
             return letterKeys[QwertyLetters.IndexOf(letter)];
         }
+        /// <summary>Tecla de espacio.</summary>
         public Button SpaceKey => spaceKey;
+        /// <summary>Tecla de borrar.</summary>
         public Button DeleteKey => deleteKey;
 
         /// <summary>
         /// Crea el teclado dentro de <paramref name="parent"/> copiando <paramref name="template"/>,
         /// un botón con un texto TMP como hijo.
         /// </summary>
+        /// <param name="parent">Transform donde se crea el teclado.</param>
+        /// <param name="template">Botón modelo que se copia para cada tecla.</param>
+        /// <param name="keySprite">Sprite de las teclas, o null para dejar el del modelo.</param>
+        /// <param name="textColor">Color de las letras.</param>
+        /// <returns>El teclado creado.</returns>
         public static LetterKeyboard Create(Transform parent, Button template, Sprite keySprite, Color textColor)
         {
             var root = new GameObject("Teclado", typeof(RectTransform));
@@ -90,6 +102,7 @@ namespace PuertaCastillo.UI
         }
 
         /// <summary>Activa o bloquea todas las teclas (se bloquean mientras se ve un panel de nivel).</summary>
+        /// <param name="interactable">False para bloquear todas las teclas.</param>
         public void SetInteractable(bool interactable)
         {
             foreach (Button key in letterKeys)
@@ -105,6 +118,11 @@ namespace PuertaCastillo.UI
         /// Coloca las teclas en un rectángulo de la interfaz, en unidades lógicas desde la esquina
         /// superior izquierda. Filas: Q-P, A-Ñ, Z-M y borrar, y espacio con el botón de enviar.
         /// </summary>
+        /// <param name="x">Borde izquierdo.</param>
+        /// <param name="y">Borde superior, medido hacia abajo.</param>
+        /// <param name="width">Ancho disponible.</param>
+        /// <param name="height">Alto disponible.</param>
+        /// <param name="submitKey">Botón de enviar, que se coloca a la derecha del espacio.</param>
         public void Arrange(float x, float y, float width, float height, RectTransform submitKey)
         {
             float keyWidth = (width - (Columns - 1) * Gap) / Columns;
@@ -127,6 +145,11 @@ namespace PuertaCastillo.UI
         }
 
         /// <summary>Hueco del botón de enviar: la última fila, a la derecha del espacio.</summary>
+        /// <param name="x">Borde izquierdo del teclado.</param>
+        /// <param name="y">Borde superior del teclado.</param>
+        /// <param name="width">Ancho del teclado.</param>
+        /// <param name="height">Alto del teclado.</param>
+        /// <returns>Rectángulo del botón de enviar, en unidades lógicas.</returns>
         public static Rect SubmitKeyRect(float x, float y, float width, float height)
         {
             float keyWidth = (width - (Columns - 1) * Gap) / Columns;
@@ -135,6 +158,8 @@ namespace PuertaCastillo.UI
         }
 
         /// <summary>Alto que ocupan las cuatro filas con teclas de letra de ese alto.</summary>
+        /// <param name="keyHeight">Alto de una tecla de letra.</param>
+        /// <returns>Alto total del teclado.</returns>
         public static float HeightFor(float keyHeight)
         {
             return (Rows - 1) * keyHeight + LastRowHeight + (Rows - 1) * Gap;

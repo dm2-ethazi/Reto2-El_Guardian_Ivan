@@ -8,7 +8,9 @@ namespace PuertaCastillo.Gameplay
     [RequireComponent(typeof(SpriteRenderer))]
     public class SpriteAnimator : MonoBehaviour
     {
+        /// <summary>Fotogramas de la animación, en orden.</summary>
         [SerializeField] private Sprite[] frames;
+        /// <summary>Velocidad de la animación, en fotogramas por segundo.</summary>
         [SerializeField, Min(0.1f)] private float framesPerSecond = 8f;
 
         private SpriteRenderer spriteRenderer;
@@ -22,6 +24,7 @@ namespace PuertaCastillo.Gameplay
         }
 
         /// <summary>Anima otro SpriteRenderer (el hijo visual del enemigo) en lugar del propio.</summary>
+        /// <param name="target">SpriteRenderer que se animará.</param>
         public void SetTarget(SpriteRenderer target)
         {
             spriteRenderer = target;

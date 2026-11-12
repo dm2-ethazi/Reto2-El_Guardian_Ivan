@@ -28,18 +28,27 @@ namespace PuertaCastillo.UI
         }
 
         /// <summary>True si la pantalla es más alta que ancha (móvil en vertical).</summary>
+        /// <param name="width">Ancho en píxeles.</param>
+        /// <param name="height">Alto en píxeles.</param>
+        /// <returns>True si es más alta que ancha.</returns>
         public static bool IsPortrait(float width, float height)
         {
             return height > width;
         }
 
         /// <summary>Resolución de referencia de la interfaz: 1080x1920 en vertical y 1920x1080 en horizontal.</summary>
+        /// <param name="width">Ancho en píxeles.</param>
+        /// <param name="height">Alto en píxeles.</param>
+        /// <returns>Resolución de referencia de esa orientación.</returns>
         public static Vector2 Reference(float width, float height)
         {
             return IsPortrait(width, height) ? PortraitReference : LandscapeReference;
         }
 
         /// <summary>Tamaño de la interfaz en unidades lógicas para una pantalla de esos píxeles.</summary>
+        /// <param name="width">Ancho en píxeles.</param>
+        /// <param name="height">Alto en píxeles.</param>
+        /// <returns>Tamaño en unidades lógicas.</returns>
         public static Vector2 LogicalSize(float width, float height)
         {
             Vector2 reference = Reference(width, height);
@@ -48,6 +57,9 @@ namespace PuertaCastillo.UI
         }
 
         /// <summary>Configura el CanvasScaler para que la resolución de referencia siempre quepa entera (modo Expand).</summary>
+        /// <param name="scaler">CanvasScaler que se configura.</param>
+        /// <param name="width">Ancho de la pantalla en píxeles.</param>
+        /// <param name="height">Alto de la pantalla en píxeles.</param>
         public static void Configure(CanvasScaler scaler, float width, float height)
         {
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;

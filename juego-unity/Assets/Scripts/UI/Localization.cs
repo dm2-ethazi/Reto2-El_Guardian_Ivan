@@ -7,8 +7,11 @@ namespace PuertaCastillo.UI
     /// <summary>Idiomas de la interfaz, en el mismo orden que las traducciones de <see cref="Localization"/>.</summary>
     public enum Language
     {
+        /// <summary>Español (idioma por defecto).</summary>
         Spanish,
+        /// <summary>Inglés.</summary>
         English,
+        /// <summary>Euskera.</summary>
         Basque
     }
 
@@ -81,6 +84,7 @@ namespace PuertaCastillo.UI
         }
 
         /// <summary>Cambia el idioma, lo guarda y avisa a los textos visibles para que se traduzcan.</summary>
+        /// <param name="language">Idioma elegido.</param>
         public static void SetLanguage(Language language)
         {
             PlayerPrefs.SetInt(LanguagePref, (int)language);
@@ -89,12 +93,17 @@ namespace PuertaCastillo.UI
         }
 
         /// <summary>Texto de una clave en el idioma actual. La clave debe existir en la tabla.</summary>
+        /// <param name="key">Clave del texto, como menu.start.</param>
+        /// <returns>El texto traducido.</returns>
         public static string Get(string key)
         {
             return Texts[key][(int)Current];
         }
 
         /// <summary>Como <see cref="Get"/>, pero sustituye {0}, {1}... por los valores dados.</summary>
+        /// <param name="key">Clave del texto.</param>
+        /// <param name="args">Valores que sustituyen a {0}, {1}...</param>
+        /// <returns>El texto traducido con los valores puestos.</returns>
         public static string Format(string key, params object[] args)
         {
             return string.Format(Get(key), args);

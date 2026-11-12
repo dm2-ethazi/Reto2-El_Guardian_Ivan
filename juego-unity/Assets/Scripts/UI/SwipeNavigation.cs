@@ -12,8 +12,11 @@ namespace PuertaCastillo.UI
     /// <summary>Resultado de un gesto de deslizar.</summary>
     public enum Swipe
     {
+        /// <summary>No es un gesto válido.</summary>
         None,
+        /// <summary>Deslizar hacia la derecha.</summary>
         Right,
+        /// <summary>Deslizar hacia la izquierda.</summary>
         Left
     }
 
@@ -54,11 +57,13 @@ namespace PuertaCastillo.UI
         /// <summary>Se llama al completar el gesto, cuando la página ya ha salido.</summary>
         public Action Swiped;
 
+        /// <summary>Dice si ahora se permite el gesto (por ejemplo, no con un panel abierto). Null equivale a siempre.</summary>
         public Func<bool> IsAllowed;
 
         /// <summary>Texto del destino que se ve en el panel, como "Nivel 2" o "Menú".</summary>
         public Func<string> DestinationLabel;
 
+        /// <summary>Fuente del texto del panel de destino. Null para la de TextMeshPro por defecto.</summary>
         public TMP_FontAsset LabelFont;
 
         /// <summary>
@@ -89,8 +94,11 @@ namespace PuertaCastillo.UI
         // Elemento de la interfaz que se desplaza con el dedo y su posición original para devolverlo.
         private struct MovedRect
         {
+            /// <summary>Elemento que se mueve.</summary>
             public RectTransform Rect;
+            /// <summary>Posición original del elemento.</summary>
             public Vector2 Original;
+            /// <summary>Escala de su Canvas, para pasar de píxeles a unidades.</summary>
             public float ScaleFactor;
         }
 
@@ -100,12 +108,17 @@ namespace PuertaCastillo.UI
         /// <summary>Progreso hacia el umbral: 0 sin arrastrar, 1 o más cuando al soltar se completaría.</summary>
         public float CurrentProgress { get; private set; }
 
+        /// <summary>True si se está viendo el panel de destino.</summary>
         public bool IsOverlayVisible => overlayCanvas != null && overlayCanvas.gameObject.activeSelf;
 
         /// <summary>
         /// Decide si un gesto cuenta al soltar: más horizontal que vertical y, o bien largo (al menos
         /// el 35 % del ancho, sin importar lo lento), o bien un golpe rápido (15 % en 0,3 s).
         /// </summary>
+        /// <param name="delta">Recorrido del dedo en píxeles.</param>
+        /// <param name="duration">Duración del gesto en segundos.</param>
+        /// <param name="screenWidth">Ancho de la pantalla en píxeles.</param>
+        /// <returns>Dirección del gesto, o <see cref="Swipe.None"/> si no cuenta.</returns>
         public static Swipe Classify(Vector2 delta, float duration, float screenWidth)
         {
             if (screenWidth <= 0f)
@@ -133,6 +146,10 @@ namespace PuertaCastillo.UI
         /// Cuánto se ha avanzado hacia el umbral arrastrando en <paramref name="direction"/>.
         /// En la dirección contraria, o si el arrastre es más vertical que horizontal, es 0.
         /// </summary>
+        /// <param name="delta">Recorrido del dedo en píxeles.</param>
+        /// <param name="direction">Dirección válida en esta pantalla.</param>
+        /// <param name="screenWidth">Ancho de la pantalla en píxeles.</param>
+        /// <returns>0 sin avance; 1 o más si al soltar se completaría.</returns>
         public static float Progress(Vector2 delta, Swipe direction, float screenWidth)
         {
             if (screenWidth <= 0f || direction == Swipe.None)
@@ -197,6 +214,7 @@ namespace PuertaCastillo.UI
         }
 
         /// <summary>Sigue al dedo: mueve la pantalla y muestra el panel según el arrastre.</summary>
+        /// <param name="delta">Recorrido del dedo desde que se pulsó, en píxeles.</param>
         public void Drag(Vector2 delta)
         {
             float progress = Progress(delta, Direction, Screen.width);
@@ -205,6 +223,8 @@ namespace PuertaCastillo.UI
         }
 
         /// <summary>Al soltar: completa el paso de página o lo devuelve a su sitio.</summary>
+        /// <param name="delta">Recorrido total en píxeles.</param>
+        /// <param name="duration">Duración del gesto en segundos.</param>
         public void Release(Vector2 delta, float duration)
         {
             if (Direction != Swipe.None && Classify(delta, duration, Screen.width) == Direction)

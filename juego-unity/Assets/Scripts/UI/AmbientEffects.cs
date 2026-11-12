@@ -11,18 +11,29 @@ namespace PuertaCastillo.UI
     /// </summary>
     public class AmbientEffects : MonoBehaviour
     {
+        /// <summary>Sprite de las velas flotantes.</summary>
         [SerializeField] private Sprite candle;
+        /// <summary>Sprite de la niebla.</summary>
         [SerializeField] private Sprite mist;
+        /// <summary>Fotogramas de las llamas de las antorchas.</summary>
         [SerializeField] private Sprite[] flameFrames;
+        /// <summary>Número de velas flotantes (0 para no poner ninguna).</summary>
         [SerializeField, Min(0)] private int candleCount = 0;
+        /// <summary>Número de nubes de niebla (0 para no poner ninguna).</summary>
         [SerializeField, Min(0)] private int mistCount = 0;
+        /// <summary>Posiciones locales de las llamas de antorcha.</summary>
         [SerializeField] private Vector2[] torchPositions;
+        /// <summary>Centro del área donde se reparten velas y niebla, en coordenadas locales.</summary>
         [SerializeField] private Vector2 areaCenter;
+        /// <summary>Tamaño del área donde se reparten velas y niebla.</summary>
         [SerializeField] private Vector2 areaSize = Vector2.one;
+        /// <summary>Escala de cada pieza.</summary>
         [Tooltip("Escala de cada pieza.")]
         [SerializeField, Min(0.01f)] private float pieceScale = 1f;
+        /// <summary>Equivalencia de una unidad de movimiento: 1 en el mundo, unos 60 en la interfaz.</summary>
         [Tooltip("Cuánto equivale una unidad de movimiento: 1 en el mundo, unos 60 en la interfaz.")]
         [SerializeField, Min(0.01f)] private float motionScale = 1f;
+        /// <summary>Velocidad de la animación de las llamas.</summary>
         [SerializeField, Min(0.1f)] private float flameFramesPerSecond = 9f;
         [Tooltip("Orden de dibujo de las llamas. En la partida van por delante de la muralla, que usa del 10 al 12.")]
         [SerializeField] private int flameOrder = 1;

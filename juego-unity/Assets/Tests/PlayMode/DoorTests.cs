@@ -16,6 +16,7 @@ namespace PuertaCastillo.Tests
         private Door door;
         private DoorHealthBar bar;
 
+        /// <summary>Carga la escena de la partida antes de cada prueba.</summary>
         [UnitySetUp]
         public IEnumerator LoadScene()
         {
@@ -25,6 +26,7 @@ namespace PuertaCastillo.Tests
             bar = Object.FindAnyObjectByType<DoorHealthBar>();
         }
 
+        /// <summary>La puerta empieza con 100 de vida.</summary>
         [Test]
         public void StartsWith100Health()
         {
@@ -33,6 +35,7 @@ namespace PuertaCastillo.Tests
             Assert.IsNotNull(bar.GetComponentInChildren<TMP_Text>().font);
         }
 
+        /// <summary>Cada golpe suena a madera, pero no se amontonan los sonidos.</summary>
         [UnityTest]
         public IEnumerator EachHitPlaysAWoodenKnockButNotTooManyAtOnce()
         {
@@ -49,6 +52,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(2, door.HitSoundsPlayed);
         }
 
+        /// <summary>Hay al menos tres sonidos de golpe, de duración corta.</summary>
         [Test]
         public void ThereAreSeveralKnockSounds()
         {
@@ -60,6 +64,7 @@ namespace PuertaCastillo.Tests
             }
         }
 
+        /// <summary>La puerta tiene un BoxCollider2D sólido y ningún Rigidbody2D.</summary>
         [Test]
         public void HasSolidColliderWithoutRigidbody()
         {
@@ -67,6 +72,7 @@ namespace PuertaCastillo.Tests
             Assert.IsNull(door.GetComponent<Rigidbody2D>());
         }
 
+        /// <summary>El daño se refleja en la barra de vida.</summary>
         [Test]
         public void DamageUpdatesTheBar()
         {
@@ -77,6 +83,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual("70 / 100", bar.GetComponentInChildren<TMP_Text>().text);
         }
 
+        /// <summary>La vida no baja de 0 y el aviso de caída salta una sola vez.</summary>
         [Test]
         public void HealthStopsAtZeroAndFallsOnce()
         {

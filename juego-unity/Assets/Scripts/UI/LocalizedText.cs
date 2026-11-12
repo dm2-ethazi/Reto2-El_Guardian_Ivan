@@ -9,10 +9,12 @@ namespace PuertaCastillo.UI
     [RequireComponent(typeof(TMP_Text))]
     public class LocalizedText : MonoBehaviour
     {
+        /// <summary>Clave del texto en <see cref="Localization"/>, por ejemplo menu.start.</summary>
         [Tooltip("Clave del texto en Localization.cs, por ejemplo menu.start.")]
         [SerializeField] private string key;
 
         /// <summary>Cambia la clave del texto y lo traduce ya. Sirve para botones copiados de otro.</summary>
+        /// <param name="newKey">Nueva clave del texto.</param>
         public void SetKey(string newKey)
         {
             key = newKey;

@@ -9,18 +9,23 @@ namespace PuertaCastillo.Tests
     {
         private Language previous;
 
+        /// <summary>Guarda el idioma elegido antes de la prueba.</summary>
         [SetUp]
         public void RememberLanguage()
         {
             previous = Localization.Current;
         }
 
+        /// <summary>Vuelve a poner el idioma que había.</summary>
         [TearDown]
         public void RestoreLanguage()
         {
             Localization.SetLanguage(previous);
         }
 
+        /// <summary>Los textos cambian con el idioma.</summary>
+        /// <param name="language">Idioma elegido.</param>
+        /// <param name="expected">Texto esperado del botón Descifrar.</param>
         [TestCase(Language.Spanish, "Descifrar")]
         [TestCase(Language.English, "Decrypt")]
         [TestCase(Language.Basque, "Deszifratu")]
@@ -31,6 +36,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(expected, Localization.Get("game.decrypt"));
         }
 
+        /// <summary>Todas las claves tienen texto en los tres idiomas.</summary>
         [Test]
         public void EveryTextIsTranslatedIntoEveryLanguage()
         {
@@ -45,6 +51,7 @@ namespace PuertaCastillo.Tests
             }
         }
 
+        /// <summary>El idioma elegido se guarda en PlayerPrefs.</summary>
         [Test]
         public void ChosenLanguageIsSavedInThePreferences()
         {
@@ -54,6 +61,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(Language.Basque, Localization.Current);
         }
 
+        /// <summary>Un idioma guardado no válido se trata como español.</summary>
         [Test]
         public void InvalidSavedLanguageFallsBackToSpanish()
         {
@@ -62,6 +70,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(Language.Spanish, Localization.Current);
         }
 
+        /// <summary>Cambiar de idioma avisa a los textos para que se traduzcan.</summary>
         [Test]
         public void ChangingTheLanguageNotifiesTheTexts()
         {

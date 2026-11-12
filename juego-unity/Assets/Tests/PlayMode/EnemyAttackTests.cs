@@ -14,6 +14,7 @@ namespace PuertaCastillo.Tests
         private Enemy enemy;
 
         // Deja un único enemigo y acelera el tiempo hasta que choca con la puerta.
+        /// <summary>Carga la partida y acelera el tiempo hasta que un enemigo llega a la puerta.</summary>
         [UnitySetUp]
         public IEnumerator EnemyReachesTheDoor()
         {
@@ -31,12 +32,14 @@ namespace PuertaCastillo.Tests
             Time.timeScale = 1f;
         }
 
+        /// <summary>Devuelve la escala de tiempo a 1.</summary>
         [TearDown]
         public void RestoreTime()
         {
             Time.timeScale = 1f;
         }
 
+        /// <summary>El enemigo se detiene ante la puerta sin atravesarla.</summary>
         [UnityTest]
         public IEnumerator EnemyStopsWithoutCrossingTheDoor()
         {
@@ -49,6 +52,7 @@ namespace PuertaCastillo.Tests
             Assert.IsTrue(enemy.IsAttacking);
         }
 
+        /// <summary>La puerta pierde vida cada 2 segundos mientras hay contacto.</summary>
         [UnityTest]
         public IEnumerator DoorLosesHealthEveryTwoSecondsWhileInContact()
         {
@@ -59,6 +63,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(96, door.CurrentHealth);
         }
 
+        /// <summary>El daño se detiene al destruir al enemigo.</summary>
         [UnityTest]
         public IEnumerator DamageStopsWhenTheEnemyIsDestroyed()
         {

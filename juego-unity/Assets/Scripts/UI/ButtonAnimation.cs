@@ -18,12 +18,14 @@ namespace PuertaCastillo.UI
         private float hover = 1f;
 
         /// <summary>El ratón entra en el botón: crece un poco.</summary>
+        /// <param name="eventData">Datos del puntero (no se usan).</param>
         public void OnPointerEnter(PointerEventData eventData)
         {
             hoverTarget = HoverScale;
         }
 
         /// <summary>El ratón sale del botón: vuelve a su tamaño.</summary>
+        /// <param name="eventData">Datos del puntero (no se usan).</param>
         public void OnPointerExit(PointerEventData eventData)
         {
             hoverTarget = 1f;

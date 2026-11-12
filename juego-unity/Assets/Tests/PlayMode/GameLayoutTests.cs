@@ -17,6 +17,7 @@ namespace PuertaCastillo.Tests
 
         private GameLayout layout;
 
+        /// <summary>Carga la escena de la partida antes de cada prueba.</summary>
         [UnitySetUp]
         public IEnumerator LoadScene()
         {
@@ -25,6 +26,9 @@ namespace PuertaCastillo.Tests
             layout = Object.FindAnyObjectByType<GameLayout>();
         }
 
+        /// <summary>Los botones de la partida son grandes y caben en pantalla.</summary>
+        /// <param name="width">Ancho de la pantalla en píxeles.</param>
+        /// <param name="height">Alto de la pantalla en píxeles.</param>
         [TestCase(1080, 1920)]
         [TestCase(1080, 2400)]
         [TestCase(720, 1280)]
@@ -51,6 +55,9 @@ namespace PuertaCastillo.Tests
             }
         }
 
+        /// <summary>Las teclas son grandes y no se solapan.</summary>
+        /// <param name="width">Ancho de la pantalla en píxeles.</param>
+        /// <param name="height">Alto de la pantalla en píxeles.</param>
         [TestCase(1080, 1920)]
         [TestCase(1080, 2400)]
         [TestCase(720, 1280)]
@@ -84,6 +91,10 @@ namespace PuertaCastillo.Tests
             }
         }
 
+        /// <summary>Las letras de la regla son grandes y no tapan otros elementos.</summary>
+        /// <param name="width">Ancho de la pantalla en píxeles.</param>
+        /// <param name="height">Alto de la pantalla en píxeles.</param>
+        /// <param name="minimumFont">Tamaño mínimo de letra.</param>
         [TestCase(1080, 1920, 50f)]
         [TestCase(1080, 2400, 50f)]
         [TestCase(720, 1280, 50f)]
@@ -122,12 +133,16 @@ namespace PuertaCastillo.Tests
             }
         }
 
+        /// <summary>Los botones no se mueven solos si no cambia la pantalla.</summary>
         [Test]
         public void GameButtonsDoNotMoveOnTheirOwn()
         {
             Assert.IsEmpty(Object.FindObjectsByType<ButtonAnimation>(FindObjectsSortMode.None));
         }
 
+        /// <summary>La cámara ve la puerta y todos los puntos de aparición.</summary>
+        /// <param name="width">Ancho de la pantalla en píxeles.</param>
+        /// <param name="height">Alto de la pantalla en píxeles.</param>
         [TestCase(1080, 1920)]
         [TestCase(1080, 2400)]
         [TestCase(1920, 1080)]
@@ -151,6 +166,7 @@ namespace PuertaCastillo.Tests
             }
         }
 
+        /// <summary>La interfaz respeta el área segura y no queda bajo la muesca.</summary>
         [Test]
         public void SafeAreaKeepsTheInterfaceAwayFromTheNotch()
         {

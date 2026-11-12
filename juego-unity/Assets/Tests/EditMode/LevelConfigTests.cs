@@ -13,6 +13,13 @@ namespace PuertaCastillo.Tests
             return AssetDatabase.LoadAssetAtPath<LevelConfig>($"Assets/Levels/Level{number}.asset");
         }
 
+        /// <summary>Cada nivel tiene el desplazamiento, mínimo, máximo, intervalo y daño de las tablas de la propuesta.</summary>
+        /// <param name="number">Número del nivel.</param>
+        /// <param name="shift">Desplazamiento esperado.</param>
+        /// <param name="min">Mínimo de enemigos esperado.</param>
+        /// <param name="max">Máximo de enemigos esperado.</param>
+        /// <param name="interval">Intervalo de aparición esperado.</param>
+        /// <param name="damage">Daño por golpe esperado.</param>
         [TestCase(1, 3, 1, 2, 6f, 2)]
         [TestCase(2, 5, 2, 3, 5f, 3)]
         [TestCase(3, 7, 3, 3, 4.5f, 4)]
@@ -29,6 +36,7 @@ namespace PuertaCastillo.Tests
             Assert.IsTrue(level.enemies.Concat(new[] { level.boss }).Where(e => e.prefab != null).All(e => e.damagePerHit == damage));
         }
 
+        /// <summary>El enemigo más rápido de cada nivel (2 a 4) es más rápido que el del anterior.</summary>
         [Test]
         public void EnemiesGetFasterEveryLevel()
         {
@@ -38,6 +46,7 @@ namespace PuertaCastillo.Tests
             }
         }
 
+        /// <summary>Del nivel 1 al 4, los mensajes de cada nivel son más cortos que los del anterior.</summary>
         [Test]
         public void MessagesGetShorterUntilLevelFour()
         {
@@ -47,6 +56,8 @@ namespace PuertaCastillo.Tests
             }
         }
 
+        /// <summary>Hay más mensajes que el máximo de enemigos, solo con letras A-Z y espacios, y la pista existe.</summary>
+        /// <param name="number">Número del nivel.</param>
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(3)]
@@ -61,6 +72,7 @@ namespace PuertaCastillo.Tests
             Assert.That(UI.Localization.Keys, Does.Contain(level.hintKey));
         }
 
+        /// <summary>El segundo tipo de enemigo (más rápido) aparece en los niveles 3 y 4; el 5 solo tiene al jefe.</summary>
         [Test]
         public void SecondEnemyTypeAppearsFromLevelThree()
         {
@@ -72,6 +84,7 @@ namespace PuertaCastillo.Tests
             Assert.Greater(Level(3).enemies[1].speed, Level(3).enemies[0].speed);
         }
 
+        /// <summary>Solo el nivel 5 tiene jefe.</summary>
         [Test]
         public void OnlyLevelFiveHasABoss()
         {

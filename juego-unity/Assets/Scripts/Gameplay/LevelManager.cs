@@ -8,10 +8,14 @@ namespace PuertaCastillo.Gameplay
     /// </summary>
     public class LevelManager : MonoBehaviour
     {
+        /// <summary>Niveles en orden; el último es el del jefe.</summary>
         [Tooltip("Los niveles en orden (Assets/Levels/Level1..5). El último es el del jefe.")]
         [SerializeField] private LevelConfig[] levels;
+        /// <summary>Generador de enemigos de la escena.</summary>
         [SerializeField] private EnemySpawner spawner;
+        /// <summary>Puerta que hay que defender.</summary>
         [SerializeField] private Door door;
+        /// <summary>Nivel inicial si el menú o el mapa no piden otro (0 es el nivel 1).</summary>
         [Tooltip("Nivel con el que empieza la partida si el menú no pide otro (Continuar). 0 es el nivel 1.")]
         [SerializeField, Min(0)] private int startLevelIndex;
 

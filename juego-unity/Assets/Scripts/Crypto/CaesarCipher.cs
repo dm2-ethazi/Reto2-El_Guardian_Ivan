@@ -31,6 +31,9 @@ namespace PuertaCastillo.Crypto
         }
 
         /// <summary>Descifra: es cifrar con el desplazamiento contrario.</summary>
+        /// <param name="text">Texto cifrado en mayúsculas.</param>
+        /// <param name="shift">Desplazamiento con el que se cifró.</param>
+        /// <returns>El texto original.</returns>
         public static string Decrypt(string text, int shift)
         {
             return Encrypt(text, -shift);

@@ -11,6 +11,7 @@ namespace PuertaCastillo.Tests
         private int? previousProgress;
         private int? previousSave;
 
+        /// <summary>Guarda las preferencias del jugador y empieza cada prueba sin progreso.</summary>
         [SetUp]
         public void BackUpAndClear()
         {
@@ -20,6 +21,7 @@ namespace PuertaCastillo.Tests
             SaveGame.Clear();
         }
 
+        /// <summary>Devuelve las preferencias del jugador a como estaban.</summary>
         [TearDown]
         public void Restore()
         {
@@ -28,6 +30,7 @@ namespace PuertaCastillo.Tests
             PlayerPrefs.Save();
         }
 
+        /// <summary>Sin progreso solo se puede jugar el nivel 1.</summary>
         [Test]
         public void WithoutProgressOnlyLevelOneIsAvailable()
         {
@@ -40,6 +43,7 @@ namespace PuertaCastillo.Tests
             }
         }
 
+        /// <summary>Superar un nivel desbloquea el siguiente.</summary>
         [Test]
         public void CompletingALevelUnlocksTheNextOne()
         {
@@ -50,6 +54,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(LevelState.Locked, LevelProgress.StateOf(2));
         }
 
+        /// <summary>Repetir un nivel anterior no quita progreso.</summary>
         [Test]
         public void ReplayingAnEarlierLevelNeverLosesProgress()
         {
@@ -69,6 +74,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(LevelState.Completed, LevelProgress.StateOf(2));
         }
 
+        /// <summary>El progreso se guarda en PlayerPrefs.</summary>
         [Test]
         public void ProgressIsSavedInThePreferences()
         {
@@ -77,6 +83,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(2, PlayerPrefs.GetInt(LevelProgress.CompletedKey));
         }
 
+        /// <summary>Una partida guardada de antes del mapa cuenta como progreso.</summary>
         [Test]
         public void SavedGameFromBeforeTheMapCountsAsProgress()
         {
@@ -86,6 +93,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(LevelState.Available, LevelProgress.StateOf(3));
         }
 
+        /// <summary>Vencer al jefe deja todos los niveles como superados.</summary>
         [Test]
         public void BeatingTheBossMarksEveryLevelAsCompleted()
         {
@@ -100,6 +108,7 @@ namespace PuertaCastillo.Tests
             }
         }
 
+        /// <summary>Borrar el progreso deja disponible solo el nivel 1.</summary>
         [Test]
         public void ResetLeavesOnlyLevelOne()
         {
@@ -110,6 +119,10 @@ namespace PuertaCastillo.Tests
             Assert.IsFalse(PlayerPrefs.HasKey(LevelProgress.CompletedKey));
         }
 
+        /// <summary>El número de niveles superados nunca baja.</summary>
+        /// <param name="completed">Niveles superados antes.</param>
+        /// <param name="levelIndex">Nivel que se supera (0 es el nivel 1).</param>
+        /// <returns>Niveles superados después.</returns>
         [TestCase(0, 0, ExpectedResult = 1)]
         [TestCase(3, 0, ExpectedResult = 3)]
         [TestCase(3, 2, ExpectedResult = 3)]
@@ -120,6 +133,10 @@ namespace PuertaCastillo.Tests
             return LevelProgress.AfterCompleting(completed, levelIndex);
         }
 
+        /// <summary>El estado de un nivel depende de cuántos se han superado.</summary>
+        /// <param name="levelIndex">Nivel (0 es el nivel 1).</param>
+        /// <param name="completed">Niveles superados.</param>
+        /// <returns>Estado del nivel.</returns>
         [TestCase(0, 2, ExpectedResult = LevelState.Completed)]
         [TestCase(1, 2, ExpectedResult = LevelState.Completed)]
         [TestCase(2, 2, ExpectedResult = LevelState.Available)]

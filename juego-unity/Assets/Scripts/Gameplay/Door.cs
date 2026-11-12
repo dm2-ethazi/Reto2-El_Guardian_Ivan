@@ -14,6 +14,7 @@ namespace PuertaCastillo.Gameplay
     [RequireComponent(typeof(BoxCollider2D))]
     public class Door : MonoBehaviour
     {
+        /// <summary>Vida de la puerta al empezar cada nivel (100).</summary>
         [Tooltip("Vida de la puerta al empezar cada nivel.")]
         [SerializeField, Min(1)] private int maxHealth = 100;
 
@@ -23,16 +24,21 @@ namespace PuertaCastillo.Gameplay
         /// <summary>Se lanza una sola vez, cuando la vida llega a 0.</summary>
         public event Action Fell;
 
+        /// <summary>Color del destello al recibir un golpe.</summary>
         [Header("Golpe recibido")]
         [SerializeField] private Color hitFlashColor = new Color(1f, 0.55f, 0.45f, 1f);
+        /// <summary>Amplitud del temblor del dibujo al recibir un golpe, en unidades del mundo.</summary>
         [SerializeField, Min(0f)] private float shakeAmplitude = 0.08f;
+        /// <summary>Duración del temblor de un golpe normal, en segundos.</summary>
         [SerializeField, Min(0.01f)] private float shakeDuration = 0.18f;
 
         /// <summary>Carpeta de Resources con los sonidos del golpe (GolpePuerta1, 2, 3...).</summary>
         public const string HitSoundsFolder = "Sonidos";
 
+        /// <summary>Volumen del sonido de golpe (0 a 1).</summary>
         [Header("Sonido del golpe")]
         [SerializeField, Range(0f, 1f)] private float hitVolume = 0.85f;
+        /// <summary>Tiempo mínimo entre dos sonidos de golpe, para no amontonarlos.</summary>
         [Tooltip("Si varios enemigos golpean a la vez, no suena más de un golpe en este tiempo.")]
         [SerializeField, Min(0f)] private float minSecondsBetweenHitSounds = 0.12f;
 
@@ -51,8 +57,11 @@ namespace PuertaCastillo.Gameplay
         private float shakeTimer = -1f;
         private float shakeStrength;
 
+        /// <summary>Vida máxima de la puerta.</summary>
         public int MaxHealth => maxHealth;
+        /// <summary>Vida que le queda a la puerta.</summary>
         public int CurrentHealth { get; private set; }
+        /// <summary>True si la puerta ha caído (vida 0).</summary>
         public bool IsDown => CurrentHealth <= 0;
 
         private void Awake()
@@ -68,6 +77,7 @@ namespace PuertaCastillo.Gameplay
         }
 
         /// <summary>Resta vida sin bajar de 0. Al llegar a 0 lanza <see cref="Fell"/> una sola vez.</summary>
+        /// <param name="amount">Vida que se resta. Si es 0 o negativa, no hace nada.</param>
         public void TakeDamage(int amount)
         {
             if (amount <= 0 || IsDown)
@@ -88,6 +98,7 @@ namespace PuertaCastillo.Gameplay
         /// Tiembla y destella un instante. Lo llama el enemigo justo al golpear.
         /// <paramref name="strength"/> 1 es un golpe normal; el jefe usa más.
         /// </summary>
+        /// <param name="strength">Fuerza del golpe: 1 en los enemigos normales y 2 en el jefe.</param>
         public void PlayHitFeedback(float strength)
         {
             PlayHitSound(strength);

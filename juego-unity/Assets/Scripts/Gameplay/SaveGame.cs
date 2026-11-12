@@ -20,6 +20,7 @@ namespace PuertaCastillo.Gameplay
         public static int SavedLevelIndex => Mathf.Max(0, PlayerPrefs.GetInt(SavedLevelKey, 0));
 
         /// <summary>Guarda el nivel actual (0 es el nivel 1) y lo escribe ya en disco.</summary>
+        /// <param name="levelIndex">Nivel actual (0 es el nivel 1).</param>
         public static void Save(int levelIndex)
         {
             PlayerPrefs.SetInt(SavedLevelKey, levelIndex);
@@ -34,12 +35,15 @@ namespace PuertaCastillo.Gameplay
         }
 
         /// <summary>Pide que la próxima partida empiece en este nivel. Lo usa el menú antes de cargar el juego.</summary>
+        /// <param name="levelIndex">Nivel con el que empezar (0 es el nivel 1).</param>
         public static void RequestStartLevel(int levelIndex)
         {
             requestedLevel = levelIndex;
         }
 
         /// <summary>Devuelve el nivel pedido y olvida la petición; sin petición, el valor por defecto.</summary>
+        /// <param name="defaultIndex">Nivel que se usa si nadie ha pedido otro.</param>
+        /// <returns>El nivel con el que debe empezar la partida.</returns>
         public static int TakeStartLevel(int defaultIndex)
         {
             int level = requestedLevel >= 0 ? requestedLevel : defaultIndex;

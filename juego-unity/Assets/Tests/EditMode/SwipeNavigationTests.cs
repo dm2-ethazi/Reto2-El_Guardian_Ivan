@@ -10,12 +10,14 @@ namespace PuertaCastillo.Tests
     {
         private const float Width = 1080f;
 
+        /// <summary>Un gesto largo a la izquierda cuenta.</summary>
         [Test]
         public void LongSwipeToTheLeftCounts()
         {
             Assert.AreEqual(Swipe.Left, SwipeNavigation.Classify(new Vector2(-500f, -40f), 0.3f, Width));
         }
 
+        /// <summary>Un gesto largo a la derecha cuenta.</summary>
         [Test]
         public void LongSwipeToTheRightCounts()
         {
@@ -23,36 +25,42 @@ namespace PuertaCastillo.Tests
         }
 
         // Con la pantalla siguiendo al dedo, un arrastre lento también vale si pasa el umbral.
+        /// <summary>Un gesto largo cuenta aunque sea lento.</summary>
         [Test]
         public void SlowLongSwipeCounts()
         {
             Assert.AreEqual(Swipe.Right, SwipeNavigation.Classify(new Vector2(600f, 0f), 1.5f, Width));
         }
 
+        /// <summary>Un gesto corto pero rápido cuenta.</summary>
         [Test]
         public void QuickShortFlickCounts()
         {
             Assert.AreEqual(Swipe.Left, SwipeNavigation.Classify(new Vector2(-200f, 0f), 0.2f, Width));
         }
 
+        /// <summary>Un gesto corto y lento no cuenta.</summary>
         [Test]
         public void SlowShortSwipeDoesNothing()
         {
             Assert.AreEqual(Swipe.None, SwipeNavigation.Classify(new Vector2(300f, 0f), 0.9f, Width));
         }
 
+        /// <summary>Un gesto muy pequeño no cuenta.</summary>
         [Test]
         public void TinySwipeDoesNothing()
         {
             Assert.AreEqual(Swipe.None, SwipeNavigation.Classify(new Vector2(100f, 0f), 0.1f, Width));
         }
 
+        /// <summary>Un gesto más vertical que horizontal no cuenta.</summary>
         [Test]
         public void MostlyVerticalSwipeDoesNothing()
         {
             Assert.AreEqual(Swipe.None, SwipeNavigation.Classify(new Vector2(400f, 500f), 0.3f, Width));
         }
 
+        /// <summary>Un toque sin arrastrar no cuenta.</summary>
         [Test]
         public void TapDoesNothing()
         {
@@ -60,6 +68,7 @@ namespace PuertaCastillo.Tests
         }
 
         // La respuesta visual solo avanza en la dirección válida y llega a 1 en el umbral (35 % del ancho).
+        /// <summary>El progreso solo crece al arrastrar en la dirección válida.</summary>
         [Test]
         public void ProgressOnlyGrowsInTheValidDirection()
         {
@@ -72,6 +81,7 @@ namespace PuertaCastillo.Tests
         }
 
         // En el menú, deslizar a la izquierda entra en el nivel guardado o, si no hay, en el nivel 1.
+        /// <summary>El gesto del menú entra en el nivel guardado, o en el 1 si no hay partida.</summary>
         [Test]
         public void MenuSwipeEntersTheSavedLevel()
         {

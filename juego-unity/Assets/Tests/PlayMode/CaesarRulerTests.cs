@@ -15,6 +15,7 @@ namespace PuertaCastillo.Tests
     {
         private CaesarRuler ruler;
 
+        /// <summary>Carga la escena de la partida antes de cada prueba.</summary>
         [UnitySetUp]
         public IEnumerator LoadScene()
         {
@@ -23,6 +24,7 @@ namespace PuertaCastillo.Tests
             ruler = Object.FindAnyObjectByType<CaesarRuler>();
         }
 
+        /// <summary>La regla empieza con desplazamiento 0: cada letra igual a su cifrada.</summary>
         [Test]
         public void StartsAlignedWithoutShift()
         {
@@ -30,6 +32,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(ruler.PlainLetters, ruler.CipherLetters);
         }
 
+        /// <summary>El botón + desplaza una posición las letras cifradas.</summary>
         [Test]
         public void IncreaseButtonSlidesTheLowerAlphabet()
         {
@@ -40,6 +43,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual("DEFGHIJKLMNÑOPQRSTUVWXYZABC", ruler.CipherLetters);
         }
 
+        /// <summary>El botón - desde 0 da la vuelta al abecedario (26).</summary>
         [Test]
         public void DecreaseButtonWrapsAroundTheAlphabet()
         {
@@ -49,6 +53,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual("ZABCDEFGHIJKLMNÑOPQRSTUVWXY", ruler.CipherLetters);
         }
 
+        /// <summary>Cada casilla muestra la letra original encima de su cifrada.</summary>
         [Test]
         public void EachCellShowsTheOriginalLetterAboveItsCipher()
         {

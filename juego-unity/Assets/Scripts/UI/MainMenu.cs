@@ -11,28 +11,37 @@ namespace PuertaCastillo.UI
     /// </summary>
     public class MainMenu : MonoBehaviour
     {
+        /// <summary>Nombre de la escena del menú principal.</summary>
         public const string SceneName = "MenuPrincipal";
         private const string GameSceneName = "PuertaDelCastillo";
 
+        /// <summary>Botón «Iniciar partida», que abre el mapa. También es el modelo del botón Continuar.</summary>
         [SerializeField] private Button startButton;
+        /// <summary>Botón «Salir».</summary>
         [SerializeField] private Button exitButton;
+        /// <summary>Panel que pide confirmación antes de salir.</summary>
         [SerializeField] private GameObject confirmPanel;
+        /// <summary>Botón «Sí, salir» de la confirmación.</summary>
         [SerializeField] private Button confirmExitButton;
+        /// <summary>Botón «No» de la confirmación.</summary>
         [SerializeField] private Button cancelExitButton;
+        /// <summary>Botón del español.</summary>
         [SerializeField] private Button spanishButton;
+        /// <summary>Botón del inglés.</summary>
         [SerializeField] private Button englishButton;
+        /// <summary>Botón del euskera.</summary>
         [SerializeField] private Button basqueButton;
 
+        // El botón de continuar solo existe si hay partida guardada. Es una copia de Iniciar partida,
+        // colocada justo antes en la columna; MenuLayout lo sitúa encima.
         private Button continueButton;
         private MenuExtras extras;
 
         /// <summary>Botón de continuar la partida guardada. Es null si no hay partida guardada.</summary>
         public Button ContinueButton => continueButton;
 
-        // El botón de continuar solo existe si hay partida guardada. Es una copia de Iniciar partida,
-        // colocada justo antes en la columna; MenuLayout lo sitúa encima.
         /// <summary>
-        /// Nivel en el que entra el gesto de deslizar a la derecha: el guardado si hay partida
+        /// Nivel en el que entra el gesto de deslizar a la izquierda: el guardado si hay partida
         /// (como Continuar) o el primero (como Iniciar partida).
         /// </summary>
         public static int SwipeStartLevel => SaveGame.HasSavedLevel ? SaveGame.SavedLevelIndex : 0;

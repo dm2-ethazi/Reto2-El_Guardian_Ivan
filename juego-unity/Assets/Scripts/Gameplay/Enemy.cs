@@ -13,14 +13,20 @@ namespace PuertaCastillo.Gameplay
     {
         private const float LabelRowHeight = 0.4f;
 
+        /// <summary>Texto hijo que muestra el mensaje cifrado encima del enemigo.</summary>
         [SerializeField] private TMP_Text messageLabel;
+        /// <summary>Marco dorado que se enseña cuando el enemigo es el objetivo.</summary>
         [SerializeField] private GameObject targetFrame;
+        /// <summary>Color del mensaje cuando el enemigo no es el objetivo (pergamino).</summary>
         [SerializeField] private Color labelColor = new Color32(0xF2, 0xE8, 0xCF, 0xFF);
+        /// <summary>Color del mensaje cuando el enemigo es el objetivo (dorado).</summary>
         [SerializeField] private Color targetLabelColor = new Color32(0xD4, 0xA0, 0x17, 0xFF);
 
+        /// <summary>Aciertos necesarios para derrotarlo: 1 en los normales y 4 en el jefe.</summary>
         [Header("Tipo de enemigo")]
         [Tooltip("Mensajes que hay que descifrar para derrotarlo. 1 en los enemigos normales; el jefe usa más.")]
         [SerializeField, Min(1)] private int decryptsToKill = 1;
+        /// <summary>Relleno de la barra de vida. Solo lo tiene el jefe, y por eso sirve para reconocerlo.</summary>
         [Tooltip("Relleno de la barra de vida. Solo lo usa el jefe.")]
         [SerializeField] private Transform healthFill;
 
@@ -68,10 +74,15 @@ namespace PuertaCastillo.Gameplay
         /// <summary>Transform del dibujo, el único que se mueve al golpear.</summary>
         public Transform Visual => visual;
 
+        /// <summary>True mientras está en contacto con la puerta y la golpea.</summary>
         public bool IsAttacking { get; private set; }
+        /// <summary>True si es el objetivo actual del campo de respuesta.</summary>
         public bool IsTargeted { get; private set; }
+        /// <summary>Mensaje original (sin cifrar), con el que se compara la respuesta.</summary>
         public string Message { get; private set; }
+        /// <summary>Mensaje cifrado tal como se ve en pantalla.</summary>
         public string EncryptedMessage => messageLabel.text;
+        /// <summary>Aciertos que faltan para derrotarlo.</summary>
         public int RemainingDecrypts { get; private set; }
 
         /// <summary>Fila del mensaje, para que no se solape con el de otros enemigos.</summary>
@@ -115,6 +126,11 @@ namespace PuertaCastillo.Gameplay
         /// Prepara al enemigo recién creado con la velocidad y el daño que su tipo tiene en el nivel.
         /// Guarda el mensaje original para comprobar la respuesta y muestra en pantalla solo el cifrado.
         /// </summary>
+        /// <param name="doorPosition">Posición de la puerta, hacia la que avanza.</param>
+        /// <param name="stats">Prefab, velocidad y daño de su tipo en este nivel.</param>
+        /// <param name="config">Nivel actual: intervalo de golpes y desplazamiento César.</param>
+        /// <param name="message">Mensaje original que tendrá que descifrar el jugador.</param>
+        /// <param name="row">Fila del texto, para que no se solape con el de otros enemigos.</param>
         public void Init(Vector2 doorPosition, EnemyStats stats, LevelConfig config, string message, int row)
         {
             LabelRow = row;
@@ -165,6 +181,7 @@ namespace PuertaCastillo.Gameplay
         }
 
         /// <summary>Cambia el mensaje: guarda el original para comprobar la respuesta y muestra el cifrado.</summary>
+        /// <param name="message">Mensaje original en mayúsculas.</param>
         public void SetMessage(string message)
         {
             Message = message;
@@ -172,6 +189,7 @@ namespace PuertaCastillo.Gameplay
         }
 
         /// <summary>Resta un descifrado. Devuelve true si el enemigo ya no puede seguir.</summary>
+        /// <returns>True si ya no le quedan aciertos y hay que destruirlo.</returns>
         public bool TakeDecrypt()
         {
             RemainingDecrypts--;
@@ -188,6 +206,7 @@ namespace PuertaCastillo.Gameplay
         }
 
         /// <summary>Marca o desmarca al enemigo como objetivo: enseña el marco y pinta su mensaje en dorado.</summary>
+        /// <param name="targeted">True para marcarlo como objetivo.</param>
         public void SetTargeted(bool targeted)
         {
             IsTargeted = targeted;

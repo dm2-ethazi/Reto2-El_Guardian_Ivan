@@ -11,8 +11,11 @@ namespace PuertaCastillo.Gameplay
     /// </summary>
     public class EnemySpawner : MonoBehaviour
     {
+        /// <summary>Nivel en juego. Lo cambia <see cref="StartLevel"/>.</summary>
         [SerializeField] private LevelConfig config;
+        /// <summary>Puerta hacia la que avanzan los enemigos.</summary>
         [SerializeField] private Door door;
+        /// <summary>Puntos de aparición de la parte de arriba. El del centro es el del jefe.</summary>
         [Tooltip("Puntos de la parte de arriba donde aparecen los enemigos. GameLayout los reparte según el ancho de pantalla.")]
         [SerializeField] private Transform[] spawnPoints;
 
@@ -25,11 +28,15 @@ namespace PuertaCastillo.Gameplay
         /// <summary>Se lanza cuando se derrota al jefe del nivel.</summary>
         public event Action BossDefeated;
 
+        /// <summary>Enemigos que hay ahora en la escena (puede contener destruidos hasta el siguiente frame).</summary>
         public IReadOnlyList<Enemy> ActiveEnemies => activeEnemies;
+        /// <summary>Configuración del nivel actual.</summary>
         public LevelConfig Config => config;
+        /// <summary>Jefe del nivel, o null si no hay o ya ha sido derrotado.</summary>
         public Enemy Boss => boss;
 
         /// <summary>Vacía la escena de enemigos y empieza a generar los del nivel indicado.</summary>
+        /// <param name="level">Configuración del nivel que empieza.</param>
         public void StartLevel(LevelConfig level)
         {
             config = level;
@@ -75,6 +82,7 @@ namespace PuertaCastillo.Gameplay
         }
 
         /// <summary>Aplica un mensaje descifrado: el enemigo muere o, si es el jefe, recibe un mensaje nuevo.</summary>
+        /// <param name="enemy">Enemigo cuyo mensaje se ha descifrado.</param>
         public void ResolveDecrypt(Enemy enemy)
         {
             if (!enemy.TakeDecrypt())

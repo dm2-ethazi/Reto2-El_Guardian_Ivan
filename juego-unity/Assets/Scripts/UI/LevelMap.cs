@@ -19,6 +19,7 @@ namespace PuertaCastillo.UI
     /// </summary>
     public class LevelMap : MonoBehaviour
     {
+        /// <summary>Nombre de la escena del mapa de niveles.</summary>
         public const string SceneName = "MapaNiveles";
         private const string GameSceneName = "PuertaDelCastillo";
 
@@ -35,35 +36,49 @@ namespace PuertaCastillo.UI
         private const float FrameWidth = 8f;
         private const float MinNodeSize = 100f;
 
+        /// <summary>Escalador del Canvas del mapa.</summary>
         [SerializeField] private CanvasScaler scaler;
+        /// <summary>Número de niveles del juego. El último es el castillo del jefe.</summary>
         [Tooltip("Número de niveles del juego. El último es el castillo del jefe.")]
         [SerializeField, Min(1)] private int levelCount = 5;
 
+        /// <summary>Ilustración del mapa en horizontal.</summary>
         [Header("Imagen del mapa")]
         [Tooltip("Ilustración del mapa en horizontal, con el camino y un hueco para cada nivel.")]
         [SerializeField] private Sprite mapImage;
+        /// <summary>Centro de cada nivel en la imagen horizontal, de 0 a 1 desde abajo a la izquierda.</summary>
         [Tooltip("Centro de cada nivel en la imagen horizontal: 0..1 desde abajo a la izquierda.")]
         [SerializeField] private Vector2[] nodePositions =
         {
             new Vector2(0.153f, 0.325f), new Vector2(0.302f, 0.431f), new Vector2(0.481f, 0.474f),
             new Vector2(0.634f, 0.527f), new Vector2(0.769f, 0.570f)
         };
+        /// <summary>Ilustración opcional para pantallas en vertical.</summary>
         [Tooltip("Opcional: ilustración para pantallas en vertical. Sin ella se usa la horizontal.")]
         [SerializeField] private Sprite portraitMapImage;
+        /// <summary>Centro de cada nivel en la imagen vertical.</summary>
         [Tooltip("Centro de cada nivel en la imagen vertical, como en la horizontal.")]
         [SerializeField] private Vector2[] portraitNodePositions = new Vector2[0];
+        /// <summary>Diámetro de los medallones de la imagen respecto a su alto.</summary>
         [Tooltip("Diámetro de los medallones de la imagen respecto a su alto.")]
         [SerializeField, Range(0.05f, 0.3f)] private float nodeSizeRatio = 0.096f;
 
+        /// <summary>Fondo que cubre la pantalla detrás del mapa.</summary>
         [Header("Sprites")]
         [SerializeField] private Sprite background;
+        /// <summary>Pergamino liso que se usa si no hay ilustración asignada.</summary>
         [SerializeField] private Sprite board;
+        /// <summary>Círculo para nodos, chispas e insignias.</summary>
         [SerializeField] private Sprite circle;
+        /// <summary>Cuadrado para sombras, marco, candado y marcas.</summary>
         [SerializeField] private Sprite square;
+        /// <summary>Sprite del botón de volver al menú.</summary>
         [SerializeField] private Sprite buttonSprite;
 
+        /// <summary>Fuente del título del mapa.</summary>
         [Header("Fuentes")]
         [SerializeField] private TMP_FontAsset titleFont;
+        /// <summary>Fuente de los textos de los botones.</summary>
         [SerializeField] private TMP_FontAsset textFont;
 
         private readonly List<Button> nodes = new List<Button>();
@@ -136,12 +151,17 @@ namespace PuertaCastillo.UI
         }
 
         /// <summary>Dibuja el mapa para una pantalla sin muescas (toda ella es área segura).</summary>
+        /// <param name="width">Ancho de la pantalla en píxeles.</param>
+        /// <param name="height">Alto de la pantalla en píxeles.</param>
         public void Apply(float width, float height)
         {
             Apply(width, height, new Rect(0f, 0f, width, height));
         }
 
         /// <summary>Dibuja el mapa entero para esa pantalla, con el progreso guardado.</summary>
+        /// <param name="width">Ancho de la pantalla en píxeles.</param>
+        /// <param name="height">Alto de la pantalla en píxeles.</param>
+        /// <param name="safeArea">Área segura en píxeles.</param>
         public void Apply(float width, float height, Rect safeArea)
         {
             if (width <= 0f || height <= 0f)
@@ -180,6 +200,7 @@ namespace PuertaCastillo.UI
         }
 
         /// <summary>Juega un nivel (0 es el nivel 1) si está desbloqueado. Lo usan los nodos del mapa.</summary>
+        /// <param name="levelIndex">Nivel que se quiere jugar (0 es el nivel 1).</param>
         public void PlayLevel(int levelIndex)
         {
             if (levelIndex < 0 || levelIndex >= levelCount || !LevelProgress.IsUnlocked(levelIndex))

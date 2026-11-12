@@ -24,17 +24,26 @@ namespace PuertaCastillo.UI
         private const float BorderScale = 1.6f;
         private const float ShiftFontSize = 48f;
 
+        /// <summary>Texto modelo de la letra cifrada; al jugar se oculta y se copia en cada casilla.</summary>
         [SerializeField] private TMP_Text cipherRow;
+        /// <summary>Texto modelo de la letra original; al jugar se oculta y se copia en cada casilla.</summary>
         [SerializeField] private TMP_Text plainRow;
+        /// <summary>Número del desplazamiento que muestra la regla.</summary>
         [SerializeField] private TMP_Text shiftLabel;
+        /// <summary>Botón + (suma uno al desplazamiento).</summary>
         [SerializeField] private Button increaseButton;
+        /// <summary>Botón - (resta uno al desplazamiento).</summary>
         [SerializeField] private Button decreaseButton;
 
+        /// <summary>Sprite de cada casilla, en modo Sliced.</summary>
         [Header("Casillas")]
         [Tooltip("Sprite de cada casilla, en Sliced (el de las teclas).")]
         [SerializeField] private Sprite cellSprite;
+        /// <summary>Color de la línea entre la letra original y la cifrada.</summary>
         [SerializeField] private Color dividerColor = new Color32(0x4A, 0x4E, 0x69, 0x80);
+        /// <summary>Color de las letras originales.</summary>
         [SerializeField] private Color plainColor = new Color32(0x22, 0x22, 0x3B, 0xFF);
+        /// <summary>Color de las letras cifradas.</summary>
         [SerializeField] private Color cipherColor = new Color32(0xC0, 0x39, 0x2B, 0xFF);
 
         private readonly List<RectTransform> cells = new List<RectTransform>();
@@ -43,11 +52,16 @@ namespace PuertaCastillo.UI
 
         /// <summary>Desplazamiento que muestra la regla ahora (0 a 26). Es solo una ayuda: no cambia el nivel.</summary>
         public int Shift { get; private set; }
+        /// <summary>Casillas de la regla, una por letra del abecedario.</summary>
         public IReadOnlyList<RectTransform> Cells => cells;
+        /// <summary>Letras originales de todas las casillas, en orden.</summary>
         public string PlainLetters => string.Concat(plainLabels.Select(label => label.text));
+        /// <summary>Letras cifradas de todas las casillas con el desplazamiento actual.</summary>
         public string CipherLetters => string.Concat(cipherLabels.Select(label => label.text));
 
         /// <summary>Alto de los dos bloques con casillas de ese alto.</summary>
+        /// <param name="cellHeight">Alto de una casilla, en unidades lógicas.</param>
+        /// <returns>Alto total de la regla.</returns>
         public static float GridHeight(float cellHeight)
         {
             return 2f * cellHeight + BlockGap;
@@ -123,6 +137,10 @@ namespace PuertaCastillo.UI
         }
 
         /// <summary>Coloca las casillas en un rectángulo de la interfaz, en unidades lógicas.</summary>
+        /// <param name="x">Borde izquierdo.</param>
+        /// <param name="y">Borde superior, medido hacia abajo.</param>
+        /// <param name="width">Ancho disponible.</param>
+        /// <param name="cellHeight">Alto de cada casilla.</param>
         public void Arrange(float x, float y, float width, float cellHeight)
         {
             float cellWidth = (width - (BlockColumns - 1) * CellGap) / BlockColumns;

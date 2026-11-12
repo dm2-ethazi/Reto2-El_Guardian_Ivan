@@ -13,7 +13,9 @@ namespace PuertaCastillo.Gameplay
     /// </summary>
     public class MusicPlayer : MonoBehaviour
     {
+        /// <summary>Pista del menú y del mapa, en Assets/Resources.</summary>
         public const string MenuTrack = "Musica/menu_musica";
+        /// <summary>Pista de la partida, en Assets/Resources.</summary>
         public const string BattleTrack = "Musica/batalla_musica";
         private const float Volume = 0.6f;
 
@@ -110,6 +112,7 @@ namespace PuertaCastillo.Gameplay
         /// <summary>Pista que está sonando, o null si no suena ninguna.</summary>
         public static AudioClip CurrentClip => instance != null ? instance.source.clip : null;
 
+        /// <summary>True si está sonando la música.</summary>
         public static bool IsPlaying => instance != null && instance.source.isPlaying;
 
         // Con "Enter Play Mode Options" sin recarga de dominio, los estáticos sobreviven entre partidas.
@@ -156,6 +159,8 @@ namespace PuertaCastillo.Gameplay
         }
 
         /// <summary>Pista de cada escena: el menú y el mapa comparten pista, y el juego tiene la suya. Otras escenas no cambian la música.</summary>
+        /// <param name="sceneName">Nombre de la escena cargada.</param>
+        /// <returns>Ruta de la pista en Resources, o null si la escena no cambia la música.</returns>
         public static string TrackFor(string sceneName)
         {
             switch (sceneName)
