@@ -1,0 +1,39 @@
+# Python - archivos compilados
+__pycache__/
+*.py[cod]
+
+# Entornos virtuales
+.venv/
+venv/
+
+# Metadatos de instalacion
+*.egg-info/
+build/
+dist/
+
+# Pytest - archivos temporales
+.pytest_cache/
+
+# Coverage - resultados de cobertura
+.coverage
+.coverage.*
+htmlcov/
+
+# Ruff - cache del analizador
+.ruff_cache/
+
+# Otras herramientas de desarrollo
+.mypy_cache/
+
+# Archivos temporales de Vigenere
+.vigenere_*.tmp
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Logs generados por Vigenère
+crypto-python/logs/
+
+# IntelliJ: configuracion personal de la carpeta desktop-javafx (fuera del proyecto Maven)
+desktop-javafx/.idea/

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Pantalla Ayuda: cómo se usa, preguntas frecuentes, atajos y, al final, "Acerca de" -->
+<VBox styleClass="content,help-content" maxWidth="900.0" minWidth="0.0" spacing="18.0" xmlns:fx="http://javafx.com/fxml">
+    <HBox styleClass="page-header" spacing="18.0" alignment="CENTER_LEFT">
+        <Region styleClass="icon,header-icon,icon-help"/>
+        <VBox spacing="4.0" minWidth="0.0" HBox.hgrow="ALWAYS">
+            <Label text="%help.title" styleClass="title" maxWidth="Infinity"/>
+            <Label text="%help.subtitle" wrapText="true" minHeight="-Infinity" styleClass="subtitle" maxWidth="Infinity"/>
+        </VBox>
+    </HBox>
+
+    <!-- Cómo se usa -->
+    <VBox styleClass="form-card" spacing="8.0">
+        <Label text="%help.encrypt.title" styleClass="step-label" maxWidth="Infinity"/>
+        <Label text="%help.encrypt.1" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+        <Label text="%help.encrypt.2" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+        <Label text="%help.encrypt.3" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+        <Label text="%help.decrypt.title" styleClass="step-label,help-subsection" maxWidth="Infinity"/>
+        <Label text="%help.decrypt.1" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+        <Label text="%help.decrypt.2" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+        <Label text="%help.decrypt.3" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+    </VBox>
+
+    <!-- Preguntas frecuentes -->
+    <VBox styleClass="form-card" spacing="12.0">
+        <Label text="%help.faq.title" styleClass="step-label" maxWidth="Infinity"/>
+        <VBox spacing="2.0" minWidth="0.0">
+            <Label text="%help.faq1.q" wrapText="true" minHeight="-Infinity" styleClass="help-question" maxWidth="Infinity"/>
+            <Label text="%help.faq1.a" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+        </VBox>
+        <VBox spacing="2.0" minWidth="0.0">
+            <Label text="%help.faq2.q" wrapText="true" minHeight="-Infinity" styleClass="help-question" maxWidth="Infinity"/>
+            <Label text="%help.faq2.a" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+        </VBox>
+        <VBox spacing="2.0" minWidth="0.0">
+            <Label text="%help.faq3.q" wrapText="true" minHeight="-Infinity" styleClass="help-question" maxWidth="Infinity"/>
+            <Label text="%help.faq3.a" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+        </VBox>
+        <VBox spacing="2.0" minWidth="0.0">
+            <Label text="%help.faq4.q" wrapText="true" minHeight="-Infinity" styleClass="help-question" maxWidth="Infinity"/>
+            <Label text="%help.faq4.a" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+        </VBox>
+        <VBox spacing="2.0" minWidth="0.0">
+            <Label text="%help.faq5.q" wrapText="true" minHeight="-Infinity" styleClass="help-question" maxWidth="Infinity"/>
+            <Label text="%help.faq5.a" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+        </VBox>
+    </VBox>
+
+    <!-- Atajos de teclado: la aplicación se puede usar entera sin ratón -->
+    <VBox styleClass="form-card" spacing="8.0">
+        <Label text="%help.shortcuts" styleClass="step-label" maxWidth="Infinity"/>
+        <Label text="%help.shortcut.overlay" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+        <Label text="%help.shortcut.nav" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+        <Label text="%help.shortcut.help" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+        <Label text="%help.shortcut.open" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+        <Label text="%help.shortcut.run" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+        <Label text="%help.shortcut.move" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+        <Label text="%help.shortcut.close" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+    </VBox>
+
+    <!-- Acerca de -->
+    <VBox styleClass="form-card" spacing="8.0">
+        <Label text="%help.about" styleClass="step-label" maxWidth="Infinity"/>
+        <Label text="%app.title" styleClass="about-name" maxWidth="Infinity"/>
+        <Label text="%help.about.version" wrapText="true" minHeight="-Infinity" styleClass="hint" maxWidth="Infinity"/>
+        <Label text="%help.about.description" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+        <Label text="%help.about.authors" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+        <Label text="%help.about.tech" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+        <Label text="%help.about.privacy" wrapText="true" minHeight="-Infinity" maxWidth="Infinity"/>
+        <Label text="%help.about.credits" styleClass="step-label,help-subsection" maxWidth="Infinity"/>
+        <Label text="%help.about.fonts" wrapText="true" minHeight="-Infinity" styleClass="hint" maxWidth="Infinity"/>
+        <Label text="%help.about.icons" wrapText="true" minHeight="-Infinity" styleClass="hint" maxWidth="Infinity"/>
+    </VBox>
+</VBox>

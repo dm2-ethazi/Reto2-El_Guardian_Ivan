@@ -1,0 +1,18 @@
+#!/bin/sh
+
+echo "Ejecutando hook pre-push..."
+
+# Comprobar las ramas que se quieren actualizar en el remoto
+while read local_ref local_sha remote_ref remote_sha
+do
+    case "$remote_ref" in
+        refs/heads/main|refs/heads/develop)
+            echo "ERROR: No se permite hacer push directo a main o develop."
+            echo "Utiliza una rama feature/ o fix/ y crea una Pull Request."
+            exit 1
+            ;;
+    esac
+done
+
+echo "Pre-push completado correctamente."
+exit 0

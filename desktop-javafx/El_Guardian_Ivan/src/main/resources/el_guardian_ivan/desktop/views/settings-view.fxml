@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox styleClass="content" maxWidth="900.0" minWidth="0.0" spacing="18.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="el_guardian_ivan.desktop.controller.SettingsController">
+    <HBox styleClass="page-header" spacing="18.0" alignment="CENTER_LEFT">
+        <Region styleClass="icon,header-icon,icon-settings"/>
+        <VBox spacing="4.0" minWidth="0.0" HBox.hgrow="ALWAYS">
+            <Label text="%settings.title" styleClass="title" wrapText="true" maxWidth="Infinity" minWidth="0.0"/>
+            <Label text="%settings.subtitle" wrapText="true" minHeight="-Infinity" styleClass="subtitle" maxWidth="Infinity" minWidth="0.0"/>
+        </VBox>
+    </HBox>
+
+    <VBox styleClass="form-card" spacing="10.0">
+        <Label fx:id="languageLabel" text="%settings.language" styleClass="step-label" wrapText="true" maxWidth="Infinity" minWidth="0.0"/>
+        <ComboBox fx:id="languageBox" accessibleText="%settings.language" prefWidth="260.0"/>
+        <Label text="%settings.language.hint" wrapText="true" minHeight="-Infinity" styleClass="hint" maxWidth="Infinity" minWidth="0.0"/>
+    </VBox>
+
+</VBox>

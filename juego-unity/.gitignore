@@ -1,0 +1,52 @@
+# Carpetas generadas por Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Bb]uild-*/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+
+# Ficheros generados por los IDE
+.vs/
+.idea/
+.vscode/
+*.csproj
+*.sln
+*.slnx
+*.user
+*.suo
+*.pidb
+*.pdb
+*.mdb
+
+# Compilaciones y crash reports
+*.apk
+*.aab
+*.unitypackage
+crashlytics-build.properties
+sysinfo.txt
+
+# Compilación nativa de Android (CMake/Gradle) que genera Unity
+.utmp/
+
+# Más ficheros de IDE y herramientas
+*.userprefs
+*.booproj
+*.svd
+*.opendb
+*.VC.db
+crashlytics-buildinfo*
+
+# Capturas de verificación (no forman parte del juego)
+docs/capturas-teclado/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Boceto y generador de la muralla (solo de trabajo, no van al repositorio)
+docs/boceto-perspectiva/

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane fx:id="rootPane" xmlns:fx="http://javafx.com/fxml" fx:controller="el_guardian_ivan.desktop.controller.MainController">
+  <BorderPane>
+    <fx:define>
+        <ToggleGroup fx:id="navigationGroup"/>
+    </fx:define>
+
+    <!-- Menú lateral -->
+    <left>
+        <VBox spacing="6.0" prefWidth="200.0" styleClass="sidebar">
+            <padding>
+                <Insets top="20.0" right="12.0" bottom="20.0" left="12.0"/>
+            </padding>
+            <!-- Escudo de la aplicación sobre el nombre (el mismo dibujo que el icono de la ventana) -->
+            <StackPane styleClass="app-logo">
+                <ImageView fitWidth="112.0" fitHeight="112.0" preserveRatio="true" smooth="true">
+                    <image><Image url="@../images/logo.png"/></image>
+                </ImageView>
+            </StackPane>
+            <Label text="%app.title" styleClass="app-name" maxWidth="Infinity"/>
+            <ToggleButton fx:id="homeButton" text="%nav.home" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button">
+                <graphic><Region styleClass="icon,icon-home"/></graphic>
+            </ToggleButton>
+            <ToggleButton fx:id="encryptButton" text="%nav.encrypt" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button">
+                <graphic><Region styleClass="icon,icon-lock"/></graphic>
+            </ToggleButton>
+            <ToggleButton fx:id="decryptButton" text="%nav.decrypt" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button">
+                <graphic><Region styleClass="icon,icon-lock-open"/></graphic>
+            </ToggleButton>
+            <ToggleButton fx:id="settingsButton" text="%nav.settings" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button">
+                <graphic><Region styleClass="icon,icon-settings"/></graphic>
+            </ToggleButton>
+            <!-- Ayuda (con "Acerca de" al final) abajo del todo, separada de las secciones principales -->
+            <Region VBox.vgrow="ALWAYS"/>
+            <ToggleButton fx:id="helpButton" text="%nav.help" toggleGroup="$navigationGroup" maxWidth="Infinity" styleClass="nav-button">
+                <graphic><Region styleClass="icon,icon-help"/></graphic>
+            </ToggleButton>
+        </VBox>
+    </left>
+
+    <!-- Aquí se muestra la pantalla elegida en el menú -->
+    <center>
+        <StackPane fx:id="contentArea" styleClass="content-area"/>
+    </center>
+  </BorderPane>
+
+  <!-- Etiquetas al estilo Excel: no bloquean clics ni cambian la disposición. -->
+  <Pane fx:id="keyTipsLayer" visible="false" managed="false" mouseTransparent="true"/>
+</StackPane>

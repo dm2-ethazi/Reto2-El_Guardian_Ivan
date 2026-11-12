@@ -1,0 +1,410 @@
+package el_guardian_ivan.desktop.controller;
+
+import el_guardian_ivan.desktop.i18n.I18n;
+import el_guardian_ivan.desktop.files.FileLocationOpener;
+import el_guardian_ivan.desktop.files.FileSizeFormatter;
+import el_guardian_ivan.desktop.ui.ScalingPane;
+import el_guardian_ivan.desktop.files.FilePreview;
+import javafx.scene.AccessibleRole;
+import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
+import javafx.scene.transform.Scale;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.Window;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+/**
+ * Diálogo con el estilo de la aplicación (boceto de la propuesta) para sustituir a las alertas
+ * estándar de JavaFX. Cada tipo lleva su icono y su color, así el resultado no depende solo del color.
+ *
+ * @author Iván Salazar
+ * @author Iván Alonso
+ */
+public class ResultDialog {
+
+    /** Registro de esta clase (ver logback.xml). */
+    private static final Logger log = LoggerFactory.getLogger(ResultDialog.class);
+
+    /** FXMLLoader crea el controlador al cargar result-dialog.fxml; desde fuera se usan los métodos estáticos. */
+    public ResultDialog() {
+    }
+
+    /** Los tres tipos de ventana: cada uno con su clase CSS, su icono y su título para el lector de pantalla. */
+    private enum Kind {
+        /** Operación terminada bien: check verde. */
+        SUCCESS("dialog-success", "icon-check-circle", "dialog.success"),
+        /** Algo ha fallado: aviso rojo. */
+        ERROR("dialog-error", "icon-error", "dialog.error"),
+        /** Pregunta antes de seguir: interrogación. */
+        CONFIRM("dialog-confirm", "icon-help", "dialog.confirm");
+
+        /** Clase CSS del diálogo (color del icono). */
+        private final String styleClass;
+        /** Clase CSS con la forma del icono. */
+        private final String iconClass;
+        /** Clave del texto que precede al título de la ventana. */
+        private final String windowTitleKey;
+
+        /**
+         * Crea un tipo con su estilo, su icono y su título.
+         *
+         * @param styleClass clase CSS del diálogo
+         * @param iconClass clase CSS del icono
+         * @param windowTitleKey clave del prefijo del título de la ventana
+         */
+        Kind(String styleClass, String iconClass, String windowTitleKey) {
+            this.styleClass = styleClass;
+            this.iconClass = iconClass;
+            this.windowTitleKey = windowTitleKey;
+        }
+    }
+
+    // ---- Elementos de result-dialog.fxml ----
+
+    /** Icono grande de arriba: check verde, aviso rojo o interrogación. */
+    @FXML
+    private Region icon;
+
+    /** Título en grande, por ejemplo "Archivo cifrado correctamente". */
+    @FXML
+    private Label titleLabel;
+
+    /** Explicación bajo el título. */
+    @FXML
+    private Label messageLabel;
+
+    /** Recuadro de la ventana (fondo pergamino y borde oro). */
+    @FXML
+    private VBox dialogBox;
+
+    /** Hueco para la vista previa de la imagen o el texto descifrado. */
+    @FXML
+    private VBox previewBox;
+
+    /** Recuadro con el nombre y el tamaño del fichero resultante (solo en éxito). */
+    @FXML
+    private HBox fileBox;
+
+    /** Nombre del fichero resultante. */
+    @FXML
+    private Label fileNameLabel;
+
+    /** Tamaño del fichero resultante. */
+    @FXML
+    private Label fileSizeLabel;
+
+    /** Carpeta donde ha quedado ("Ubicación: ..."). */
+    @FXML
+    private Label filePathLabel;
+
+    /** "Abrir ubicación" en éxito, "Reemplazar" en confirmación; oculto en error. */
+    @FXML
+    private Button primaryButton;
+
+    /** "Cerrar" (o "Cancelar" en confirmación); también responde a Esc. */
+    @FXML
+    private Button closeButton;
+
+    /** La X de la esquina superior derecha. */
+    @FXML
+    private Button cornerCloseButton;
+
+    /** Tamaño máximo de la vista previa, en píxeles de diseño (antes de escalar). */
+    private static final int PREVIEW_WIDTH = 480;
+    /** Alto máximo de la vista previa. */
+    private static final int PREVIEW_HEIGHT = 220;
+
+    /** Ventana propia del diálogo. */
+    private Stage stage;
+    /** Fichero resultante, para "Abrir ubicación". */
+    private Path file;
+    /** En confirmación: si el usuario pulsó el botón de aceptar. */
+    private boolean confirmed;
+
+    /**
+     * Operación terminada: muestra el fichero resultante y permite abrir su carpeta.
+     *
+     * @param owner ventana sobre la que se abre
+     * @param title título del aviso
+     * @param message mensaje del aviso
+     * @param file fichero creado
+     */
+    public static void success(Window owner, String title, String message, Path file) {
+        success(owner, title, message, file, false);
+    }
+
+    /**
+     * Como {@link #success(Window, String, String, Path)}; con {@code preview} enseña la imagen o el texto.
+     *
+     * @param owner ventana sobre la que se abre
+     * @param title título del aviso
+     * @param message mensaje del aviso
+     * @param file fichero creado
+     * @param preview si se intenta enseñar la imagen o el texto del fichero
+     */
+    public static void success(Window owner, String title, String message, Path file, boolean preview) {
+        ResultDialog dialog = create(owner, Kind.SUCCESS, title, message);
+        dialog.showFile(file);
+        if (preview) {
+            dialog.showPreview(file);
+        }
+        dialog.primaryButton.setText(I18n.get("dialog.openLocation"));
+        dialog.primaryButton.setOnAction(event -> dialog.openLocation());
+        dialog.showAndWait();
+    }
+
+    /**
+     * Algo ha fallado: icono rojo, mensaje y solo el botón Cerrar.
+     *
+     * @param owner ventana sobre la que se abre
+     * @param title título del error
+     * @param message explicación del error
+     */
+    public static void error(Window owner, String title, String message) {
+        ResultDialog dialog = create(owner, Kind.ERROR, title, message);
+        dialog.hidePrimaryButton();
+        dialog.showAndWait();
+    }
+
+    /**
+     * Pregunta antes de una acción; devuelve {@code true} solo si se pulsa el botón de confirmar.
+     *
+     * @param owner ventana sobre la que se abre
+     * @param title título de la pregunta
+     * @param message la pregunta
+     * @param confirmText texto del botón de aceptar, por ejemplo "Reemplazar"
+     * @return {@code true} si el usuario acepta; {@code false} si cancela o cierra
+     */
+    public static boolean confirm(Window owner, String title, String message, String confirmText) {
+        ResultDialog dialog = create(owner, Kind.CONFIRM, title, message);
+        dialog.primaryButton.setText(confirmText);
+        dialog.primaryButton.setGraphic(null); // El icono de carpeta solo tiene sentido en "Abrir ubicación"
+        dialog.primaryButton.setOnAction(event -> {
+            dialog.confirmed = true;
+            dialog.stage.close();
+        });
+        dialog.closeButton.setText(I18n.get("dialog.cancel"));
+        dialog.showAndWait();
+        return dialog.confirmed;
+    }
+
+    /**
+     * Carga el FXML del diálogo, lo rellena según el tipo y prepara su ventana (aún sin mostrarla).
+     *
+     * @param owner ventana sobre la que se abrirá
+     * @param kind tipo de diálogo
+     * @param title título
+     * @param message mensaje
+     * @return el controlador del diálogo, listo para completarlo y mostrarlo
+     */
+    private static ResultDialog create(Window owner, Kind kind, String title, String message) {
+        FXMLLoader loader = new FXMLLoader(ResultDialog.class.getResource("/el_guardian_ivan/desktop/views/result-dialog.fxml"),
+                I18n.bundle());
+        Parent root;
+        try {
+            root = loader.load();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        ResultDialog dialog = loader.getController();
+        root.getStyleClass().add(kind.styleClass);
+        dialog.icon.getStyleClass().add(kind.iconClass);
+        dialog.titleLabel.setText(title);
+        dialog.messageLabel.setText(message);
+
+        Stage stage = new Stage(StageStyle.TRANSPARENT); // Sin la barra de Windows, como en el boceto
+        stage.initOwner(owner);
+        stage.initModality(Modality.WINDOW_MODAL); // Bloquea la ventana principal hasta cerrarlo
+        // El título de la ventana es lo que anuncia el lector de pantalla al abrirse
+        stage.setTitle(I18n.get(kind.windowTitleKey) + ": " + title);
+        // Mismo tamaño relativo que la ventana principal; el Group hace que la escena mida el contenido ya escalado
+        if (owner != null && owner.getScene() != null && owner.getScene().getRoot() instanceof ScalingPane scaling) {
+            root.getTransforms().add(new Scale(scaling.getScale(), scaling.getScale()));
+        }
+        Scene scene = new Scene(new Group(root));
+        scene.setFill(Color.TRANSPARENT); // Transparente para que se vean las esquinas redondeadas y la sombra
+        if (owner != null && owner.getScene() != null) {
+            scene.getStylesheets().setAll(owner.getScene().getStylesheets());
+        }
+        stage.setScene(scene);
+        dialog.stage = stage;
+        return dialog;
+    }
+
+    /** Estado inicial: sin fichero ni vista previa; cada tipo enseña lo que necesita. */
+    @FXML
+    private void initialize() {
+        fileBox.setVisible(false);
+        fileBox.setManaged(false);
+        previewBox.setVisible(false);
+        previewBox.setManaged(false);
+        filePathLabel.managedProperty().bind(fileBox.managedProperty());
+        filePathLabel.visibleProperty().bind(fileBox.visibleProperty());
+        closeButton.setCancelButton(true); // Escape cierra el diálogo
+        cornerCloseButton.setAccessibleText(I18n.get("dialog.close"));
+    }
+
+    /** Botón Cerrar/Cancelar y la X: cierra sin confirmar nada. */
+    @FXML
+    private void onClose() {
+        stage.close();
+    }
+
+    /**
+     * Rellena el recuadro del fichero resultante: nombre, tamaño y carpeta.
+     *
+     * @param file fichero resultante
+     */
+    private void showFile(Path file) {
+        this.file = file;
+        fileNameLabel.setText(file.getFileName().toString());
+        filePathLabel.setText(I18n.get("dialog.location", file.toAbsolutePath().getParent()));
+        filePathLabel.setTooltip(new Tooltip(file.toAbsolutePath().toString()));
+        try {
+            fileSizeLabel.setText(FileSizeFormatter.format(Files.size(file), I18n.getLocale()));
+        } catch (IOException e) {
+            fileSizeLabel.setText("");
+        }
+        fileBox.setVisible(true);
+        fileBox.setManaged(true);
+    }
+
+    /**
+     * Muestra la imagen o el texto descifrado; si no es ninguno de los dos (o falla), no enseña nada.
+     *
+     * @param file fichero descifrado
+     */
+    private void showPreview(Path file) {
+        Node content;
+        try {
+            content = switch (FilePreview.kindOf(file)) {
+                case IMAGE -> imagePreview(file);
+                case TEXT -> textPreview(file);
+                case NONE -> null;
+            };
+        } catch (IOException e) {
+            content = null; // Sin vista previa: el archivo ya está guardado y se puede abrir desde su carpeta
+        }
+        if (content == null) {
+            return;
+        }
+        previewBox.getChildren().add(0, content);
+        previewBox.setVisible(true);
+        previewBox.setManaged(true);
+        dialogBox.setPrefWidth(PREVIEW_WIDTH + 80); // Ventana más ancha para que la vista previa luzca
+    }
+
+    /**
+     * Imagen reducida dentro de un marco, sin deformarla.
+     *
+     * @param file imagen que se muestra
+     * @return el marco con la imagen
+     */
+    private Node imagePreview(Path file) {
+        // Se decodifica ya reducida y en segundo plano: una foto enorme no bloquea ni llena la memoria
+        Image image = new Image(file.toUri().toString(), PREVIEW_WIDTH * 2, PREVIEW_HEIGHT * 2, true, true, true);
+        ImageView view = new ImageView(image);
+        view.setFitWidth(PREVIEW_WIDTH);
+        view.setFitHeight(PREVIEW_HEIGHT);
+        view.setPreserveRatio(true);
+        view.setSmooth(true);
+        view.setAccessibleRole(AccessibleRole.IMAGE_VIEW);
+        view.setAccessibleText(I18n.get("dialog.preview.image", file.getFileName()));
+        image.errorProperty().addListener((obs, hadError, error) -> {
+            if (error) { // JavaFX no sabe dibujarla (formato raro o dañada): quitamos el hueco
+                previewBox.getChildren().remove(view.getParent());
+                previewBox.setVisible(false);
+                previewBox.setManaged(false);
+                stage.sizeToScene();
+            }
+        });
+        StackPane frame = new StackPane(view);
+        frame.getStyleClass().add("preview-image");
+        frame.setMinHeight(PREVIEW_HEIGHT);
+        return frame;
+    }
+
+    /**
+     * Texto en un cuadro de solo lectura; si el fichero es muy largo, se avisa de que está recortado.
+     *
+     * @param file fichero de texto
+     * @return el cuadro de texto (y el aviso de recorte si hace falta)
+     * @throws IOException si no se puede leer el fichero
+     */
+    private Node textPreview(Path file) throws IOException {
+        FilePreview.Text text = FilePreview.readText(file, FilePreview.MAX_TEXT_BYTES);
+        TextArea area = new TextArea(text.content());
+        area.setEditable(false);
+        area.setWrapText(true);
+        area.setPrefSize(PREVIEW_WIDTH, PREVIEW_HEIGHT);
+        area.getStyleClass().add("preview-text");
+        area.setAccessibleText(I18n.get("dialog.preview.text", file.getFileName()));
+        if (!text.truncated()) {
+            return area;
+        }
+        Label note = new Label(I18n.get("dialog.preview.truncated",
+                FileSizeFormatter.format(FilePreview.MAX_TEXT_BYTES, I18n.getLocale())));
+        note.getStyleClass().add("path-label");
+        note.setWrapText(true);
+        return new VBox(4, area, note);
+    }
+
+    /** En los errores solo queda "Cerrar", que pasa a responder también a Intro. */
+    private void hidePrimaryButton() {
+        primaryButton.setVisible(false);
+        primaryButton.setManaged(false);
+        closeButton.setDefaultButton(true);
+    }
+
+    /** "Abrir ubicación": abre el explorador de archivos con el resultado seleccionado. */
+    private void openLocation() {
+        try {
+            FileLocationOpener.reveal(file);
+            stage.close();
+        } catch (IOException e) {
+            log.warn("No se ha podido abrir la ubicación del resultado", e);
+            messageLabel.setText(I18n.get("dialog.openLocationFailed", e.getMessage()));
+        }
+    }
+
+    /** Oscurece la ventana principal mientras el diálogo está abierto. */
+    private void showAndWait() {
+        Node ownerRoot = stage.getOwner() == null ? null : stage.getOwner().getScene().getRoot();
+        if (ownerRoot != null) {
+            ownerRoot.setEffect(new ColorAdjust(0, 0, -0.35, 0));
+        }
+        Node focusTarget = primaryButton.isManaged() ? primaryButton : closeButton;
+        stage.setOnShown(event -> focusTarget.requestFocus());
+        try {
+            stage.showAndWait();
+        } finally {
+            if (ownerRoot != null) {
+                ownerRoot.setEffect(null);
+            }
+        }
+    }
+}
