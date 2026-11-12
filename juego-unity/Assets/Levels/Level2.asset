@@ -12,22 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4dbefbee637373c4f9f79b7d93108e74, type: 3}
   m_Name: Level2
   m_EditorClassIdentifier: PuertaCastillo::PuertaCastillo.Gameplay.LevelConfig
-  minEnemies: 2
-  maxEnemies: 3
-  spawnInterval: 5
-  enemySpeed: 0.47
-  damagePerHit: 3
+  minEnemies: 1
+  maxEnemies: 5
+  spawnInterval: 18
   secondsBetweenHits: 2
-  durationSeconds: 70
+  durationSeconds: 90
   caesarShift: 5
-  enemyPrefabs:
-  - {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
-  bossPrefab: {fileID: 0}
+  enemies:
+  - prefab: {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
+    speed: 0.3
+    damagePerHit: 2
+  boss:
+    prefab: {fileID: 0}
+    speed: 0.4
+    damagePerHit: 2
   hintKey: hint.level2
   messages:
-  - LA TORRE
-  - EL FOSO
-  - EL PUENTE
-  - ABRE FUEGO
-  - ALZA ARCOS
-  - LA MURALLA
+  - LANZA
+  - HACHA
+  - DRAGON
+  - POCION
+  - ARCOS
+  - CORONA

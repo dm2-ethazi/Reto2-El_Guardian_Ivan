@@ -11,8 +11,12 @@ namespace PuertaCastillo.Gameplay
     /// </summary>
     public class EnemySpawner : MonoBehaviour
     {
+        /// <summary>Nivel en juego. Lo cambia <see cref="StartLevel"/>.</summary>
         [SerializeField] private LevelConfig config;
+        /// <summary>Puerta hacia la que avanzan los enemigos.</summary>
         [SerializeField] private Door door;
+        /// <summary>Puntos de aparición de la parte de arriba. El del centro es el del jefe.</summary>
+        [Tooltip("Puntos de la parte de arriba donde aparecen los enemigos. GameLayout los reparte según el ancho de pantalla.")]
         [SerializeField] private Transform[] spawnPoints;
 
         private readonly List<Enemy> activeEnemies = new List<Enemy>();
@@ -24,11 +28,15 @@ namespace PuertaCastillo.Gameplay
         /// <summary>Se lanza cuando se derrota al jefe del nivel.</summary>
         public event Action BossDefeated;
 
+        /// <summary>Enemigos que hay ahora en la escena (puede contener destruidos hasta el siguiente frame).</summary>
         public IReadOnlyList<Enemy> ActiveEnemies => activeEnemies;
+        /// <summary>Configuración del nivel actual.</summary>
         public LevelConfig Config => config;
+        /// <summary>Jefe del nivel, o null si no hay o ya ha sido derrotado.</summary>
         public Enemy Boss => boss;
 
         /// <summary>Vacía la escena de enemigos y empieza a generar los del nivel indicado.</summary>
+        /// <param name="level">Configuración del nivel que empieza.</param>
         public void StartLevel(LevelConfig level)
         {
             config = level;
@@ -37,9 +45,10 @@ namespace PuertaCastillo.Gameplay
             timer = 0f;
             stopped = false;
 
-            if (config.bossPrefab != null)
+            if (config.HasBoss)
             {
-                boss = Spawn(config.bossPrefab, spawnPoints[spawnPoints.Length / 2]);
+                boss = Spawn(config.boss, spawnPoints[spawnPoints.Length / 2]);
+                MusicPlayer.PlayEffect(SoundCue.BossSpawn);
             }
         }
 
@@ -65,14 +74,15 @@ namespace PuertaCastillo.Gameplay
             bool belowMinimum = activeEnemies.Count < config.minEnemies;
             bool intervalDone = timer >= config.spawnInterval && activeEnemies.Count < config.maxEnemies;
 
-            if (belowMinimum || intervalDone)
+            if ((belowMinimum || intervalDone) && config.enemies.Length > 0)
             {
-                Enemy prefab = config.enemyPrefabs[Random.Range(0, config.enemyPrefabs.Length)];
-                Spawn(prefab, NextSpawnPoint());
+                EnemyStats stats = config.enemies[Random.Range(0, config.enemies.Length)];
+                Spawn(stats, NextSpawnPoint());
             }
         }
 
         /// <summary>Aplica un mensaje descifrado: el enemigo muere o, si es el jefe, recibe un mensaje nuevo.</summary>
+        /// <param name="enemy">Enemigo cuyo mensaje se ha descifrado.</param>
         public void ResolveDecrypt(Enemy enemy)
         {
             if (!enemy.TakeDecrypt())
@@ -81,6 +91,7 @@ namespace PuertaCastillo.Gameplay
                 return;
             }
 
+            MusicPlayer.PlayEffect(SoundCue.EnemyDefeated);
             Destroy(enemy.gameObject);
 
             if (enemy == boss)
@@ -92,15 +103,16 @@ namespace PuertaCastillo.Gameplay
         }
 
         // Crea el enemigo a partir del prefab y le da los valores del nivel y un mensaje libre.
-        private Enemy Spawn(Enemy prefab, Transform point)
+        private Enemy Spawn(EnemyStats stats, Transform point)
         {
-            Enemy enemy = Instantiate(prefab, point.position, Quaternion.identity);
-            enemy.Init(door.transform.position, config, PickMessage(), FreeLabelRow());
+            Enemy enemy = Instantiate(stats.prefab, point.position, Quaternion.identity);
+            enemy.Init(door.transform.position, stats, config, PickMessage(), FreeLabelRow());
             activeEnemies.Add(enemy);
             timer = 0f;
             return enemy;
         }
 
+        // Borra de la escena todos los enemigos que quedan y vacía la lista.
         private void DestroyActiveEnemies()
         {
             foreach (Enemy enemy in activeEnemies.Where(enemy => enemy != null))

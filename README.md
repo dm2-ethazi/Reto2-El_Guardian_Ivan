@@ -15,6 +15,8 @@ El proyecto integra Python, JavaFX, Android y Unity,
 además de herramientas de control de versiones,
 pruebas automatizadas e integración continua.
 
+El juego de Unity (El Guardián Iván) se explica, con cómo compilarlo y modificarlo, en [juego-unity/README.md](juego-unity/README.md).
+
 ## Flujo de trabajo Git
 
 El proyecto Reto 02 se desarrolla de forma colaborativa mediante Git y GitHub.

@@ -7,8 +7,13 @@ namespace PuertaCastillo.Crypto
     /// </summary>
     public static class CaesarCipher
     {
+        /// <summary>Abecedario español de 27 letras (con Ñ). Su orden define el cifrado.</summary>
         public const string Alphabet = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
 
+        /// <summary>Cifra el texto avanzando cada letra <paramref name="shift"/> posiciones en el abecedario.</summary>
+        /// <param name="text">Texto en mayúsculas. Lo que no es letra del abecedario se copia igual.</param>
+        /// <param name="shift">Desplazamiento; puede ser negativo o mayor que 27.</param>
+        /// <returns>El texto cifrado.</returns>
         public static string Encrypt(string text, int shift)
         {
             // Deja el desplazamiento entre 0 y 26, también si es negativo (así descifra Decrypt).
@@ -25,6 +30,10 @@ namespace PuertaCastillo.Crypto
             return result.ToString();
         }
 
+        /// <summary>Descifra: es cifrar con el desplazamiento contrario.</summary>
+        /// <param name="text">Texto cifrado en mayúsculas.</param>
+        /// <param name="shift">Desplazamiento con el que se cifró.</param>
+        /// <returns>El texto original.</returns>
         public static string Decrypt(string text, int shift)
         {
             return Encrypt(text, -shift);

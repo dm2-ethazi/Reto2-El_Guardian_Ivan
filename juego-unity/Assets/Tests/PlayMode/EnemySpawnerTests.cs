@@ -10,10 +10,12 @@ using UnityEngine.TestTools;
 
 namespace PuertaCastillo.Tests
 {
+    /// <summary>Pruebas del generador: mínimo y máximo de enemigos, velocidad, física y mensajes sin repetir.</summary>
     public class EnemySpawnerTests
     {
         private EnemySpawner spawner;
 
+        /// <summary>Carga la escena de la partida antes de cada prueba.</summary>
         [UnitySetUp]
         public IEnumerator LoadScene()
         {
@@ -23,18 +25,21 @@ namespace PuertaCastillo.Tests
             spawner = Object.FindAnyObjectByType<EnemySpawner>();
         }
 
+        /// <summary>Devuelve la escala de tiempo a 1.</summary>
         [TearDown]
         public void RestoreTime()
         {
             Time.timeScale = 1f;
         }
 
+        /// <summary>Al empezar aparece enseguida el mínimo de enemigos.</summary>
         [Test]
         public void SpawnsTheMinimumImmediately()
         {
             Assert.AreEqual(1, spawner.ActiveEnemies.Count);
         }
 
+        /// <summary>El enemigo tiene Rigidbody2D Dynamic sin gravedad ni rotación y CircleCollider2D sólido.</summary>
         [Test]
         public void EnemyPhysicsMatchesTheProposal()
         {
@@ -47,6 +52,7 @@ namespace PuertaCastillo.Tests
             Assert.IsFalse(enemy.GetComponent<CircleCollider2D>().isTrigger);
         }
 
+        /// <summary>Los enemigos están en la capa Enemy, que no choca consigo misma.</summary>
         [Test]
         public void EnemiesDoNotCollideWithEachOther()
         {
@@ -56,6 +62,7 @@ namespace PuertaCastillo.Tests
             Assert.IsTrue(Physics2D.GetIgnoreLayerCollision(layer, layer));
         }
 
+        /// <summary>El enemigo avanza hacia la puerta a la velocidad del nivel.</summary>
         [UnityTest]
         public IEnumerator EnemyMovesTowardsTheDoorAtLevelSpeed()
         {
@@ -69,6 +76,7 @@ namespace PuertaCastillo.Tests
             Assert.That(startDistance - distance, Is.EqualTo(0.4f).Within(0.1f));
         }
 
+        /// <summary>Nunca hay más enemigos que el máximo del nivel.</summary>
         [UnityTest]
         public IEnumerator NeverExceedsTheMaximum()
         {
@@ -79,6 +87,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(2, spawner.ActiveEnemies.Count);
         }
 
+        /// <summary>El enemigo muestra su mensaje cifrado con el desplazamiento del nivel.</summary>
         [Test]
         public void EnemyShowsItsMessageEncrypted()
         {
@@ -90,6 +99,7 @@ namespace PuertaCastillo.Tests
             Assert.AreEqual(enemy.Message, CaesarCipher.Decrypt(label.text, 3));
         }
 
+        /// <summary>Los mensajes no se solapan cuando varios enemigos golpean la puerta.</summary>
         [UnityTest]
         public IEnumerator MessagesDoNotOverlapWhileAttacking()
         {
@@ -103,6 +113,7 @@ namespace PuertaCastillo.Tests
             Assert.That(Mathf.Abs(first - second), Is.GreaterThan(0.25f));
         }
 
+        /// <summary>Dos enemigos activos nunca tienen el mismo mensaje.</summary>
         [UnityTest]
         public IEnumerator ActiveEnemiesNeverShareAMessage()
         {

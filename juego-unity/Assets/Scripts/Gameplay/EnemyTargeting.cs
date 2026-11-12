@@ -7,14 +7,23 @@ namespace PuertaCastillo.Gameplay
     /// </summary>
     public class EnemyTargeting : MonoBehaviour
     {
+        /// <summary>Generador del que se leen los enemigos activos.</summary>
         [SerializeField] private EnemySpawner spawner;
+        /// <summary>Puerta: el objetivo es el enemigo más cercano a ella.</summary>
         [SerializeField] private Door door;
 
+        /// <summary>Enemigo objetivo actual, o null si no hay ninguno.</summary>
         public Enemy Target { get; private set; }
 
         // Recalcula el objetivo en cada frame y solo cambia el resaltado si es otro enemigo.
+        // Mientras el objetivo esté golpeando la puerta se mantiene, aunque otro quede más cerca.
         private void Update()
         {
+            if (Target != null && Target.IsAttacking)
+            {
+                return;
+            }
+
             Enemy closest = FindClosestToDoor();
             if (closest == Target)
             {
@@ -37,6 +46,8 @@ namespace PuertaCastillo.Gameplay
         /// <summary>
         /// Da por descifrado al objetivo si la respuesta coincide con su mensaje, sin espacios sobrantes y en mayúsculas.
         /// </summary>
+        /// <param name="answer">Respuesta escrita por el jugador.</param>
+        /// <returns>True si la respuesta era correcta y se ha aplicado al objetivo.</returns>
         public bool TrySolve(string answer)
         {
             if (Target == null || answer.Trim().ToUpperInvariant() != Target.Message)
@@ -48,6 +59,7 @@ namespace PuertaCastillo.Gameplay
             return true;
         }
 
+        // Recorre los enemigos activos y se queda con el más cercano a la puerta (el más peligroso).
         private Enemy FindClosestToDoor()
         {
             Enemy closest = null;

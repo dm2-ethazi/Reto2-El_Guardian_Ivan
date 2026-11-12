@@ -13,22 +13,27 @@ MonoBehaviour:
   m_Name: Level4
   m_EditorClassIdentifier: PuertaCastillo::PuertaCastillo.Gameplay.LevelConfig
   minEnemies: 3
-  maxEnemies: 4
-  spawnInterval: 4
-  enemySpeed: 0.6
-  damagePerHit: 5
-  secondsBetweenHits: 2
-  durationSeconds: 90
+  maxEnemies: 8
+  spawnInterval: 25
+  secondsBetweenHits: 3
+  durationSeconds: 140
   caesarShift: 11
-  enemyPrefabs:
-  - {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
-  - {fileID: 2571283707677237309, guid: f1225b080ad82bf41ac4e072156d5a72, type: 3}
-  bossPrefab: {fileID: 0}
+  enemies:
+  - prefab: {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
+    speed: 0.3
+    damagePerHit: 2
+  - prefab: {fileID: 2571283707677237309, guid: f1225b080ad82bf41ac4e072156d5a72, type: 3}
+    speed: 0.6
+    damagePerHit: 1
+  boss:
+    prefab: {fileID: 0}
+    speed: 0.4
+    damagePerHit: 2
   hintKey: hint.level4
   messages:
-  - ALERTA EN LA TORRE
-  - EL GUARDIAN VIGILA
-  - LOS ARCOS DEFIENDEN
-  - LA MAGIA PROTEGE
-  - CIERRA EL PORTON YA
-  - AVISA AL CAPITAN
+  - ABRE
+  - TORRE
+  - MAGIA
+  - PUERTA
+  - ESCUDO
+  - FOSO

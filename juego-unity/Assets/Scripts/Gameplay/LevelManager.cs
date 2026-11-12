@@ -8,10 +8,15 @@ namespace PuertaCastillo.Gameplay
     /// </summary>
     public class LevelManager : MonoBehaviour
     {
+        /// <summary>Niveles en orden; el último es el del jefe.</summary>
+        [Tooltip("Los niveles en orden (Assets/Levels/Level1..5). El último es el del jefe.")]
         [SerializeField] private LevelConfig[] levels;
+        /// <summary>Generador de enemigos de la escena.</summary>
         [SerializeField] private EnemySpawner spawner;
+        /// <summary>Puerta que hay que defender.</summary>
         [SerializeField] private Door door;
-        [Tooltip("Nivel con el que empieza la partida. 0 es el nivel 1.")]
+        /// <summary>Nivel inicial si el menú o el mapa no piden otro (0 es el nivel 1).</summary>
+        [Tooltip("Nivel con el que empieza la partida si el menú no pide otro (Continuar). 0 es el nivel 1.")]
         [SerializeField, Min(0)] private int startLevelIndex;
 
         private int levelIndex;
@@ -29,7 +34,9 @@ namespace PuertaCastillo.Gameplay
         /// <summary>Se lanza cuando cae la puerta.</summary>
         public event Action Lost;
 
+        /// <summary>Número del nivel actual tal como lo ve el jugador (empieza en 1).</summary>
         public int LevelNumber => levelIndex + 1;
+        /// <summary>Segundos que quedan para superar el nivel.</summary>
         public float TimeRemaining { get; private set; }
 
         private void OnEnable()
@@ -46,7 +53,7 @@ namespace PuertaCastillo.Gameplay
 
         private void Start()
         {
-            StartLevel(startLevelIndex);
+            StartLevel(Mathf.Clamp(SaveGame.TakeStartLevel(startLevelIndex), 0, levels.Length - 1));
         }
 
         // Cuenta atrás del nivel: si la puerta sigue en pie al llegar a 0, el nivel está superado.
@@ -65,6 +72,7 @@ namespace PuertaCastillo.Gameplay
             }
         }
 
+        /// <summary>Empieza el nivel siguiente. Lo llama el botón "Siguiente nivel".</summary>
         public void NextLevel()
         {
             StartLevel(levelIndex + 1);
@@ -78,12 +86,17 @@ namespace PuertaCastillo.Gameplay
             playing = true;
             door.ResetHealth();
             spawner.StartLevel(levels[index]);
+            // Se guarda al empezar: si se cierra el juego a mitad, Continuar retoma este nivel desde el principio.
+            SaveGame.Save(index);
             LevelStarted?.Invoke();
         }
 
         // Resistir el último nivel es la victoria final; en los demás se espera al botón de siguiente nivel.
         private void CompleteLevel()
         {
+            // Superar el nivel desbloquea el siguiente en el mapa; repetir uno anterior no quita progreso.
+            LevelProgress.MarkCompleted(levelIndex);
+
             if (levelIndex == levels.Length - 1)
             {
                 Win();
@@ -92,20 +105,28 @@ namespace PuertaCastillo.Gameplay
 
             playing = false;
             spawner.StopLevel();
+            MusicPlayer.PlayEffect(SoundCue.Victory);
             LevelCompleted?.Invoke();
         }
 
+        // Victoria final: se para todo y se borra la partida guardada.
         private void Win()
         {
             playing = false;
             spawner.StopLevel();
+            LevelProgress.MarkCompleted(levelIndex);
+            // Partida terminada: ya no hay nada que continuar.
+            SaveGame.Clear();
+            MusicPlayer.PlayEffect(SoundCue.Victory);
             Won?.Invoke();
         }
 
+        // Derrota: la puerta ha caído. La partida guardada se mantiene para reintentar el nivel.
         private void Lose()
         {
             playing = false;
             spawner.StopLevel();
+            MusicPlayer.PlayEffect(SoundCue.Defeat);
             Lost?.Invoke();
         }
     }

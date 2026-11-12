@@ -14,20 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: PuertaCastillo::PuertaCastillo.Gameplay.LevelConfig
   minEnemies: 1
   maxEnemies: 2
-  spawnInterval: 6
-  enemySpeed: 0.4
-  damagePerHit: 2
+  spawnInterval: 10
   secondsBetweenHits: 2
   durationSeconds: 60
   caesarShift: 3
-  enemyPrefabs:
-  - {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
-  bossPrefab: {fileID: 0}
+  enemies:
+  - prefab: {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
+    speed: 0.4
+    damagePerHit: 2
+  boss:
+    prefab: {fileID: 0}
+    speed: 0.4
+    damagePerHit: 2
   hintKey: hint.level1
   messages:
-  - ABRE
-  - TORRE
-  - MAGIA
-  - PUERTA
-  - ESCUDO
-  - FOSO
+  - HECHIZO
+  - BALLESTA
+  - ALABARDA
+  - MAZMORRA
+  - ESPADAS
+  - GUARDIAS

@@ -12,23 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4dbefbee637373c4f9f79b7d93108e74, type: 3}
   m_Name: Level3
   m_EditorClassIdentifier: PuertaCastillo::PuertaCastillo.Gameplay.LevelConfig
-  minEnemies: 3
-  maxEnemies: 3
-  spawnInterval: 4.5
-  enemySpeed: 0.53
-  damagePerHit: 4
-  secondsBetweenHits: 2
-  durationSeconds: 80
+  minEnemies: 2
+  maxEnemies: 6
+  spawnInterval: 20
+  secondsBetweenHits: 3
+  durationSeconds: 120
   caesarShift: 7
-  enemyPrefabs:
-  - {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
-  - {fileID: 2571283707677237309, guid: f1225b080ad82bf41ac4e072156d5a72, type: 3}
-  bossPrefab: {fileID: 0}
+  enemies:
+  - prefab: {fileID: 7646270480022184487, guid: 9cf9f35487cf1b14eb2acf66646fc347, type: 3}
+    speed: 0.3
+    damagePerHit: 2
+  - prefab: {fileID: 2571283707677237309, guid: f1225b080ad82bf41ac4e072156d5a72, type: 3}
+    speed: 0.6
+    damagePerHit: 1
+  boss:
+    prefab: {fileID: 0}
+    speed: 0.4
+    damagePerHit: 2
   hintKey: hint.level3
   messages:
-  - ALZA EL ESCUDO
-  - CIERRA EL PORTON
-  - LA TORRE CAE
-  - CUIDA EL FOSO
-  - ABRE LA PUERTA
-  - LA MAGIA VUELVE
+  - RUNA
+  - YELMO
+  - LOBO
+  - ALMA
+  - VELA
+  - REINO
